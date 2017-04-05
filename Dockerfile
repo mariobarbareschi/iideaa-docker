@@ -4,8 +4,6 @@ MAINTAINER Mario Barbareschi <mario.barbareschi@unina.it>
 MAINTAINER Giovanni Panice   <n@mosfet.io>
 MAINTAINER Antonio Tammaro   <ntonjeta@autistici.org>
 
-#RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
 # Update Software
 # Default command at startup
 RUN  pacman --noconfirm -Sy git zsh libedit libffi wget libtar doxygen boost-libs
