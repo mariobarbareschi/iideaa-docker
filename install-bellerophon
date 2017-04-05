@@ -12,6 +12,6 @@ cd Bellerophon
 mkdir build
 cd build
 ## add fix paradiseo
-cmake ../ -DCMAKE_MODULE_PATH=/opt/paradiseo-install/ParadisEO-2.0/cmake/module/
+cmake ../ -DCMAKE_MODULE_PATH=/opt/ParadisEO-2.0/cmake/module/
 make
 make install
