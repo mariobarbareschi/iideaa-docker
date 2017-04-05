@@ -16,3 +16,5 @@ cd build
 cmake ..
 make
 make install
+cd ..
+rm ParadisEO-2.0.1.tar.gz
