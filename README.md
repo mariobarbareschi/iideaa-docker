@@ -1,5 +1,5 @@
 # iideaa-docker
-[![Build Status](https://travis-ci.org/mariobarbareschi/iideaa-docker.svg?branch=master)](https://travis-ci.org/mariobarbareschi/iideaa-docker) [![](https://images.microbadger.com/badges/image/mariobarbareschi/iideaa-docker.svg)](https://microbadger.com/images/mariobarbareschi/iideaa-docker "Get your own image badge on microbadger.com")
+[![Build Status](https://travis-ci.org/mariobarbareschi/iideaa-docker.svg?branch=master)](https://travis-ci.org/mariobarbareschi/iideaa-docker) [![](https://images.microbadger.com/badges/image/mariobarbareschi/iideaa.svg)](https://microbadger.com/images/mariobarbareschi/iideaa "Get your own image badge on microbadger.com")
 ------------
 
 Docker image based on Arch-linux featuring IIDEAA tools
