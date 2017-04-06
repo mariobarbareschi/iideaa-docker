@@ -4,10 +4,10 @@ services:
 - docker
 before_install:
 - docker info
-- docker build -t mariobarbareschi/iideaa-docker .
-- docker run -it -d mariobarbareschi/iideaa-docker /bin/bash
+- docker build -t mariobarbareschi/iideaa .
+- docker run -it -d mariobarbareschi/iideaa /bin/bash
 script:
-- docker ps | grep -q mariobarbareschi/iideaa-docker
+- docker ps | grep -q mariobarbareschi/iideaa
 
 env:
 global:
@@ -21,7 +21,7 @@ global:
 
 after_success:
   - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-  - export REPO=$DOCKER_USER/iideaa
+  - export REPO=mariobarbareschi/iideaa
   - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
   - docker build -f Dockerfile -t $REPO:$COMMIT .
   - docker tag $REPO:$COMMIT $REPO:$TAG
