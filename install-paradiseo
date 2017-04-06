@@ -15,6 +15,5 @@ cd ParadisEO-2.0
 mkdir build
 cd build
 cmake ..
-make
+make -j4
 make install
-cd ..
