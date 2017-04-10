@@ -7,11 +7,11 @@ Docker image based on Arch-linux featuring IIDEAA tools
 ### Introduction to Bellerophon ###
 ------------
 
-Bellerophont is a genetic optimization tools, used in the context of Approximate Computing. It is part of IIDEAA tools, developed to be used in conjunction with [clang-Chimera] (https://github.com/ntonjeta/clang-chimera). Clang-Chimera provides code mutation, and Bellerophon uses genetic algorithm to find the Pareto-optimal solution.
+Bellerophont is a genetic optimization tools, used in the context of Approximate Computing. It is part of IIDEAA tools, developed to be used in conjunction with [clang-Chimera](https://github.com/ntonjeta/clang-chimera). Clang-Chimera provides code mutation, and Bellerophon uses genetic algorithm to find the Pareto-optimal solution.
 
-You can find more details about Bellerophon at [ntonjeta/bellerophon] (https://github.com/ntonjeta/Bellerophon).
+You can find more details about Bellerophon at [ntonjeta/bellerophon](https://github.com/ntonjeta/Bellerophon).
 
-In order to try by yourself IIDEAA, just clone and make Docker [https://www.docker.com] image by your own.
+In order to try by yourself IIDEAA, just clone and make [Docker](https://www.docker.com) image by your own.
 
 ### How use container ###
 
@@ -40,7 +40,7 @@ You can test a simple example:
 
     docker run -it ...
 
-The example use bit lenght reduction approximate technique, provided by [FLAP library] (https://github.com/Ghost047/Fap).
+The example use bit lenght reduction approximate technique, provided by [FLAP library](https://github.com/Ghost047/Fap).
 
 ### LICENSE ###
 --------
