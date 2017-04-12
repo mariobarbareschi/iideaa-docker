@@ -9,7 +9,7 @@ Docker image based on Arch-linux featuring IIDEAA tools
 
 Bellerophon is a genetic optimization tools, used in the context of Approximate Computing. It is part of IIDEAA tools, developed to be used in conjunction with [clang-Chimera](https://github.com/ntonjeta/clang-chimera). Clang-Chimera provides code mutation, and Bellerophon uses genetic algorithm to find the Pareto-optimal solutions.
 
-You can find more details about Bellerophon at [ntonjeta/bellerophon](https://github.com/ntonjeta/Bellerophon).
+You can find more details about Bellerophon at [ntonjeta/bellerophon](https://github.com/mariobarbareschi/Bellerophon).
 
 In order to try by yourself IIDEAA, just clone and make [Docker](https://www.docker.com) image by your own.
 
