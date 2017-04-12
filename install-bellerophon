@@ -7,7 +7,7 @@ exec > >(tee $log) # Requires fdescfs mounted to /dev/fd on FreeBSD.
 exec 2>&1
 
 cd /opt
-git clone https://github.com/ntonjeta/Bellerophon
+git clone https://github.com/mariobarbareschi/Bellerophon
 cd Bellerophon
 mkdir build
 cd build
