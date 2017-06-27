@@ -7,7 +7,7 @@ exec > >(tee $log) # Requires fdescfs mounted to /dev/fd on FreeBSD.
 exec 2>&1
 
 cd /opt
-git https://github.com/mariobarbareschi/clang-chimera
+git clone https://github.com/mariobarbareschi/clang-chimera
 cd clang-chimera
 mkdir build
 cd build
