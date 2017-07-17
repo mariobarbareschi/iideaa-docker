@@ -8,12 +8,12 @@
 --popSize=1500                              # -P : Population Size
 
 ######    Stopping criterion      ######
-                               # -G : Maximum number of generations
+# -G : Maximum number of generations
 
 ######    Variation Operators     ######
 --crossRate=1                              # Relative rate for the only crossover
 --shiftMutRate=0.5                         # Relative rate for shift mutation
 --exchangeMutRate=0.5                      # Relative rate for exchange mutation
---pCross=0.35                              # -c : Probability of Crossover
---pMut=0.35                                # -m : Probability of Mutation
+--pCross=0.5                              # -c : Probability of Crossover
+--pMut=0.1                                # -m : Probability of Mutation
 

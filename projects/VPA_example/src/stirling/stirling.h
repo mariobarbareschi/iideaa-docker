@@ -2,7 +2,7 @@
 #ifndef STIRLING_H
 #define STIRLING_H
 
-#include "math.h"
+#include <math.h>
 
 
 namespace stirling{

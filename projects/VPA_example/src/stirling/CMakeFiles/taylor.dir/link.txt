@@ -1,1 +1,0 @@
-/usr/bin/clang++  -fPIC  -Wfatal-errors -fno-use-cxa-atexit -g  -shared -Wl,-soname,libtaylor.so -o ../build/libs.o/libtaylor.so CMakeFiles/taylor.dir/taylor.cpp.o -lstirling 

@@ -1,12 +1,12 @@
 [
 {
-  "directory": "/home/VPA_example/bellerophon",
-  "command": "/usr/bin/clang++   -Dtaylor_EXPORTS -I/home/VPA_example/src/taylor -I/home/VPA_example/src/stirling   -Wfatal-errors -fno-use-cxa-atexit -g -fPIC   -std=gnu++11 -c /home/VPA_example/clang-chimera/output/mutants/taylor.cpp/4/taylor.cpp",
-  "file": "/home/VPA_example/clang-chimera/output/mutants/taylor.cpp/4/taylor.cpp"
+  "directory": "opt/projects/VPA_example/bellerophon",
+  "command": "/usr/bin/clang++ -Dtaylor_EXPORTS -I/opt/projects/VPA_example/src/taylor -I/opt/projects/VPA_example/src/stirling   -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /opt/projects/VPA_example/clang-chimera/output/mutants/taylor.cpp/4/taylor.cpp",
+  "file": "/opt/projects/VPA_example/clang-chimera/output/mutants/taylor.cpp/4/taylor.cpp"
 },
 {
-  "directory": "/home/VPA_example/bellerophon",
-  "command": "/usr/bin/clang++   -Dtaylor_EXPORTS -I/home/VPA_example/src/taylor -Wfatal-errors -fno-use-cxa-atexit -g -fPIC   -std=gnu++11 -c /home/VPA_example/bellerophon/bellerophon_functions.cpp",
-  "file": "/home/VPA_example/bellerophon/bellerophon_functions.cpp"
+  "directory": "/opt/projects/VPA_example/bellerophon",
+  "command": "/usr/bin/clang++ -I/opt/projects/VPA_example/src/taylor -Wfatal-errors -fno-use-cxa-atexit -g   -std=gnu++11 -c /opt/projects/VPA_example/bellerophon/bellerophon_functions.cpp",
+  "file": "/opt/projects/VPA_example/bellerophon/bellerophon_functions.cpp"
 }
 ]

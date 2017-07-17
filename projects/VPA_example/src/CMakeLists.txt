@@ -18,7 +18,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(GCC_COVERAGE_COMPILE_FLAGS "-Wfatal-errors")
 
 #We need the -fno-use-cxa-atexit flag for the symbol ___cxa_atexit
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS} -fno-use-cxa-atexit" )
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS} -fno-use-cxa-atexit -fPIC" )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -43,13 +43,14 @@ add_custom_target(library_database
   COMMAND if [ -d ${PROJECT_BINARY_DIR}/libs.a ]; then ls ${PROJECT_BINARY_DIR}/libs.a | grep 'a' >> ${PROJECT_BINARY_DIR}/library_database.csv\; fi
 )
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/taylor)
 add_subdirectory(${CMAKE_SOURCE_DIR}/stirling)
+add_subdirectory(${CMAKE_SOURCE_DIR}/taylor)
 
 # add the executable
 add_executable(taylor_main ${CMAKE_SOURCE_DIR}/main.cpp)
-include_directories(${CMAKE_SOURCE_DIR}/taylor)
 
-target_link_libraries(taylor_main taylor)
+target_include_directories(taylor_main PRIVATE ${CMAKE_SOURCE_DIR}/taylor)
+
+target_link_libraries(taylor_main PRIVATE taylor)
 
 add_dependencies(${CMAKE_PROJECT_NAME} library_database)
