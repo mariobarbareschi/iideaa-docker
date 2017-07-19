@@ -40,7 +40,7 @@ You can test a simple example:
 
     docker run -it ...
 
-The example use bit lenght reduction approximate technique, provided by [FLAP library](https://github.com/Ghost047/Fap).
+The example uses bit lenght reduction approximate technique, provided by [FLAP library](https://github.com/Ghost047/Fap).
 
 ### LICENSE ###
 --------
