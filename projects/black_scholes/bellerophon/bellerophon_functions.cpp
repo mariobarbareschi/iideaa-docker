@@ -1,12 +1,12 @@
 #include<iostream>
 #include<fstream>
 #include<string>
+#include<cstring>
 #include <math.h>
 
 #include <map>
 #include <vector>
 
-#include "csv.hpp"
 #include "vpa.h"
 
 extern void BlackScholesGPU(float *d_CallResult,
