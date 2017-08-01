@@ -2,13 +2,13 @@
 ######                 General    ######
 --help=0                                   # -h : Prints this message
 --stopOnUnknownParam=1                     # Stop if unkown param entered
---seed=1203083493                        # -S : Random number seed
+--seed=12371187                        # -S : Random number seed
 
 ######    Evolution Engine        ######
---popSize=200                              # -P : Population Size
+--popSize=900                              # -P : Population Size
 
 ######    Stopping criterion      ######
---maxGen=40                               # -G : Maximum number of generations
+--maxGen=35                               # -G : Maximum number of generations
 
 ######    Variation Operators     ######
 --crossRate=1                              # Relative rate for the only crossover
