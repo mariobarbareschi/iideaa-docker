@@ -31,7 +31,7 @@ Attach to container
 
     docker attach <containerhash>
 
-Now you have an interactive shell in wich you can use "clang-chimnera" and "bellerophon" tools. You can use a sharing volume with host machine for getting access to files outside the container.
+Now you have an interactive shell in wich you can use "clang-chimera" and "bellerophon" tools. You can use a sharing volume with host machine for getting access to files outside the container.
 
 #### Example ####
 --------
