@@ -17,7 +17,7 @@ In order to try by yourself IIDEAA, just clone and make [Docker](https://www.doc
 
 Download and build container
 
-    git clone https://github.com/ntonjeta/iidea-Docker
+    git clone https://github.com/mariobarbareschi/iideaa-Docker
     cd iidea-Docker/
     docker build -t <name> .
 
