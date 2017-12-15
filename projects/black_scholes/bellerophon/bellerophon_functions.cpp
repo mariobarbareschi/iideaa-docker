@@ -26,7 +26,6 @@ static float h_StockPrice[40000], h_OptionStrike[40000], h_OptionYears[40000], c
 static int oracleLength;
 
 extern "C" double BELLERO_getError() {
-    std::cout << "\n\n\n\n ERROR\n";
     if(!readOracleFile){
         readOracleFile = true;
         /*h_StockPrice = new std::vector<float>(40000);
@@ -53,7 +52,7 @@ extern "C" double BELLERO_getError() {
             golden_callResult[c] = golden_callResultVal;
             golden_putResult[c] = golden_putResultVal;
             c++;
-        } while ( !oracle.eof() && c < 100);
+        } while ( !oracle.eof());
         oracleLength = c;
     }
     
@@ -79,8 +78,6 @@ static int getZeros(std::vector<int> v){
 }
 
 extern "C" double BELLERO_Penality() {
-    
-std::cout << "\n Penalty\n";
 
 std::map<std::string, ::vpa::FloatingPointPrecision> map_operators;
     
@@ -275,6 +272,5 @@ map_operators["OP_33"] = OP_33;
             //std::cout << itMap->first << " --> " << (int) itMap->second[0] << ", " << (int) itMap->second[1] << ", "<< (int) itMap->second[2] <<std::endl;
             penaltyValue += (2-getZeros(itMap->second));
         }
-    std::cout << penaltyValue << std::endl;
     return penaltyValue;
 }
