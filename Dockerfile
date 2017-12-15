@@ -20,8 +20,9 @@ RUN /opt/install-iideaa/install-chimera
 RUN /opt/install-iideaa/install-paradiseo
 RUN /opt/install-iideaa/install-bellerophon
 
+#Letting root be the only user to allow user to run root commands
 # Create a new user
-RUN useradd -ms /bin/bash iideaa
+#RUN useradd -ms /bin/bash iideaa
 
 # Expose user
-USER iideaa
+#USER iideaa
