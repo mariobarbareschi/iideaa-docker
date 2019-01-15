@@ -1,0 +1,20 @@
+#!/bin/bash
+
+chmod +x /opt/scripts/install_*
+
+echo "*********** INSTALLING IIDEAA DEPENDENCIES ***********"
+/opt/scripts/install_dependencies
+
+echo "*********** INSTALLING LLVM/Clang 3.9.1 ***********"
+/opt/scripts/install_llvm391
+
+echo "*********** INSTALLING Clang-Chimera ***********"
+/opt/scripts/install_clang-chimera
+
+echo "*********** INSTALLING ParadisEO ***********"
+/opt/scripts/install_paradisEO
+
+echo "*********** INSTALLING Bellerophon ***********"
+/opt/scripts/install_bellerophon
+
+echo "*********** ENVIRONMENT CONFIGURATION COMPLETED ***********"

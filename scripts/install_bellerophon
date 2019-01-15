@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#Clone Bellerophon repo
+cd ~
+git clone https://github.com/andreaaletto/Bellerophon.git
+
+cd ~/Bellerophon
+mkdir build
+cd ~/Bellerophon/build
+
+#Insert LLVM components into the CMakeLists.txt of clang-chimera
+LLVM_LIBS="$(llvm-config --components)"
+sed -i "s/insert-llvm-libs-here/${LLVM_LIBS}/g" ~/Bellerophon/CMakeLists.txt
+sed -i "s/all-targets //g" ~/Bellerophon/CMakeLists.txt
+
+#Link ParadisEO cmake files
+cmake .. -DCMAKE_MODULE_PATH=~/ParadisEO-2.0/cmake/module/
+
+#Build and install
+make -j4 2> /dev/null
+make install
