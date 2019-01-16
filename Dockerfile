@@ -24,11 +24,14 @@ RUN echo "Cleaning up..."
 RUN rm -Rf ~/llvm
 RUN rm -f /opt/configure_environment
 RUN rm -Rf /opt/scripts
+RUN rm -Rf ~/ParadisEO-2.0/build
+RUN cd ~/Bellerophon/build && make clean
+RUN cd ~/clang-chimera/build && make clean
 
 # Install zsh and oh-my-zsh
 RUN echo "Installing a fancy shell..."
-RUN ["apt-get", "install", "-y", "zsh"]
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+RUN ["apt-get", "-qq", "install", "-y", "zsh", "nano"]
+RUN wget --quiet https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 RUN sed -i "s/git/git sudo docker /g" ~/.zshrc
 RUN sed -i "s/robbyrussell/af-magic/g" ~/.zshrc
 

@@ -1,3 +1,6 @@
-gnome-terminal --working-directory=/home/andrea/iideaa
+#!/bin/bash
+[ ! -d ~/iideaa_shared ] && mkdir ~/iideaa_shared
+
+gnome-terminal --working-directory=/home/andrea/iideaa_shared
 clear
-docker run -v /home/andrea/iideaa:/root/mnt -it iideaa-docker-new
+docker run -v /home/andrea/iideaa_shared:/root/mnt -w /root -it iideaa-docker-new /bin/zsh
