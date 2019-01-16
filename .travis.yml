@@ -5,7 +5,7 @@ services:
 before_install:
 - docker info
 - ./build_iideaa_docker
-- ./run_iidea_docker
+- ./run_iideaa_docker
 script:
 - docker ps | grep -q iideaa-docker
 
