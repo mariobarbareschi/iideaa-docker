@@ -3,4 +3,4 @@
 
 gnome-terminal --working-directory=/home/andrea/iideaa_shared
 clear
-docker run -v /home/andrea/iideaa_shared:/root/mnt -w /root -it iideaa-docker-new /bin/zsh
+docker run -v /home/andrea/iideaa_shared:/root/mnt -w /root -it iideaa-docker /bin/zsh

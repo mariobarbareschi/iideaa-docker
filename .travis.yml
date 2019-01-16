@@ -4,10 +4,10 @@ services:
 - docker
 before_install:
 - docker info
-- docker build -t andreaaletto/iideaa-docker .
-- docker run -it andreaaletto/iideaa-docker /bin/zsh
+- ./build_iideaa_docker
+- ./run_iidea_docker
 script:
-- docker ps | grep -q andreaaletto/iideaa-docker
+- docker ps | grep -q iideaa-docker
 
 #Docker will be triggered automatically by each push
 #env:

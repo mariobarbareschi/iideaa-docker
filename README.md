@@ -1,53 +1,77 @@
 # iideaa-docker
-[![Build Status](https://travis-ci.org/mariobarbareschi/iideaa-docker.svg?branch=master)](https://travis-ci.org/mariobarbareschi/iideaa-docker) [![](https://images.microbadger.com/badges/image/mariobarbareschi/iideaa.svg)](https://microbadger.com/images/mariobarbareschi/iideaa "Get your own image badge on microbadger.com")
+[![Build Status](https://travis-ci.org/andreaaletto/iideaa-docker.svg?branch=master)](https://travis-ci.org/andreaaletto/iideaa-docker)
 ------------
 
-Docker image based on Arch-linux featuring IIDEAA tools
+Docker image based on Ubuntu 18.04 featuring IIDEAA tools.
 
-### Introduction to Bellerophon ###
+### How use container
 ------------
 
-Bellerophon is a genetic optimization tools, used in the context of Approximate Computing. It is part of IIDEAA tools, developed to be used in conjunction with [clang-Chimera](https://github.com/ntonjeta/clang-chimera). Clang-Chimera provides code mutation, and Bellerophon uses genetic algorithm to find the Pareto-optimal solutions.
+First of all you will need a [Docker](https://www.docker.com/) installation. If not present you can easily install it using the [convenience script](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
 
-You can find more details about Bellerophon at [mariobarbareschi/bellerophon](https://github.com/mariobarbareschi/Bellerophon).
+```sh
+$ curl -fsSL https://get.docker.com -o get-docker.sh
+$ sudo sh get-docker.sh
+<output truncated>
 
-In order to try by yourself IIDEAA, just clone and make [Docker](https://www.docker.com) image by your own.
+sudo usermod -aG docker your-user
+```
 
-### How use container ###
+Now download and build container:
+```sh
+$ git clone https://github.com/andreaaletto/iideaa-docker
+$ cd iideaa-docker
+$ chmod +x build_iideaa_docker
+$ ./build_iideaa_docker
+```
 
-Download and build container
+Grab a coffee: it will take several minutes to download and build everything.
 
-    git clone https://github.com/mariobarbareschi/iideaa-Docker
-    cd iidea-Docker/
-    docker build -t <name> .
+Run container:
 
-Grab a coffee: it will take minutes for download and build everything.
+```sh
+$ ./run_iideaa_docker
+```
+    
+This script will run the container with zsh as default shell and will mount the folder ```/root/mnt``` of the container onto the folder ```/home/<user>/iideaa_shared``` of the host.
 
-Run container and mount volume
+Now you have an interactive shell in which you can use **clang-chimera** and **bellerophon** tools. You can use the container folder ```/root/mnt``` to share data with host machine outside the container.
 
-    docker run -dit -v /path/to/host/folder:/absolute/path/to/container/folder/ <container hash>
-
-Attach to container
-
-    docker attach <containerhash>
-
-Now you have an interactive shell in wich you can use "clang-chimera" and "bellerophon" tools. You can use a sharing volume with host machine for getting access to files outside the container.
-
-#### Example ####
+### Example 
 --------
 
-You can test a simple example:
+You can test IIDEAA looking at the project folder in ```/opt/projects```. In the following **k-means** example will be considered. 
 
-    docker run -it ...
+Execute Clang-Chimera:
 
-The example uses bit lenght reduction approximate technique, provided by [FLAP library](https://github.com/Ghost047/Fap).
+```sh
+# cd /opt/projects/k-means/chimera
+# ./launch.sh
 
-### LICENSE ###
+<chimera output truncated>
+```
+Now check the mutants in ```/opt/projects/k-means/chimera/output``` and run Bellerophon:
+
+```sh
+# cd ../bellerophon
+# ./launch_bellerophon.sh
+```
+The output of Bellerophon will be displayed on terminal.
+
+#### Related repositories
+--------
+
+For further information about IIDEAA tools, please refer to the following repos:
+
+- [Clang-Chimera](https://github.com/andreaaletto/clang-chimera) 
+- [Bellerophon](https://github.com/andreaaletto/Bellerophon)
+
+#### LICENSE
 --------
 
 * [GPLV3.0](https://www.gnu.org/licenses/licenses.html)
 
-### Contributing ###
+#### Contributing
 ----------
 
 Github is for social coding: if you want to write code, I encourage contributions through pull requests from forks of this repository.
