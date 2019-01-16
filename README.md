@@ -17,7 +17,15 @@ $ sudo sh get-docker.sh
 sudo usermod -aG docker your-user
 ```
 
-Now download and build container:
+##### Download from Docker Hub
+
+IIDEAA Docker has been pushed to Docker Hub. You can pull it from [here](https://hub.docker.com/r/andreaaletto/iideaa-docker).
+
+
+##### Build your own image
+
+If, instead, you prefer to build Docker image from scratch, use the following commands:
+
 ```sh
 $ git clone https://github.com/andreaaletto/iideaa-docker
 $ cd iideaa-docker
@@ -27,28 +35,28 @@ $ ./build_iideaa_docker
 
 Grab a coffee: it will take several minutes to download and build everything.
 
-Run container:
+##### Run a container
+
+Either if you pulled from Docker Hub or if you built from scratch, it is recomended to spawn a container with: 
 
 ```sh
 $ ./run_iideaa_docker
 ```
     
-This script will run the container with zsh as default shell and will mount the folder ```/root/mnt``` of the container onto the folder ```/home/<user>/iideaa_shared``` of the host.
+This script will run the container with ***zsh*** as default shell and it will mount the folder ```/root/mnt``` of the container onto the folder ```/home/<user>/iideaa_shared``` of the host.
 
 Now you have an interactive shell in which you can use **clang-chimera** and **bellerophon** tools. You can use the container folder ```/root/mnt``` to share data with host machine outside the container.
 
 ### Example 
 --------
 
-You can test IIDEAA looking at the project folder in ```/opt/projects```. In the following **k-means** example will be considered. 
+You can test IIDEAA looking at the project folder in ```/opt/projects```. In the following, **k-means** example will be considered. 
 
 Execute Clang-Chimera:
 
 ```sh
 # cd /opt/projects/k-means/chimera
 # ./launch.sh
-
-<chimera output truncated>
 ```
 Now check the mutants in ```/opt/projects/k-means/chimera/output``` and run Bellerophon:
 
@@ -58,7 +66,7 @@ Now check the mutants in ```/opt/projects/k-means/chimera/output``` and run Bell
 ```
 The output of Bellerophon will be displayed on terminal.
 
-#### Related repositories
+### Related repositories
 --------
 
 For further information about IIDEAA tools, please refer to the following repos:
