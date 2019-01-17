@@ -7,14 +7,12 @@ Docker image based on Ubuntu 18.04 featuring IIDEAA tools.
 ### How use container
 ------------
 
-First of all you will need a [Docker](https://www.docker.com/) installation. If not present you can easily install it using the [convenience script](https://docs.docker.com/install/linux/docker-ce/ubuntu/)
+First of all you will need a [Docker](https://www.docker.com/) installation. If not present you can easily install it using the [convenience script](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
 
 ```sh
 $ curl -fsSL https://get.docker.com -o get-docker.sh
 $ sudo sh get-docker.sh
-<output truncated>
-
-sudo usermod -aG docker your-user
+$ sudo usermod -aG docker your-user
 ```
 
 ##### Download from Docker Hub
