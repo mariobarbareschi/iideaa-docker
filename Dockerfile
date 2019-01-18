@@ -5,8 +5,8 @@ MAINTAINER Mario Barbareschi <mario.barbareschi@unina.it>
 
 # Update Software
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get -qq update && apt-get -qq install -y apt-utils 
-RUN apt-get -qq dist-upgrade -y && apt-get -qq autoremove -y
+RUN apt-get -qq update && apt-get -qq install -y apt-utils > /dev/null
+RUN apt-get -qq dist-upgrade -y > /dev/null && apt-get -qq autoremove -y > /dev/null
 
 # Copy install script
 ADD ./configure_environment /opt
