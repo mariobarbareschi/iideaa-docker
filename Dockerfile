@@ -25,8 +25,8 @@ RUN rm -Rf ~/llvm
 RUN rm -f /opt/configure_environment
 RUN rm -Rf /opt/scripts
 RUN rm -Rf ~/ParadisEO-2.0/build
-RUN cd ~/Bellerophon/build && make clean
-RUN cd ~/clang-chimera/build && make clean
+#RUN cd ~/Bellerophon/build && make clean
+#RUN cd ~/clang-chimera/build && make clean
 
 # Install zsh and oh-my-zsh
 RUN echo "Installing a fancy shell..."
