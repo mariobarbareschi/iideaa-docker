@@ -1,8 +1,5 @@
 FROM ubuntu:18.04
 
-MAINTAINER Andrea Aletto <andrea.aletto8@gmail.com>
-MAINTAINER Mario Barbareschi <mario.barbareschi@unina.it>
-
 # Update Software
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -qq update && apt-get -qq install -y apt-utils > /dev/null
