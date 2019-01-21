@@ -1,8 +1,5 @@
 FROM ubuntu:18.04
 
-MAINTAINER Andrea Aletto <andrea.aletto8@gmail.com>
-MAINTAINER Mario Barbareschi <mario.barbareschi@unina.it>
-
 # Update Software
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -qq update && apt-get -qq install -y apt-utils > /dev/null
@@ -25,8 +22,8 @@ RUN rm -Rf ~/llvm
 RUN rm -f /opt/configure_environment
 RUN rm -Rf /opt/scripts
 RUN rm -Rf ~/ParadisEO-2.0/build
-RUN cd ~/Bellerophon/build && make clean
-RUN cd ~/clang-chimera/build && make clean
+RUN cd ~/Bellerophon/build && ninja clean
+RUN cd ~/clang-chimera/build && ninja clean
 
 # Install zsh and oh-my-zsh
 RUN echo "Installing a fancy shell..."
