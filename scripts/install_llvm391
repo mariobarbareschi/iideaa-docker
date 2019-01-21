@@ -3,13 +3,10 @@
 echo "Downloading LLVM/Clang source. This will take a while..."
 
 cd ~
-svn co -q http://llvm.org/svn/llvm-project/llvm/tags/RELEASE_391/final llvm > /dev/null
+git clone https://github.com/llvm-mirror/llvm.git llvm
 
 cd ~/llvm/tools
-svn co -q http://llvm.org/svn/llvm-project/cfe/tags/RELEASE_391/final clang > /dev/null
-
-cd ~/llvm/tools/clang/tools
-svn co -q http://llvm.org/svn/llvm-project/clang-tools-extra/tags/RELEASE_391/final extra > /dev/null
+git clone https://github.com/llvm-mirror/clang.git clang
 
 echo "LLVM/Clang download completed."
 

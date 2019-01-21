@@ -17,5 +17,5 @@ sed -i "s/all-targets //g" ~/Bellerophon/CMakeLists.txt
 cmake .. -DCMAKE_MODULE_PATH=~/ParadisEO-2.0/cmake/module/
 
 #Build and install
-make -j4 2> /dev/null
-make install
+ninja 2> /dev/null
+ninja install

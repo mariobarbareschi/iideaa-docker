@@ -13,7 +13,7 @@ cd ~/ParadisEO-2.0/build
 #Solve FindDoxygen CMake Policy Requirements
 sed -i "s/CMAKE_MINIMUM_REQUIRED(VERSION 2.6)/CMAKE_MINIMUM_REQUIRED(VERSION 3.3)/g" ../eo/CMakeLists.txt
 
-cmake ..
-make -j4 2> /dev/null
-make install
+cmake .. -G Ninja
+ninja 2> /dev/null
+ninja install
 
