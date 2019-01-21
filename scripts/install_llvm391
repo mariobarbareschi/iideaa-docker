@@ -4,9 +4,13 @@ echo "Downloading LLVM/Clang source. This will take a while..."
 
 cd ~
 git clone https://github.com/llvm-mirror/llvm.git llvm
+cd llvm
+git checkout release_30
 
-cd ~/llvm/tools
+cd tools
 git clone https://github.com/llvm-mirror/clang.git clang
+cd clang
+git checkout release_30
 
 echo "LLVM/Clang download completed."
 
