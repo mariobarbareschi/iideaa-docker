@@ -3,9 +3,8 @@ language: C
 services:
 - docker
 before_install:
-- docker info
-- docker build -t andrealetto/iideaa-docker .
-- docker run -it -d andreaaletto/iideaa-docker /bin/zsh
+- docker build -t iideaa-docker .
+- docker run -it -d iideaa-docker /bin/zsh
 script:
-- docker ps | grep -q andreaaletto/iideaa-docker
+- docker ps | grep -q iideaa-docker
 

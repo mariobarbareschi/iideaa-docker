@@ -21,9 +21,7 @@ RUN echo "Cleaning up..."
 RUN rm -Rf ~/llvm
 RUN rm -f /opt/configure_environment
 RUN rm -Rf /opt/scripts
-RUN rm -Rf ~/ParadisEO-2.0/build
-#RUN cd ~/Bellerophon/build && make clean
-#RUN cd ~/clang-chimera/build && make clean
+RUN rm -Rf /opt/ParadisEO-2.0/build
 
 # Install zsh and oh-my-zsh
 RUN echo "Installing a fancy shell..."
@@ -33,5 +31,3 @@ RUN sed -i "s/git/git sudo docker /g" ~/.zshrc
 RUN sed -i "s/robbyrussell/af-magic/g" ~/.zshrc
 
 RUN echo "Configuration completed. Packaging Docker Image..."
-
-

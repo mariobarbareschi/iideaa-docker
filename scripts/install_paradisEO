@@ -5,10 +5,11 @@ cd ~
 wget https://gforge.inria.fr/frs/download.php/31732/ParadisEO-2.0.1.tar.gz
 tar xvfz ParadisEO-2.0.1.tar.gz > /dev/null
 rm -f ParadisEO-2.0.1.tar.gz
+mv ~/ParadisEO-2.0 /opt
 
-cd ~/ParadisEO-2.0
+cd /opt/ParadisEO-2.0
 mkdir build
-cd ~/ParadisEO-2.0/build
+cd /opt/ParadisEO-2.0/build
 
 #Solve FindDoxygen CMake Policy Requirements
 sed -i "s/CMAKE_MINIMUM_REQUIRED(VERSION 2.6)/CMAKE_MINIMUM_REQUIRED(VERSION 3.3)/g" ../eo/CMakeLists.txt
