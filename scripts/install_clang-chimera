@@ -4,15 +4,13 @@
 cd ~
 git clone https://github.com/andreaaletto/clang-chimera.git
 
-#Prepare Clang-Chimera for building
-cd ~/clang-chimera
-mkdir build
-cd ~/clang-chimera/build
-
 #Solve LLVM 3.9.1 bug of jit cmake
 sed -i 's/list(APPEND link_components "jit")/list(APPEND link_components "mcjit")/g' /usr/lib/cmake/llvm/LLVM-Config.cmake
 
-../run_cmake
+cd ~/clang-chimera
+#Configure Clang-Chimera
+~/clang-chimera/run_cmake
 
+cd build
 ninja 2> /dev/null
 ninja install
