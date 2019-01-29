@@ -1,5 +1,5 @@
 # iideaa-docker
-[![Build Status](https://travis-ci.org/andreaaletto/iideaa-docker.svg?branch=master)](https://travis-ci.org/andreaaletto/iideaa-docker) [![](https://images.microbadger.com/badges/image/andreaaletto/iideaa-docker.svg)](https://microbadger.com/images/andreaaletto/iideaa-docker "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/andreaaletto/iideaa-docker.svg)](https://microbadger.com/images/andreaaletto/iideaa-docker "Get your own version badge on microbadger.com")
+[![Build Status](https://travis-ci.org/andreaaletto/iideaa-docker.svg?branch=master)](https://travis-ci.org/andreaaletto/iideaa-docker) [![](https://images.microbadger.com/badges/image/andreaaletto/iideaa-docker.svg)](https://microbadger.com/images/andreaaletto/iideaa-docker "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/andreaaletto/iideaa-docker.svg)](https://microbadger.com/images/andreaaletto/iideaa-docker "Get your own version badge on microbadger.com") [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 ------------
 
 Docker image based on Ubuntu 18.04 featuring IIDEAA tools.
