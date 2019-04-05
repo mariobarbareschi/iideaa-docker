@@ -1,0 +1,17 @@
+[
+
+{
+  "directory": "/opt/newton/src/build",
+  "command": "/usr/bin/clang++    -I/opt/newton/src/.   -Wfatal-errors -fno-use-cxa-atexit -fPIC -g   -std=gnu++11 -o CMakeFiles/demo.dir/newton.cpp.o -c /opt/newton/clang-chimera/output/mutants/newton.cpp/2/newton.cpp",
+  "file": "/opt/newton/src/newton.cpp"
+},
+
+{
+  "directory": "/opt/newton/bellerophon",
+   "command": "/usr/bin/clang++ -I/opt/newton/src -Wfatal-errors -fno-use-cxa-atexit -fPIC -g   -std=gnu++11 -c /opt/newton/bellerophon/bellerophon_functions.cpp",
+	      "file": "/opt/newton/bellerophon/bellerophon_functions.cpp"
+}
+
+
+
+]
