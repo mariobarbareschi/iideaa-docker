@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/opt/projects/k-means/code/build",
+  "command": "/usr/bin/clang++    -I/opt/projects/k-means/code/include -I/opt/projects/k-means/code/include/segmentation   -Wfatal-errors -fno-use-cxa-atexit -g   -std=gnu++11 -o CMakeFiles/kmeans.dir/src/main.cpp.o -c /opt/projects/k-means/code/src/main.cpp",
+  "file": "/opt/projects/k-means/code/src/main.cpp"
+},
+{
+  "directory": "/opt/projects/k-means/code/build/src/segmentation",
+  "command": "/usr/bin/clang++   -Dsegmentation_EXPORTS -I/opt/projects/k-means/code/include -I/opt/projects/k-means/code/include/segmentation   -Wfatal-errors -fno-use-cxa-atexit -g -fPIC   -std=gnu++11 -o CMakeFiles/segmentation.dir/segmentation.cpp.o -c /opt/projects/k-means/code/src/segmentation/segmentation.cpp",
+  "file": "/opt/projects/k-means/code/src/segmentation/segmentation.cpp"
+}
+]

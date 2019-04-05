@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/opt/kmeans/bellerophon",
+  "command": "/usr/bin/clang++    -I/opt/kmeans/code/include -I/opt/kmeans/code/include/segmentation   -Wfatal-errors -fno-use-cxa-atexit -g   -std=gnu++11 -o /opt/kmeans/bellerophon/bellerophon_functions.cpp.o -c /opt/kmeans/bellerophon/bellerophon_functions.cpp",
+  "file": "/opt/kmeans/bellerophon/bellerophon_functions.cpp"
+},
+{
+  "directory": "/opt/kmeans/code/build",
+  "command": "/usr/bin/clang++    -I/opt/kmeans/code/include -I/opt/kmeans/code/include/segmentation   -Wfatal-errors -fno-use-cxa-atexit -g   -std=gnu++11 -o CMakeFiles/kmeans.dir/src/main.cpp.o -c /opt/kmeans/code/src/main.cpp",
+  "file": "/opt/kmeans/code/src/main.cpp"
+},
+{
+  "directory": "/opt/kmeans/chimera/output/mutants/segmentation.cpp/1/",
+  "command": "/usr/bin/clang++   -Dsegmentation_EXPORTS -I/opt/kmeans/code/include -I/opt/kmeans/code/include/segmentation   -Wfatal-errors -fno-use-cxa-atexit -g -fPIC   -std=gnu++11 -o segmentation.cpp.o -c /opt/kmeans/chimera/output/mutants/segmentation.cpp/1/segmentation.cpp",
+  "file": "/opt/kmeans/chimera/output/mutants/segmentation.cpp/1/segmentation.cpp"
+}
+]
