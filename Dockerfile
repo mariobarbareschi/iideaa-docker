@@ -1,28 +1,33 @@
-FROM mariobarbareschi/clang_llvm391
-
-MAINTAINER Mario Barbareschi <mario.barbareschi@unina.it>
-MAINTAINER Giovanni Panice   <n@mosfet.io>
-MAINTAINER Antonio Tammaro   <ntonjeta@autistici.org>
+FROM ubuntu:18.04
 
 # Update Software
-# Default command at startup
-RUN  pacman --noconfirm -Sy git zsh libedit libffi wget libtar doxygen boost-libs
-#pacman --noconfirm -Syu &&
-
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get -qq update && apt-get -qq install -y apt-utils > /dev/null
+RUN apt-get -qq dist-upgrade -y > /dev/null && apt-get -qq autoremove -y > /dev/null
 
 # Copy install script
-ADD . /opt/install-iideaa
+ADD ./configure_environment /opt
+ADD ./scripts /opt/scripts
+ADD ./projects /opt/projects
 
 SHELL ["/bin/bash", "-c"]
 
-# Run script Install for clang-Chimera, ParadisEO and Bellerophon
-RUN /opt/install-iideaa/install-chimera
-RUN /opt/install-iideaa/install-paradiseo
-RUN /opt/install-iideaa/install-bellerophon
+# Run iideaa installation
+RUN chmod +x /opt/configure_environment
+RUN /opt/configure_environment
 
-#Letting root be the only user to allow user to run root commands
-# Create a new user
-#RUN useradd -ms /bin/bash iideaa
+# Cleanup
+RUN echo "Cleaning up..."
+RUN rm -Rf ~/llvm
+RUN rm -f /opt/configure_environment
+RUN rm -Rf /opt/scripts
+RUN rm -Rf /opt/ParadisEO-2.0/build
 
-# Expose user
-#USER iideaa
+# Install zsh and oh-my-zsh
+RUN echo "Installing a fancy shell..."
+RUN ["apt-get", "-qq", "install", "-y", "zsh", "nano"]
+RUN wget --quiet https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+RUN sed -i "s/git/git sudo docker /g" ~/.zshrc
+RUN sed -i "s/robbyrussell/af-magic/g" ~/.zshrc
+
+RUN echo "Configuration completed. Packaging Docker Image..."

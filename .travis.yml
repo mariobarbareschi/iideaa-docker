@@ -3,29 +3,8 @@ language: C
 services:
 - docker
 before_install:
-- docker info
-- docker build -t mariobarbareschi/iideaa .
-- docker run -it -d mariobarbareschi/iideaa /bin/bash
+- docker build -t iideaa-docker .
+- docker run -it -d iideaa-docker /bin/zsh
 script:
-- docker ps | grep -q mariobarbareschi/iideaa
-
-#Docker will be triggered automatically by each push
-#env:
-#global:
-#- secure: p8sEpXd4omDluB+zYwfIuTZcGCevkDM1AoNM1xZPHHXOkddlScnAHTV6+IYT6HdLPMr78T0irSsg949dHr5RKqZOh5A77Sn5jXn/A0dZVpMwM7CZ1X/mN1F1fuwS7Zefoblwejw9s2rzV0eStPdvbDTWb5kbqHvj7TbZYIwre5cdFy9VAOBXEej1Qcw2dNp+ADHpKHvkGFOpcNuEyfuoNniVFcR2roCXj9xcgdvmfxH49kLWo39/NtElCi/lReA4IW17UG+tlwuVHbxpUo78+S8VW/RdAT98KnaUKl/wQxI5MdO0nh2kOKq6wwQDY1NY7sUJQABwvpzAjw8CLRt/q+Pn32e3IHb32mN3yPLMWJzhRzhPDr2xjk4JRGoU7RrkflEMZc9x4+EzM8BlsFQc32W4/FUbnPCmO6D+hIpsH/+/sgTQNMb87ub1VS6UMyP87h7FzwsLp2CTmXueyCSujlpKJrpahkVpEEAK6FiLMo1i/CoRsFfANiTCIb+Io7wxjVD+A3fQ8X69sOC9iM3mk4x729tuHiz7kCmpd21lYG5IpPA0oqwmYiz75sZ+NbhD/BwMaZe6uluG6eBunUVgY7sUTn1hclhIkMQS0MyndmMysb8CM6PWIzxJYDRsIBAEjOPxZU3YH+RYjqKFrS5BGWdEutKeS0vvuUmxcQC3soo=
-
-#- secure: bYO80H0ZOcmrZOp1lD+G1CepIPumTNeHh961F/AJR4nTq1hYQEJF68SGJI1GUaHDIZJzm7CGqS0/ddvs8vAthiPBdim5RiED3yyvAQzGHH6GTx/M6HN/HuvdLStBCuShtJ0qfbVYcJYKg8z7EB++LkuI8RZqiNDW9uA7SVMSEFyx5kp/7qgxoD1tGW1gK1iqBJfaGNFORXfUlDZ7qfFqb13ArKsJFkEOKwh8XE6+DswqWxnBWGVGQAOhXMZcXlx7eYjbmgpTj8uwrlG0DFwlCaWfLRlOhczZnSxmv6ERIRZTl8YdbdS9lGdTYo8Fk6uBo1A9TjNbY0DasBkZOJcN8ItSDzG88bCtd8NnE44tAdevR3C4/VLV+jDR5YKOAZiXv6OJfaejpQiolpCMXLHS8fv23D8S4y/kX1F8CWOrxRy17ZBZMsExcHlzn4nGy1Mj23ZpTVHmw6kK9ZO3FVFTjK19hAuDg1NyrnGb4NHYd0hInMViYI2IVecxI6CD3+kg0oApq5VW7Z0Eas+yQ6Li3JZ3eRimGd49/OOK1tzlUXWBnmBsBqH3mnQKq3RRMt3dC7TFMlbIa6dgI3YrQYiUv2ZXBDYHDIhm1eRoH/Ho5PFtZ4ld//cXJCPIldbUunP4PhumGt/Icnv2mwXypfVY3IO6VRHNtafYURvYsWIYXZg=
-
-#- secure: iBEh2ousjnF4kNcT8sNUHLyNGE1jAltRw56VipVAyIrCgRz7KEnEucnaDg1BRrfcBXHPS/eQIXhVcnYgicYgi11HMThu90IDJKMHisiAm8Nk0BS9ZdW5QxrsE8+z4D8TvS/gSvAZhC2yHmf5ISv5CxFw1pxveLRQ5i+EQO2VFGGKOVR2KjjMDQsTBd8m234op+8kHO1DVg3+EN5IrEfrXJ8WgZuOkYxR61i0c+W83E3TO4LAxltAM4iZihM2HZmAhKbBNQtpNWWo15GsT/h345jBAj7pZFUqa0bVqHEGDRpJvEf3SSGtFebtlZ/IH4MGQhXt6mgOhgUgLOXbklt5m9bibc751Mk5HB4vT/xvaARrCw5UvaeqDi2StjQqc7OxNfWZxDcuEOeVXpKY9LqCjtumUWCdNPm2ILmETvPzJMvu2cijNvsT+ykmSMcijAEjqgvDTNESU082JfLnV5EKavFIbKEvbXa3F+AC6NmvVK6CMtUWkEnr/vpZ7UoMoVDD0uLmjniizzOS7B6LYHHNHRQQwvFblsl5ub3DM4ibn3wK/aHlq1jXANGGsZJSylkXie8sooX6RyIi0/Mva25tmwID9V56WKHxYJk/CO3mwPppQ4kMnwmz4KllJz4gQGo9Y7UpJISrwNz++DZVCkqLqtRBWniEi1DLYRdkpJLlcLE=
-
-#- COMMIT=${TRAVIS_COMMIT::8}
-
-#after_success:
-#  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-#  - export REPO=mariobarbareschi/iideaa
-#  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-#  - docker build -f Dockerfile -t $REPO:$COMMIT .
-#  - docker tag $REPO:$COMMIT $REPO:$TAG
-#  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-#  - docker push $REPO
+- docker ps | grep -q iideaa-docker
 

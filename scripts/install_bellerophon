@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#Clone Bellerophon repo
+cd ~
+git clone https://github.com/andreaaletto/Bellerophon.git
+
+#Configure Bellerophon
+cd ~/Bellerophon
+~/Bellerophon/run_cmake /opt/ParadisEO-2.0/cmake/module/
+
+#Build and install
+cd ~/Bellerophon/build
+ninja 2> /dev/null
+ninja install
