@@ -28,7 +28,7 @@
 #ifndef NO_DIRENT
 #include <dirent.h>
 #else
-#include "getline.h"
+//#include "getline.h"
 #endif
 
 #include <stddef.h> // NULL def
@@ -36,15 +36,14 @@
 #include <stdio.h> // printf()
 #include <sys/time.h>
 
-#if defined(NL) || NB_BITS < 0
 #include <math.h>
-#endif
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
 #include "typedefs.h"
+#include "env.h"
 #include "utils.h"
 
 #ifdef ACC_NB_BITS
@@ -137,10 +136,12 @@ void env_read(char* fileName,
               unsigned int nbChannels,
               unsigned int channelsHeight,
               unsigned int channelsWidth,
-              DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
+              // DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
+              DATA_T * inputs,
               unsigned int outputsHeight,
               unsigned int outputsWidth,
-              int32_t outputTargets[outputsHeight][outputsWidth]);
+              //int32_t outputTargets[outputsHeight][outputsWidth]);
+              int32_t * outputTargets);
 
 static inline SUM_T sht(SUM_T weightedSum, int shift) {
 #if NB_BITS >= 0
@@ -745,7 +746,7 @@ void fccell_outputs_dynamic_print(const char* name,
                                   RUNNING_MEAN_T* pMeanVal);
 
 void confusion_print(unsigned int nbOutputs,
-                     unsigned int confusion[nbOutputs][nbOutputs]);
+                     unsigned int * confusion);
 
 void time_analysis(const char* name,
                    struct timeval start,

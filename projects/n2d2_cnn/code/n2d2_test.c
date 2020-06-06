@@ -72,10 +72,10 @@ int main(int argc, char* argv[])
                  ENV_NB_OUTPUTS,
                  ENV_SIZE_Y,
                  ENV_SIZE_X,
-                 env_data,
+                 reinterpret_cast<DATA_T*>(env_data),
                  dimY,
                  dimX,
-                 outputTargets);
+                 reinterpret_cast<int32_t*>(outputTargets));
         network(env_data, outputEstimated);
 
         unsigned int nbValidPredictions = 0;
@@ -130,10 +130,10 @@ int main(int argc, char* argv[])
                      ENV_NB_OUTPUTS,
                      ENV_SIZE_Y,
                      ENV_SIZE_X,
-                     env_data,
+                     reinterpret_cast<DATA_T*>(env_data),
                      dimY,
                      dimX,
-                     outputTargets);
+                     reinterpret_cast<int32_t*>(outputTargets));
             free(fileList[n]);
 
             gettimeofday(&start, NULL);
@@ -245,7 +245,7 @@ int main(int argc, char* argv[])
     }
 
     if(NB_TARGETS <= CONFUSION_MATRIX_PRINT_MAX_TARGETS) {
-        confusion_print(NB_TARGETS, confusion);
+        confusion_print(NB_TARGETS, reinterpret_cast<unsigned int *>(confusion));
     }
 
 #ifdef OUTXT
