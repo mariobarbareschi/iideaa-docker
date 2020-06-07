@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
                  dimY,
                  dimX,
                  reinterpret_cast<int32_t*>(outputTargets));
-        network(env_data, outputEstimated);
+        network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
 
         unsigned int nbValidPredictions = 0;
         unsigned int nbPredictions = 0;
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
 #ifdef __STXP70__
             clrcc1();
 #endif
-            network(env_data, outputEstimated);
+            network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
 #ifdef __STXP70__
             const int cycleCount = stopcc1();
 #endif

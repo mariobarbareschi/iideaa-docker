@@ -22,6 +22,6 @@
 #define FC2_OUTPUT_OFFSET 0
 extern DATA_T output_data[NB_OUTPUTS*OUTPUTS_HEIGHT*OUTPUTS_WIDTH]; 
 
-void network(DATA_T in_data[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X], uint32_t out_data[OUTPUTS_HEIGHT][OUTPUTS_WIDTH]);
+void network(DATA_T * in_data, uint32_t * out_data);
 
 #endif

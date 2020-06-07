@@ -19,13 +19,11 @@
 */
 
 #include "n2d2.h"
-#include "c99_vla_cast_for_cpp.h"
-#include <string.h>
 
 int compare(void const* a, void const* b)
 {
-    char const* const* pa = (char const * const*) a;
-    char const* const* pb = (char const * const*) b;
+    char const* const* pa = a;
+    char const* const* pb = b;
     return strcmp(*pa, *pb);
 }
 
@@ -53,7 +51,7 @@ int sortedFileList(const char* const dirName,
         ++count;
     }
 #else
-    char* listName = (const char*) malloc((strlen(dirName) + strlen(".list")
+    char* listName = malloc((strlen(dirName) + strlen(".list")
                                      + 1) * sizeof(char));
     sprintf(listName, "%s.list", dirName);
 
@@ -78,7 +76,7 @@ int sortedFileList(const char* const dirName,
 #endif
 
     // Allocate enough space
-    (*fileList) = (char**) malloc(count * sizeof(*(*fileList)));
+    (*fileList) = malloc(count * sizeof(*(*fileList)));
 
     if ((*fileList) == NULL) {
 #ifndef NO_DIRENT
@@ -100,7 +98,7 @@ int sortedFileList(const char* const dirName,
             continue;
 
         /* + 2 because of the '/' and the terminating 0 */
-        (*fileList)[count] = (char*)malloc((strlen(dirName) + strlen(pFile->d_name)
+        (*fileList)[count] = malloc((strlen(dirName) + strlen(pFile->d_name)
                                      + 2) * sizeof(*(*fileList)[count]));
 
         if ((*fileList)[count] == NULL) {
@@ -160,15 +158,11 @@ void env_read(char* fileName,
               unsigned int nbChannels,
               unsigned int channelsHeight,
               unsigned int channelsWidth,
-              DATA_T * inputs_to_be_cast,
+              DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
               unsigned int outputsHeight,
               unsigned int outputsWidth,
-              int32_t * outputTargets_to_be_cast)
+              int32_t outputTargets[outputsHeight][outputsWidth])
 {
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
-	DECLARE_2D_VLA_ARRAY_AND_CAST(int32_t, outputTargets_vla_array_t, outputsHeight, outputsWidth, outputTargets, outputTargets_to_be_cast);
-
-
     FILE* filePtr = fopen(fileName, "rb");
 
     if (filePtr == NULL) {
@@ -408,7 +402,7 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
     unsigned int strideX, \
     unsigned int subSampleY, \
     unsigned int subSampleX, \
-    DATA_T * inputs_to_be_cast, \
+    DATA_T inputs[nbChannels][channelsHeight][channelsWidth], \
     unsigned int oySize, \
     unsigned int oxSize, \
     unsigned int nbOutputs_, \
@@ -416,16 +410,12 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
     unsigned int outputsWidth, \
     unsigned int nbOutputs, \
     unsigned int outputOffset, \
-    DATA_T * outputs_to_be_cast, \
-    BDATA_T * bias_to_be_cast, \
-    WDATA_T * weights_to_be_cast, \
+    DATA_T outputs[nbOutputs_][outputsHeight][outputsWidth], \
+    const BDATA_T bias[nbOutputs], \
+    const WDATA_T (*weights[nbOutputs][nbChannels])[M_kernelHeight][M_kernelWidth], \
     ActivationFunction_T func, \
     int shift) \
 { \
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);\
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, M_kernelHeight, M_kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
     _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
     for (unsigned int output = 0; output < nbOutputs; ++output) { \
         for (unsigned int oy = 0; oy < oySize; ++oy) { \
@@ -488,7 +478,7 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
     unsigned int strideX, \
     unsigned int subSampleY, \
     unsigned int subSampleX, \
-    DATA_T * inputs_to_be_cast, \
+    DATA_T inputs[nbChannels][channelsHeight][channelsWidth], \
     unsigned int oySize, \
     unsigned int oxSize, \
     unsigned int nbOutputs_, \
@@ -496,17 +486,12 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
     unsigned int outputsWidth, \
     unsigned int nbOutputs, \
     unsigned int outputOffset, \
-    DATA_T * outputs_to_be_cast, \
-    BDATA_T * bias_to_be_cast, \
-    WDATA_T * weights_to_be_cast, \
+    DATA_T outputs[nbOutputs_][outputsHeight][outputsWidth], \
+    const BDATA_T bias[nbOutputs], \
+    const WDATA_T (*weights[nbOutputs][nbChannels])[M_kernelHeight][M_kernelWidth], \
     ActivationFunction_T func, \
     int shift) \
 { \
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, outputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, outputs, outputs_to_be_cast);\
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
- \
     _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
     for (unsigned int output = 0; output < nbOutputs; ++output) { \
         for (unsigned int oy = 0; oy < oySize; ++oy) { \
@@ -569,8 +554,8 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
 #define CONVCELL_PROPAGATE(M_kernelHeight, M_kernelWidth) do { \
     if (kernelHeight == M_kernelHeight && kernelWidth == M_kernelWidth) { \
         convcell_propagate_##M_kernelHeight##x##M_kernelWidth(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, \
-            strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, \
-            outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); \
+            strideY, strideX, subSampleY, subSampleX, inputs, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, \
+            outputOffset, outputs, bias, weights, func, shift); \
         return; \
     } \
 } while (0)
@@ -578,8 +563,8 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
 #define CONVCELL_UPROPAGATE(M_kernelHeight, M_kernelWidth) do { \
     if (kernelHeight == M_kernelHeight && kernelWidth == M_kernelWidth) { \
         convcell_upropagate_##M_kernelHeight##x##M_kernelWidth(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, \
-            strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, \
-            outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); \
+            strideY, strideX, subSampleY, subSampleX, inputs, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, \
+            outputOffset, outputs, bias, weights, func, shift); \
         return; \
     } \
 } while (0)
@@ -588,6 +573,8 @@ DECLARE_CONVCELL_PROPAGATE(1, 1)
 DECLARE_CONVCELL_PROPAGATE(3, 3)
 DECLARE_CONVCELL_PROPAGATE(5, 5)
 
+::vpa::FloatingPointPrecision OP_1 = ::vpa::float_prec;
+::vpa::FloatingPointPrecision OP_0 = ::vpa::float_prec;
 void convcell_propagate(
     unsigned int nbChannels,
     unsigned int channelsHeight,
@@ -598,7 +585,7 @@ void convcell_propagate(
     unsigned int strideX,
     unsigned int subSampleY,
     unsigned int subSampleX,
-    DATA_T * inputs_to_be_cast,
+    DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
     unsigned int oySize,
     unsigned int oxSize,
     unsigned int nbOutputs_,
@@ -606,19 +593,14 @@ void convcell_propagate(
     unsigned int outputsWidth,
     unsigned int nbOutputs,
     unsigned int outputOffset,
-    DATA_T * outputs_to_be_cast,
+    DATA_T outputs[nbOutputs_][outputsHeight][outputsWidth],
     unsigned int kernelHeight,
     unsigned int kernelWidth,
-    BDATA_T * bias_to_be_cast,
-    WDATA_T * weights_to_be_cast,
+    const BDATA_T bias[nbOutputs],
+    const WDATA_T (*weights[nbOutputs][nbChannels])[kernelHeight][kernelWidth],
     ActivationFunction_T func,
     int shift)
 {
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
-
     if (subSampleY != 1 || subSampleX != 1) {
         fprintf(stderr, "convcell_propagate(): subsampling not implemented\n");
         return;
@@ -664,9 +646,10 @@ void convcell_propagate(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx)
-                            weightedSum = ADD_SAT(weightedSum,
-                                (*weights[output][channel])[sy][sx]
-                                   * inputs[channel][iy + sy][ix + sx]);
+						{
+							WDATA_T prod = (WDATA_T)(::vpa::VPA((*weights[output][channel])[sy][sx] , OP_0)* ::vpa::VPA(inputs[channel][iy + sy][ix + sx], OP_0)) ;
+                            weightedSum =(float)( ADD_SAT(weightedSum, prod);
+						}
                     }
                 }
 
@@ -691,7 +674,7 @@ void convcell_upropagate(
     unsigned int strideX,
     unsigned int subSampleY,
     unsigned int subSampleX,
-    DATA_T * inputs_to_be_cast,
+    DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
     unsigned int oySize,
     unsigned int oxSize,
     unsigned int nbOutputs_,
@@ -699,19 +682,14 @@ void convcell_upropagate(
     unsigned int outputsWidth,
     unsigned int nbOutputs,
     unsigned int outputOffset,
-    DATA_T * outputs_to_be_cast,
+    DATA_T outputs[nbOutputs_][outputsHeight][outputsWidth],
     unsigned int kernelHeight,
     unsigned int kernelWidth,
-    BDATA_T * bias_to_be_cast,
-    WDATA_T * weights_to_be_cast,
+    const BDATA_T bias[nbOutputs],
+    const WDATA_T (*weights[nbOutputs][nbChannels])[kernelHeight][kernelWidth],
     ActivationFunction_T func,
     int shift)
 {
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
-
     if (subSampleY != 1 || subSampleX != 1) {
         fprintf(stderr, "convcell_upropagate(): subsampling not implemented\n");
         return;
@@ -2049,14 +2027,10 @@ void resize_nearest_neighbor_propagete(unsigned int nbChannels,
     }    
 }
 
-void convcell_output_out(FILE* file, 
-						unsigned int nbOutputs,
-                         unsigned int outputsHeight, 
-						 unsigned int outputsWidth,
-                         DATA_T * outputs_to_be_cast)
+void convcell_output_out(FILE* file, unsigned int nbOutputs,
+                         unsigned int outputsHeight, unsigned int outputsWidth,
+                         DATA_T outputs[nbOutputs][outputsHeight][outputsWidth])
 {
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
-
     for (unsigned int output = 0; output < nbOutputs; ++output) {
         fprintf(file, "%d:\n", output);
 
@@ -2079,7 +2053,7 @@ void convcell_output_out(FILE* file,
 
 void convcell_outputs_save(const char* fileName, unsigned int nbOutputs,
                            unsigned int outputsHeight, unsigned int outputsWidth,
-                           DATA_T * outputs)
+                           DATA_T outputs[nbOutputs][outputsHeight][outputsWidth])
 {
     FILE* file = fopen(fileName, "w");
     if(!file) {
@@ -2095,7 +2069,7 @@ void convcell_outputs_save(const char* fileName, unsigned int nbOutputs,
 
 void convcell_outputs_print(const char* name, unsigned int nbOutputs,
                             unsigned int outputsHeight, unsigned int outputsWidth,
-                            DATA_T  * outputs)
+                            DATA_T outputs[nbOutputs][outputsHeight][outputsWidth])
 {
     printf("%s outputs:\n", name);
     convcell_output_out(stdout, nbOutputs, outputsHeight, outputsWidth, outputs);
@@ -2222,10 +2196,8 @@ void fccell_outputs_dynamic_print(const char* name,
 }
 
 void confusion_print(unsigned int nbOutputs,
-                     unsigned int * confusion_to_be_cast)
+                     unsigned int confusion[nbOutputs][nbOutputs])
 {
-	DECLARE_2D_VLA_ARRAY_AND_CAST(int, vla_array_t, nbOutputs, nbOutputs, confusion, confusion_to_be_cast);
-
     printf("\nConfusion matrix:\n");
 
     printf("%.*s\n",
