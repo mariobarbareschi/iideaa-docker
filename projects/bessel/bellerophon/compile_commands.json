@@ -1,12 +1,12 @@
 [
 {
-  "command": "clang++  -std=c++11 -c ../chimera/output/mutants/bessel.cpp/1/bessel.cpp -I../src/include",
-  "directory": "/opt/projects/bessel/src/",
-  "file": "../chimera/output/mutants/bessel.cpp/1/bessel.cpp"
+  "command": "clang++  -std=c++11 -c ../chimera/output/mutants/bessel.cpp/3/bessel.cpp -I../src/include",
+  "directory": "/root/projects/bessel/src/",
+  "file": "../chimera/output/mutants/bessel.cpp/3/bessel.cpp"
 },
 {
   "command": "clang++  -std=c++11 -c bellerophon_functions.cpp -I../src/include",
-  "directory": "/opt/projects/bessel/bellerophon/",
+  "directory": "/root/projects/bessel/bellerophon/",
   "file": "./bellerophon_functions.cpp"
 }
 

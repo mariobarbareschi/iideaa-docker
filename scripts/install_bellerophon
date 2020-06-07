@@ -2,7 +2,7 @@
 
 #Clone Bellerophon repo
 cd ~
-git clone https://github.com/mariobarbareschi/Bellerophon.git
+git clone https://github.com/SalvatoreBarone/Bellerophon.git
 
 #Configure Bellerophon
 cd ~/Bellerophon
