@@ -1183,13 +1183,13 @@ void poolcell_propagate_unitmap(
     unsigned int channelsWidth,
     unsigned int strideY,
     unsigned int strideX,
-    DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
+    DATA_T * inputs_to_be_cast,
     unsigned int nbOutputs_,
     unsigned int outputsHeight,
     unsigned int outputsWidth,
     unsigned int nbOutputs,
     unsigned int outputOffset,
-    DATA_T outputs[nbOutputs_][outputsHeight][outputsWidth],
+    DATA_T * outputs_to_be_cast,
     unsigned int poolHeight,
     unsigned int poolWidth,
     Pooling_T pooling,
@@ -1204,6 +1204,9 @@ void poolcell_propagate_unitmap(
         return;
     }
 #endif
+
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, input_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast); 	
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast); 	
 
 #if defined(_OPENMP) && _OPENMP >= 200805
 #pragma omp parallel for collapse(3)
@@ -1620,17 +1623,21 @@ void
 fccell_propagate_2d(unsigned int nbChannels,
                     unsigned int channelsHeight,
                     unsigned int channelsWidth,
-                    DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
+                    DATA_T * inputs_to_be_cast,
                     unsigned int nbOutputs_,
                     unsigned int nbOutputs,
                     unsigned int outputOffset,
-                    DATA_T outputs[nbOutputs_],
+                    DATA_T * outputs_to_be_cast,
                     unsigned int nbChannels_,
-                    const BDATA_T bias[nbOutputs],
-                    const WDATA_T weights[nbOutputs][nbChannels_],
+                    BDATA_T * bias_to_be_cast,
+                    WDATA_T * weights_to_be_cast,
                     ActivationFunction_T func,
                     int shift)
 {
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
+	DECLARE_1D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputs, outputs_to_be_cast);
+	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
+	DECLARE_2D_VLA_ARRAY_AND_CAST(WDATA_T, weights_vla_array_t, nbOutputs, nbChannels_, weights, weights_to_be_cast);
 #pragma omp parallel for if (nbOutputs > 32)
     for (unsigned int output = 0; output < nbOutputs; ++output) {
         SUM_T weightedSum = bias[output];
@@ -1682,16 +1689,20 @@ fccell_upropagate_2d(unsigned int nbChannels,
 }
 
 void fccell_propagate(unsigned int nbChannels,
-                      DATA_T inputs[nbChannels],
+                      DATA_T * inputs_to_be_cast,
                       unsigned int nbOutputs_,
                       unsigned int nbOutputs,
                       unsigned int outputOffset,
-                      DATA_T outputs[nbOutputs_],
-                      const BDATA_T bias[nbOutputs],
-                      const WDATA_T weights[nbOutputs][nbChannels],
+                      DATA_T * outputs_to_be_cast,
+                      BDATA_T * bias_to_be_cast,
+                      WDATA_T * weights_to_be_cast,
                       ActivationFunction_T func,
                       int shift)
 {
+	DECLARE_1D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, inputs, inputs_to_be_cast);
+	DECLARE_1D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputs, outputs_to_be_cast);
+	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
+	DECLARE_2D_VLA_ARRAY_AND_CAST(WDATA_T, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);
 #pragma omp parallel for if (nbOutputs > 32)
     for (unsigned int output = 0; output < nbOutputs; ++output) {
         SUM_T weightedSum = bias[output];
@@ -1851,9 +1862,12 @@ void fccell_propagate_sparse(unsigned int nbChannels,
 }
 
 void output_max(unsigned int nbOutputs,
-                DATA_T outputs[nbOutputs],
-                uint32_t outputEstimated[1][1])
+                DATA_T * outputs_to_be_cast,
+                uint32_t * outputEstimated_to_be_cast)
 {
+	DECLARE_1D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs, outputs, outputs_to_be_cast);
+	DECLARE_2D_VLA_ARRAY_AND_CAST(uint32_t, outputEstimated_vla_array_t, 1, 1, outputEstimated, outputEstimated_to_be_cast);
+
     if (nbOutputs > 1) {
         DATA_T maxVal = outputs[0];
         unsigned int outputMax = 0;
