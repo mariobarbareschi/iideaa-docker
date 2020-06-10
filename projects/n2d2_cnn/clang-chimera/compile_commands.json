@@ -1,22 +1,17 @@
 [
 {
   "directory": "/root/projects/n2d2_cnn/code/build",
-  "command": "/usr/bin/clang  -I/root/projects/n2d2_cnn/code/include   -Wall -Wextra -Wno-unused-label -pedantic -std=c99 -Wconversion -fsigned-char -O3 -s -DNDEBUG -O3 -DNDEBUG -fopenmp   -o CMakeFiles/n2d2_test.dir/n2d2_test.c.o   -c /root/projects/n2d2_cnn/code/n2d2_test.c",
-  "file": "/root/projects/n2d2_cnn/code/n2d2_test.c"
+  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/n2d2_test.cc.o -c /root/projects/n2d2_cnn/code/n2d2_test.cc",
+  "file": "/root/projects/n2d2_cnn/code/n2d2_test.cc"
 },
 {
   "directory": "/root/projects/n2d2_cnn/code/build",
-  "command": "/usr/bin/clang  -I/root/projects/n2d2_cnn/code/include   -Wall -Wextra -Wno-unused-label -pedantic -std=c99 -Wconversion -fsigned-char -O3 -s -DNDEBUG -O3 -DNDEBUG -fopenmp   -o CMakeFiles/n2d2_test.dir/src/getline.c.o   -c /root/projects/n2d2_cnn/code/src/getline.c",
-  "file": "/root/projects/n2d2_cnn/code/src/getline.c"
+  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/n2d2.cc.o -c /root/projects/n2d2_cnn/code/src/n2d2.cc",
+  "file": "/root/projects/n2d2_cnn/code/src/n2d2.cc"
 },
 {
   "directory": "/root/projects/n2d2_cnn/code/build",
-  "command": "/usr/bin/clang  -I/root/projects/n2d2_cnn/code/include   -Wall -Wextra -Wno-unused-label -pedantic -std=c99 -Wconversion -fsigned-char -O3 -s -DNDEBUG -O3 -DNDEBUG -fopenmp   -o CMakeFiles/n2d2_test.dir/src/n2d2.c.o   -c /root/projects/n2d2_cnn/code/src/n2d2.c",
-  "file": "/root/projects/n2d2_cnn/code/src/n2d2.c"
-},
-{
-  "directory": "/root/projects/n2d2_cnn/code/build",
-  "command": "/usr/bin/clang  -I/root/projects/n2d2_cnn/code/include   -Wall -Wextra -Wno-unused-label -pedantic -std=c99 -Wconversion -fsigned-char -O3 -s -DNDEBUG -O3 -DNDEBUG -fopenmp   -o CMakeFiles/n2d2_test.dir/src/network.c.o   -c /root/projects/n2d2_cnn/code/src/network.c",
-  "file": "/root/projects/n2d2_cnn/code/src/network.c"
+  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/network.cc.o -c /root/projects/n2d2_cnn/code/src/network.cc",
+  "file": "/root/projects/n2d2_cnn/code/src/network.cc"
 }
 ]

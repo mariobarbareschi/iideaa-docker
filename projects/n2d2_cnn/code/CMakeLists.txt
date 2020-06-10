@@ -25,19 +25,12 @@ if (NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set_source_files_properties(
-	n2d2_test.c 
-	##	src/getline.c
-	src/n2d2.c
-	src/network.c  
-	PROPERTIES LANGUAGE CXX)
-
 add_executable(
 	n2d2_test
-	n2d2_test.c
-	src/getline.c
-	src/n2d2.c
-	src/network.c)
+	n2d2_test.cc
+	#	src/getline.cc
+	src/n2d2.cc
+	src/network.cc)
 
 target_include_directories(
 	n2d2_test

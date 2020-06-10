@@ -20,6 +20,7 @@
 
 #include "n2d2.h"
 #include "c99_vla_cast_for_cpp.h"
+#include "vpa_n.h"
 #include <string.h>
 
 int compare(void const* a, void const* b)
@@ -615,8 +616,8 @@ void convcell_propagate(
     int shift)
 {
 	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
 	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
 
     if (subSampleY != 1 || subSampleX != 1) {
@@ -664,9 +665,13 @@ void convcell_propagate(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx)
-                            weightedSum = ADD_SAT(weightedSum,
-                                (*weights[output][channel])[sy][sx]
-                                   * inputs[channel][iy + sy][ix + sx]);
+						{
+							WDATA_T wei = (*weights[output][channel])[sy][sx];
+							DATA_T inp = inputs[channel][iy + sy][ix + sx];
+                            // weightedSum = ADD_SAT(weightedSum,  wei * inp);
+							weightedSum += wei * inp;
+
+						}
                     }
                 }
 
@@ -757,11 +762,7 @@ void convcell_upropagate(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
-                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
-                                       *weights[output][channel])[sy][sx]
-                                   * (SUM_T)(
-                                         (UDATA_T)
-                                         inputs[channel][iy + sy][ix + sx]));
+                            weightedSum += (SUM_T)(*weights[output][channel])[sy][sx] * (SUM_T)((UDATA_T)inputs[channel][iy + sy][ix + sx]);
                         }
                     }
                 }
@@ -1646,8 +1647,7 @@ fccell_propagate_2d(unsigned int nbChannels,
         for (unsigned int channel = 0; channel < nbChannels; ++channel) {
             for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
                 for (unsigned int ix = 0; ix < channelsWidth; ++ix)
-                    weightedSum = ADD_SAT(weightedSum, weights[output][c++]
-                                   * inputs[channel][iy][ix]);
+                    weightedSum += weights[output][c++] * inputs[channel][iy][ix];
             }
         }
 
@@ -1708,8 +1708,7 @@ void fccell_propagate(unsigned int nbChannels,
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel)
-            weightedSum = ADD_SAT(weightedSum,
-                                  weights[output][channel] * inputs[channel]);
+            weightedSum += weights[output][channel] * inputs[channel];
 
         outputs[outputOffset + output] = sat(weightedSum, func, shift);
     }
@@ -1731,10 +1730,11 @@ void fccell_upropagate(unsigned int nbChannels,
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel)
-            weightedSum = ADD_SAT(weightedSum,
-                                  (SUM_T)weights[output][channel]
-                                  * (SUM_T)((UDATA_T)inputs[channel]));
-
+		{
+			SUM_T w = (SUM_T)weights[output][channel];
+			SUM_T inp = (SUM_T)(UDATA_T)inputs[channel];
+            weightedSum += w * inp;
+		}
         outputs[outputOffset + output] = usat(weightedSum, func, shift);
     }
 }
