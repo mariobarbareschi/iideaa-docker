@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
                  dimY,
                  dimX,
                  reinterpret_cast<int32_t*>(outputTargets));
+
         network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
 
         unsigned int nbValidPredictions = 0;
@@ -125,6 +126,13 @@ int main(int argc, char* argv[])
         }
 #endif
 
+		FILE *oracle_file = fopen("oracle.txt", "w");
+        if (oracle_file == NULL)
+        {
+            printf("Error opening outputs.txt file!\n");
+            exit(1);
+        }
+
         for (unsigned int n = 0; n < total;) {
             env_read(fileList[n],
                      ENV_NB_OUTPUTS,
@@ -134,6 +142,12 @@ int main(int argc, char* argv[])
                      dimY,
                      dimX,
                      reinterpret_cast<int32_t*>(outputTargets));
+			
+			fprintf(oracle_file, "%s;", fileList[n]);
+			for (int dimY_c = 0; dimY_c < dimY; dimY_c++)
+				for (int dimX_c = 0; dimX_c < dimX; dimX_c++)
+					fprintf(oracle_file, "%d;", outputTargets[dimY_c][dimX_c]);
+
             free(fileList[n]);
 
             gettimeofday(&start, NULL);
@@ -141,6 +155,8 @@ int main(int argc, char* argv[])
             clrcc1();
 #endif
             network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
+
+
 #ifdef __STXP70__
             const int cycleCount = stopcc1();
 #endif
@@ -193,6 +209,8 @@ int main(int argc, char* argv[])
 
             for (unsigned int oy = 0; oy < OUTPUTS_HEIGHT; ++oy) {
                 for (unsigned int ox = 0; ox < OUTPUTS_WIDTH; ++ox) {
+					fprintf(oracle_file, "%d;", outputEstimated[oy][ox]);
+
                     int iy = oy;
                     int ix = ox;
                     if (dimX > 1 || dimY > 1) {
@@ -207,7 +225,12 @@ int main(int argc, char* argv[])
                         nbPredictions++;
                         if (outputTargets[iy][ix] == (int)outputEstimated[oy][ox]) {
                             nbValidPredictions++;
+							fprintf(oracle_file, "+\n", outputEstimated[oy][ox]);
+
                         }
+						else
+							fprintf(oracle_file, "-\n", outputEstimated[oy][ox]);
+
                     }
                 }
             }
@@ -226,6 +249,7 @@ int main(int argc, char* argv[])
         }
 
         free(fileList);
+		fclose(oracle_file);
 #ifdef SAVE_OUTPUTS
         fclose(fOuts);
 #endif
