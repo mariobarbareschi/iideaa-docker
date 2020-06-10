@@ -2,8 +2,7 @@
 
 #Clone Bellerophon repo
 cd ~
-git clone https://github.com/SalvatoreBarone/Bellerophon.git
-
+git clone https://github.com/mariobarbareschi/Bellerophon.git
 #Configure Bellerophon
 cd ~/Bellerophon
 ~/Bellerophon/run_cmake /opt/ParadisEO-2.0/cmake/module/
