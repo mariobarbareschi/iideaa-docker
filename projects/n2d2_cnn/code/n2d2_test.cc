@@ -19,18 +19,11 @@
 */
 
 //#define SAVE_OUTPUTS
-
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
-// For the Windows version of dirent.h (http://www.softagalleria.net/dirent.php)
-#undef min
-#undef max
-
-#ifdef _OPENMP
 #include <omp.h>
-#endif
-
 #include "network.h"
 #include "c99_vla_cast_for_cpp.h"
 
@@ -96,7 +89,10 @@ int main(int argc, char* argv[])
                      dimX,
                      reinterpret_cast<int32_t*>(outputTargets));
 			
-			fprintf(oracle_file, "%s;", fileList[n]);
+			char resolved_path[PATH_MAX + 1];
+			realpath(fileList[n], resolved_path);
+			fprintf(oracle_file, "%s;", resolved_path);
+
 			for (int dimY_c = 0; dimY_c < dimY; dimY_c++)
 				for (int dimX_c = 0; dimX_c < dimX; dimX_c++)
 					fprintf(oracle_file, "%d;", outputTargets[dimY_c][dimX_c]);
