@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/root/projects/n2d2_cnn/bellerophon",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /root/projects/n2d2_cnn/clang-chimera/output/mutants/n2d2.cc/6/n2d2.cc",
+  "file": "/root/projects/n2d2_cnn/clang-chimera/output/mutants/n2d2.cc/6/n2d2.cc"
+},
+{
+  "directory": "/root/projects/n2d2_cnn/bellerophon",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -g -std=gnu++11 -c /root/projects/n2d2_cnn/bellerophon/bellerophon_functions.cpp",
+  "file": "/root/projects/n2d2_cnn/bellerophon/bellerophon_functions.cpp"
+}
+]

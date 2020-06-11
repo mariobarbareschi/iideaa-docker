@@ -506,7 +506,7 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
 	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
 	DECLARE_3D_VLA_ARRAY_AND_CAST(int, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
 	DECLARE_3D_VLA_ARRAY_AND_CAST(int, outputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, outputs, outputs_to_be_cast);\
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
+	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, M_kernelHeight, M_kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
  \
     _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
     for (unsigned int output = 0; output < nbOutputs; ++output) { \

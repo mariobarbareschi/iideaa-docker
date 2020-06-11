@@ -149,6 +149,8 @@ static inline SUM_T sht(SUM_T weightedSum, int shift) {
         return (weightedSum >> shift);
     else
         return (weightedSum << (-shift));
+#else
+	return 0;
 #endif
 }
 
