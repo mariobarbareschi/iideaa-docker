@@ -1,4 +1,3 @@
 convcell_propagate,VPANOperator
-convcell_upropagate,VPANOperator
 fccell_propagate_2d,VPANOperator
 fccell_propagate,VPANOperator

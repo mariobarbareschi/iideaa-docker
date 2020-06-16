@@ -590,6 +590,8 @@ DECLARE_CONVCELL_PROPAGATE(1, 1)
 DECLARE_CONVCELL_PROPAGATE(3, 3)
 DECLARE_CONVCELL_PROPAGATE(5, 5)
 
+::fap::FloatPrecTy OP_1(8,23);
+::fap::FloatPrecTy OP_0(8,23);
 void convcell_propagate(
     unsigned int nbChannels,
     unsigned int channelsHeight,
@@ -670,7 +672,7 @@ void convcell_propagate(
 							WDATA_T wei = (*weights[output][channel])[sy][sx];
 							DATA_T inp = inputs[channel][iy + sy][ix + sx];
                             // weightedSum = ADD_SAT(weightedSum,  wei * inp);
-							weightedSum += wei * inp;
+							weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_0)) + (float)(::fap::FloatingPointType((float) wei, OP_1)) * (float)(::fap::FloatingPointType((float) inp, OP_1));
 
 						}
                     }
@@ -1621,6 +1623,8 @@ void rbfcell_propagate(unsigned int nbChannels,
 #endif
     }
 }
+::fap::FloatPrecTy OP_3(8,23);
+::fap::FloatPrecTy OP_2(8,23);
 void
 fccell_propagate_2d(unsigned int nbChannels,
                     unsigned int channelsHeight,
@@ -1648,7 +1652,7 @@ fccell_propagate_2d(unsigned int nbChannels,
         for (unsigned int channel = 0; channel < nbChannels; ++channel) {
             for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
                 for (unsigned int ix = 0; ix < channelsWidth; ++ix)
-                    weightedSum += weights[output][c++] * inputs[channel][iy][ix];
+                    weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_2)) + (float)(::fap::FloatingPointType((float) weights[output][c++], OP_3)) * (float)(::fap::FloatingPointType((float) inputs[channel][iy][ix], OP_3));
             }
         }
 
@@ -1689,6 +1693,8 @@ fccell_upropagate_2d(unsigned int nbChannels,
     }
 }
 
+::fap::FloatPrecTy OP_5(8,23);
+::fap::FloatPrecTy OP_4(8,23);
 void fccell_propagate(unsigned int nbChannels,
                       DATA_T * inputs_to_be_cast,
                       unsigned int nbOutputs_,
@@ -1709,7 +1715,7 @@ void fccell_propagate(unsigned int nbChannels,
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel)
-            weightedSum += weights[output][channel] * inputs[channel];
+            weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_4)) + (float)(::fap::FloatingPointType((float) weights[output][channel], OP_5)) * (float)(::fap::FloatingPointType((float) inputs[channel], OP_5));
 
         outputs[outputOffset + output] = sat(weightedSum, func, shift);
     }

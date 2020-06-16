@@ -8,13 +8,18 @@ set (CMAKE_LINKER  		"/usr/bin/llvm-ld")
 set (CMAKE_NM      		"/usr/bin/llvm-nm")
 set (CMAKE_OBJDUMP 		"/usr/bin/llvm-objdump")
 set (CMAKE_RANLIB  		"/usr/bin/llvm-ranlib")
-set (CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -Wextra -Wconversion -fsigned-char -march=native")
+set (CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion -fsigned-char -march=native")
 
 set (CMAKE_CXX_STANDARD 11)
 set (CXX_STANDARD_REQUIRED ON)
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(OpenMP)
+find_package(OpenMP REQUIRED)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
 
 #We are going to collect all the target modules in libs folders
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -35,22 +40,15 @@ if (NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE "Release")
 endif()
 
-add_library(n2d2 SHARED src/n2d2.cc )
-target_include_directories(n2d2 PRIVATE include)
-# target_link_libraries(n2d2 m)
-
-add_library(n2d2cnn SHARED src/network.cc)
+add_library(n2d2cnn SHARED src/n2d2.cc src/network.cc)
 target_include_directories(n2d2cnn PRIVATE include)
-# target_link_libraries(n2d2cnn m n2d2)
 
 add_executable(n2d2_test n2d2_test.cc)
 target_include_directories(n2d2_test PRIVATE include)
-target_link_libraries(n2d2_test m n2d2 n2d2cnn)
+target_link_libraries(n2d2_test m n2d2cnn)
 
 add_executable(example example.cc)
 target_include_directories(example PRIVATE include)
-target_link_libraries(example m n2d2 n2d2cnn)
+target_link_libraries(example m n2d2cnn)
 
-
-add_dependencies(library_database n2d2)
 add_dependencies(library_database n2d2cnn)

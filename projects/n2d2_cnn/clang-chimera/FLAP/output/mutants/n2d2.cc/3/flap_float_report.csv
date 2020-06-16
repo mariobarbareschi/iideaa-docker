@@ -1,0 +1,6 @@
+OP_0,673,FLOAT,ADD,"weightedSum","OP_1","weightedSum"
+OP_1,673,FLOAT,MUL,"wei","inp","NULL"
+OP_2,1651,FLOAT,ADD,"OP_0","OP_1","weightedSum"
+OP_3,1651,FLOAT,MUL,"weights[output][c++]","inputs[channel][iy][ix]","NULL"
+OP_4,1712,FLOAT,ADD,"OP_2","OP_1","weightedSum"
+OP_5,1712,FLOAT,MUL,"weights[output][channel]","inputs[channel]","NULL"

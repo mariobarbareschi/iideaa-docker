@@ -1,6 +1,4 @@
-// N2D2 auto-generated file.
-// @ Mon Sep 16 12:33:02 2019
-
+#warning "Compiling network.cc"
 #include "network.h"
 
 //#define TIME_ANALYSIS

@@ -423,9 +423,9 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
     ActivationFunction_T func, \
     int shift) \
 { \
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
 	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);\
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);\	
+	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
 	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, M_kernelHeight, M_kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
     _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
     for (unsigned int output = 0; output < nbOutputs; ++output) { \
@@ -503,9 +503,9 @@ void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
     ActivationFunction_T func, \
     int shift) \
 { \
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\	
+	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);\
 	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(int, outputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, outputs, outputs_to_be_cast);\
 	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, M_kernelHeight, M_kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
  \
     _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
@@ -617,9 +617,9 @@ void convcell_propagate(
     ActivationFunction_T func,
     int shift)
 {
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
 	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
 	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
+	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
 	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
 
     if (subSampleY != 1 || subSampleX != 1) {
@@ -688,8 +688,6 @@ DECLARE_CONVCELL_UPROPAGATE(1, 1)
 DECLARE_CONVCELL_UPROPAGATE(3, 3)
 DECLARE_CONVCELL_UPROPAGATE(5, 5)
 
-::vpa_n::VPAPrecision OP_3 = ::vpa_n::FLOAT;
-::vpa_n::VPAPrecision OP_2 = ::vpa_n::FLOAT;
 void convcell_upropagate(
     unsigned int nbChannels,
     unsigned int channelsHeight,
@@ -716,9 +714,9 @@ void convcell_upropagate(
     ActivationFunction_T func,
     int shift)
 {
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
 	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);
 	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);
+	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);
 	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, kernelHeight, kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
 
     if (subSampleY != 1 || subSampleX != 1) {
@@ -766,7 +764,7 @@ void convcell_upropagate(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
-                            weightedSum = (float)(::vpa_n::VPA(weightedSum, OP_2) + ::vpa_n::VPA((SUM_T)::vpa_n::VPA((*weights[output][channel])[sy][sx] , OP_3)* (SUM_T)::vpa_n::VPA(((UDATA_T)inputs[channel][iy + sy][ix + sx]), OP_3), OP_2));
+                            weightedSum += (SUM_T)(*weights[output][channel])[sy][sx] * (SUM_T)((UDATA_T)inputs[channel][iy + sy][ix + sx]);
                         }
                     }
                 }
@@ -1624,8 +1622,8 @@ void rbfcell_propagate(unsigned int nbChannels,
 #endif
     }
 }
-::vpa_n::VPAPrecision OP_5 = ::vpa_n::FLOAT;
-::vpa_n::VPAPrecision OP_4 = ::vpa_n::FLOAT;
+::vpa_n::VPAPrecision OP_3 = ::vpa_n::FLOAT;
+::vpa_n::VPAPrecision OP_2 = ::vpa_n::FLOAT;
 void
 fccell_propagate_2d(unsigned int nbChannels,
                     unsigned int channelsHeight,
@@ -1653,7 +1651,7 @@ fccell_propagate_2d(unsigned int nbChannels,
         for (unsigned int channel = 0; channel < nbChannels; ++channel) {
             for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
                 for (unsigned int ix = 0; ix < channelsWidth; ++ix)
-                    weightedSum = (float)(::vpa_n::VPA(weightedSum, OP_4) + ::vpa_n::VPA(::vpa_n::VPA(weights[output][c++] , OP_5)* ::vpa_n::VPA(inputs[channel][iy][ix], OP_5), OP_4));
+                    weightedSum = (float)(::vpa_n::VPA(weightedSum, OP_2) + ::vpa_n::VPA(::vpa_n::VPA(weights[output][c++] , OP_3)* ::vpa_n::VPA(inputs[channel][iy][ix], OP_3), OP_2));
             }
         }
 
@@ -1694,8 +1692,8 @@ fccell_upropagate_2d(unsigned int nbChannels,
     }
 }
 
-::vpa_n::VPAPrecision OP_7 = ::vpa_n::FLOAT;
-::vpa_n::VPAPrecision OP_6 = ::vpa_n::FLOAT;
+::vpa_n::VPAPrecision OP_5 = ::vpa_n::FLOAT;
+::vpa_n::VPAPrecision OP_4 = ::vpa_n::FLOAT;
 void fccell_propagate(unsigned int nbChannels,
                       DATA_T * inputs_to_be_cast,
                       unsigned int nbOutputs_,
@@ -1716,7 +1714,7 @@ void fccell_propagate(unsigned int nbChannels,
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel)
-            weightedSum = (float)(::vpa_n::VPA(weightedSum, OP_6) + ::vpa_n::VPA(::vpa_n::VPA(weights[output][channel] , OP_7)* ::vpa_n::VPA(inputs[channel], OP_7), OP_6));
+            weightedSum = (float)(::vpa_n::VPA(weightedSum, OP_4) + ::vpa_n::VPA(::vpa_n::VPA(weights[output][channel] , OP_5)* ::vpa_n::VPA(inputs[channel], OP_5), OP_4));
 
         outputs[outputOffset + output] = sat(weightedSum, func, shift);
     }

@@ -1,8 +1,0 @@
-OP_0,672,FLOAT,ADD,"weightedSum","OP_1","weightedSum"
-OP_1,672,FLOAT,MUL,"wei","inp","NULL"
-OP_2,765,FLOAT,ADD,"OP_0","OP_3","weightedSum"
-OP_3,765,FLOAT,MUL,"(SUM_T)(*weights[output][channel])[sy][sx]","(SUM_T)((UDATA_T)inputs[channel][iy+sy][ix+sx])","NULL"
-OP_4,1650,FLOAT,ADD,"OP_2","OP_5","weightedSum"
-OP_5,1650,FLOAT,MUL,"weights[output][c++]","inputs[channel][iy][ix]","NULL"
-OP_6,1711,FLOAT,ADD,"OP_4","OP_7","weightedSum"
-OP_7,1711,FLOAT,MUL,"weights[output][channel]","inputs[channel]","NULL"

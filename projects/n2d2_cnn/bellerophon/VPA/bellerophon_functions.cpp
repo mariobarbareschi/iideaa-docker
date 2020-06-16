@@ -83,5 +83,7 @@ extern "C" double BELLERO_getError() {
 	float success_rate = 100.0 * success / (float) total_stimuli;
 	double error = original_success_rate - success_rate;
 
+	printf("Success-rate: %f, error: %lf\n", success_rate, error);
+
 	return error;
 }
