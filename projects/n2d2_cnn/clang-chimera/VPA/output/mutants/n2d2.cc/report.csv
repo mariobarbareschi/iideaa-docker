@@ -1,6 +1,8 @@
-6,convcell_propagate,672,8,mutator_vpa_n_operation,0
-6,convcell_propagate,672,23,mutator_vpa_n_operation,0
-6,fccell_propagate_2d,1650,21,mutator_vpa_n_operation,0
-6,fccell_propagate_2d,1650,36,mutator_vpa_n_operation,0
-6,fccell_propagate,1711,13,mutator_vpa_n_operation,0
-6,fccell_propagate,1711,28,mutator_vpa_n_operation,0
+6,convcell_propagate_5x5,570,24,mutator_vpa_n_operation,0
+6,convcell_propagate_5x5,570,41,mutator_vpa_n_operation,0
+6,convcell_propagate,847,8,mutator_vpa_n_operation,0
+6,convcell_propagate,847,23,mutator_vpa_n_operation,0
+6,fccell_propagate_2d,1816,21,mutator_vpa_n_operation,0
+6,fccell_propagate_2d,1816,36,mutator_vpa_n_operation,0
+6,fccell_propagate,1877,13,mutator_vpa_n_operation,0
+6,fccell_propagate,1877,28,mutator_vpa_n_operation,0

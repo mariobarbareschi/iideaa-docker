@@ -4,13 +4,11 @@
 #include <omp.h>
 #include "network.h"
 #include "c99_vla_cast_for_cpp.h"
+#include "vpa_n.h"
 
 #include<iostream>
 #include<fstream>
 #include <math.h>
-
-#include "vpa_n.h"
-#include "network.h"
 
 bool vpa_n::VPA::UPCASTING = false;
 
@@ -20,7 +18,7 @@ extern "C" double BELLERO_getError() {
 	omp_set_num_threads(8);
 
 	// Getting the success-rate of the original CNN
-	FILE *oracle_file = fopen("success_rate.txt", "r");
+	FILE *oracle_file = fopen("/root/projects/n2d2_cnn/bellerophon/VPA/success_rate.txt", "r");
 	if (oracle_file == NULL)
 	{
 		printf("Error opening success_rate.txt file!\n");

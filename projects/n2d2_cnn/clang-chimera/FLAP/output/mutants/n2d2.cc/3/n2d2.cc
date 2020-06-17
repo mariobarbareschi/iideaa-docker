@@ -23,6 +23,7 @@
 #include "vpa_n.h"
 #include "fap.h"
 #include <string.h>
+#include <omp.h>
 
 int compare(void const* a, void const* b)
 {
@@ -396,202 +397,379 @@ void fmpcell_propagate(unsigned int nbChannels,
     }
 }
 
-#if defined(_OPENMP) && _OPENMP >= 200805
-#define CONV_COLLAPSE collapse(3)
-
-#define DECLARE_CONVCELL_PROPAGATE_TYPE(PREFIX, TYPE, M_kernelHeight, M_kernelWidth) \
-void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
-    unsigned int nbChannels, \
-    unsigned int channelsHeight, \
-    unsigned int channelsWidth, \
-    int paddingY, \
-    int paddingX, \
-    unsigned int strideY, \
-    unsigned int strideX, \
-    unsigned int subSampleY, \
-    unsigned int subSampleX, \
-    DATA_T * inputs_to_be_cast, \
-    unsigned int oySize, \
-    unsigned int oxSize, \
-    unsigned int nbOutputs_, \
-    unsigned int outputsHeight, \
-    unsigned int outputsWidth, \
-    unsigned int nbOutputs, \
-    unsigned int outputOffset, \
-    DATA_T * outputs_to_be_cast, \
-    BDATA_T * bias_to_be_cast, \
-    WDATA_T * weights_to_be_cast, \
-    ActivationFunction_T func, \
-    int shift) \
-{ \
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);\	
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, M_kernelHeight, M_kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
-    _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
-    for (unsigned int output = 0; output < nbOutputs; ++output) { \
-        for (unsigned int oy = 0; oy < oySize; ++oy) { \
-            for (unsigned int ox = 0; ox < oxSize; ++ox) { \
-                const unsigned int sxMin = (unsigned int)int_max( \
-                    (int)paddingX - (int)(ox * strideX), 0); \
-                const unsigned int syMin = (unsigned int)int_max( \
-                    (int)paddingY - (int)(oy * strideY), 0); \
-                const unsigned int sxMax = (unsigned int)int_max( \
-                    int_min((int)channelsWidth + paddingX - (int)(ox * strideX), \
-                            (int)M_kernelWidth), \
-                    0); \
-                const unsigned int syMax = (unsigned int)int_max( \
-                    int_min((int)channelsHeight + paddingY \
-                            - (int)(oy * strideY), \
-                            (int)M_kernelHeight), \
-                    0); \
- \
-                const int ix = (int)(ox * strideX) - (int)paddingX; \
-                const int iy = (int)(oy * strideY) - (int)paddingY; \
- \
-                SUM_T weightedSum = bias[output]; \
- \
-                for (unsigned int channel = 0; channel < nbChannels; \
-                     ++channel) { \
-                    if (weights[output][channel] == NULL) \
-                        continue; \
- \
-                    for (unsigned int sy = syMin; sy != syMax; ++sy) { \
-                        _Pragma(STR(unroll M_kernelWidth)) \
-                        for (unsigned int sx = 0; sx != M_kernelWidth; ++sx) { \
-                            if (sx >= sxMin && sx < sxMax) { \
-                                weightedSum = ADD_SAT(weightedSum, (SUM_T)( \
-                                           *weights[output][channel])[sy][sx] \
-                                       * (SUM_T)( \
-                                             (TYPE) \
-                                             inputs[channel][iy + sy][ix + sx])); \
-                            } \
-                        } \
-                    } \
-                } \
- \
-                outputs[outputOffset + output][oy][ox] \
-                    = PREFIX##sat(weightedSum, func, shift); \
-            } \
-        } \
-    } \
+void convcell_propagate_1x1(
+		unsigned int nbChannels, 
+		unsigned int channelsHeight, 
+		unsigned int channelsWidth, 
+		int paddingY, 
+		int paddingX, 
+		unsigned int strideY, 
+		unsigned int strideX, 
+		unsigned int subSampleY, 
+		unsigned int subSampleX, 
+		DATA_T * inputs_to_be_cast, 
+		unsigned int oySize, 
+		unsigned int oxSize, 
+		unsigned int nbOutputs_, 
+		unsigned int outputsHeight, 
+		unsigned int outputsWidth, 
+		unsigned int nbOutputs, 
+		unsigned int outputOffset, 
+		DATA_T * outputs_to_be_cast, 
+		BDATA_T * bias_to_be_cast, 
+		WDATA_T * weights_to_be_cast, 
+		ActivationFunction_T func, 
+		int shift) 
+{ 
+	typedef DATA_T inputs_vla_array_t[nbChannels][channelsHeight][channelsWidth]; 
+	inputs_vla_array_t &inputs = *reinterpret_cast<inputs_vla_array_t*>(inputs_to_be_cast); 
+	typedef DATA_T outputs_vla_array_t[nbOutputs_][outputsHeight][outputsWidth]; 
+	outputs_vla_array_t &outputs = *reinterpret_cast<outputs_vla_array_t*>(outputs_to_be_cast); 
+	typedef BDATA_T bias_vla_array_t[nbOutputs]; 
+	bias_vla_array_t &bias = *reinterpret_cast<bias_vla_array_t*>(bias_to_be_cast); 
+	typedef WDATA_T internal_type_t[1][1]; 
+	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
+	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	#pragma omp parallel for
+	for (unsigned int output = 0; output < nbOutputs; ++output) { 
+		for (unsigned int oy = 0; oy < oySize; ++oy) { 
+			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
+				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
+				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)1), 0); 
+				const unsigned int syMax = (unsigned int)int_max( int_min((int)channelsHeight + paddingY - (int)(oy * strideY), (int)1), 0); 
+				const int ix = (int)(ox * strideX) - (int)paddingX; const int iy = (int)(oy * strideY) - (int)paddingY; SUM_T weightedSum = bias[output]; 
+				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
+					if (weights[output][channel] == __null) continue;
+					#pragma unroll 1
+					for (unsigned int sy = 0; sy < 1; ++sy) {
+						#pragma unroll 1
+						for (unsigned int sx = 0; sx < 1; ++sx) { 
+							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
+								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
+							} 
+						} 
+					} 
+				} 
+				outputs[outputOffset + output][oy][ox] = sat(weightedSum, func, shift); 
+			} 
+		} 
+	} 
 }
-#else
-#define CONV_COLLAPSE
 
-#define DECLARE_CONVCELL_PROPAGATE_TYPE(PREFIX, TYPE, M_kernelHeight, M_kernelWidth) \
-void convcell_##PREFIX##propagate_##M_kernelHeight##x##M_kernelWidth( \
-    unsigned int nbChannels, \
-    unsigned int channelsHeight, \
-    unsigned int channelsWidth, \
-    int paddingY, \
-    int paddingX, \
-    unsigned int strideY, \
-    unsigned int strideX, \
-    unsigned int subSampleY, \
-    unsigned int subSampleX, \
-    DATA_T * inputs_to_be_cast, \
-    unsigned int oySize, \
-    unsigned int oxSize, \
-    unsigned int nbOutputs_, \
-    unsigned int outputsHeight, \
-    unsigned int outputsWidth, \
-    unsigned int nbOutputs, \
-    unsigned int outputOffset, \
-    DATA_T * outputs_to_be_cast, \
-    BDATA_T * bias_to_be_cast, \
-    WDATA_T * weights_to_be_cast, \
-    ActivationFunction_T func, \
-    int shift) \
-{ \
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, inputs_vla_array_t, nbChannels, channelsHeight, channelsWidth, inputs, inputs_to_be_cast);\
-	DECLARE_3D_VLA_ARRAY_AND_CAST(DATA_T, outputs_vla_array_t, nbOutputs_, outputsHeight, outputsWidth, outputs, outputs_to_be_cast);\
-	DECLARE_1D_VLA_ARRAY_AND_CAST(BDATA_T, bias_vla_array_t, nbOutputs, bias, bias_to_be_cast);\
-	DECLARE_2D_VLA_ARRAY_OF_PTR_TO_2D_VLA_ARRAY(WDATA_T, kernel_weights_vla_array_t, M_kernelHeight, M_kernelWidth, weights_vla_array_t, nbOutputs, nbChannels, weights, weights_to_be_cast);\
- \
-    _Pragma(STR(omp parallel for CONV_COLLAPSE)) \
-    for (unsigned int output = 0; output < nbOutputs; ++output) { \
-        for (unsigned int oy = 0; oy < oySize; ++oy) { \
-            for (unsigned int ox = 0; ox < oxSize; ++ox) { \
-                const unsigned int sxMin = (unsigned int)int_max( \
-                    (int)paddingX - (int)(ox * strideX), 0); \
-                const unsigned int syMin = (unsigned int)int_max( \
-                    (int)paddingY - (int)(oy * strideY), 0); \
-                const unsigned int sxMax = (unsigned int)int_max( \
-                    int_min((int)channelsWidth + paddingX - (int)(ox * strideX), \
-                            (int)M_kernelWidth), \
-                    0); \
-                const unsigned int syMax = (unsigned int)int_max( \
-                    int_min((int)channelsHeight + paddingY \
-                            - (int)(oy * strideY), \
-                            (int)M_kernelHeight), \
-                    0); \
- \
-                const int ix = (int)(ox * strideX) - (int)paddingX; \
-                const int iy = (int)(oy * strideY) - (int)paddingY; \
- \
-                SUM_T weightedSum = bias[output]; \
- \
-                for (unsigned int channel = 0; channel < nbChannels; \
-                     ++channel) { \
-                    if (weights[output][channel] == NULL) \
-                        continue; \
- \
-                    _Pragma(STR(unroll M_kernelHeight)) \
-                    for (unsigned int sy = 0; sy < M_kernelHeight; ++sy) { \
-                        _Pragma(STR(unroll M_kernelWidth)) \
-                        for (unsigned int sx = 0; sx < M_kernelWidth; ++sx) { \
-                            if (sx >= sxMin && sx < sxMax \
-                                && sy >= syMin && sy < syMax) \
-                            { \
-                                weightedSum = ADD_SAT(weightedSum, (SUM_T)( \
-                                           *weights[output][channel])[sy][sx] \
-                                       * (SUM_T)( \
-                                             (TYPE) \
-                                             inputs[channel][iy + sy][ix + sx])); \
-                            } \
-                        } \
-                    } \
-                } \
- \
-                outputs[outputOffset + output][oy][ox] \
-                    = PREFIX##sat(weightedSum, func, shift); \
-            } \
-        } \
-    } \
+void convcell_propagate_3x3(
+		unsigned int nbChannels, 
+		unsigned int channelsHeight, 
+		unsigned int channelsWidth, 
+		int paddingY, 
+		int paddingX, 
+		unsigned int strideY, 
+		unsigned int strideX, 
+		unsigned int subSampleY, 
+		unsigned int subSampleX, 
+		DATA_T * inputs_to_be_cast, 
+		unsigned int oySize, 
+		unsigned int oxSize, 
+		unsigned int nbOutputs_, 
+		unsigned int outputsHeight, 
+		unsigned int outputsWidth, 
+		unsigned int nbOutputs, 
+		unsigned int outputOffset, 
+		DATA_T * outputs_to_be_cast, 
+		BDATA_T * bias_to_be_cast, 
+		WDATA_T * weights_to_be_cast, 
+		ActivationFunction_T func, 
+		int shift) 
+{ 
+	typedef DATA_T inputs_vla_array_t[nbChannels][channelsHeight][channelsWidth]; 
+	inputs_vla_array_t &inputs = *reinterpret_cast<inputs_vla_array_t*>(inputs_to_be_cast); 
+	typedef DATA_T outputs_vla_array_t[nbOutputs_][outputsHeight][outputsWidth]; 
+	outputs_vla_array_t &outputs = *reinterpret_cast<outputs_vla_array_t*>(outputs_to_be_cast); 
+	typedef BDATA_T bias_vla_array_t[nbOutputs]; bias_vla_array_t &bias = *reinterpret_cast<bias_vla_array_t*>(bias_to_be_cast); 
+	typedef WDATA_T internal_type_t[3][3]; 
+	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
+	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	#pragma omp parallel for
+	for (unsigned int output = 0; output < nbOutputs; ++output) { 
+		for (unsigned int oy = 0; oy < oySize; ++oy) { 
+			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
+				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
+				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)3), 0); 
+				const unsigned int syMax = (unsigned int)int_max( int_min((int)channelsHeight + paddingY - (int)(oy * strideY), (int)3), 0); 
+				const int ix = (int)(ox * strideX) - (int)paddingX; 
+				const int iy = (int)(oy * strideY) - (int)paddingY; SUM_T weightedSum = bias[output]; 
+				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
+					if (weights[output][channel] == __null) continue;
+					#pragma unroll 3
+					for (unsigned int sy = 0; sy < 3; ++sy) {
+						#pragma unroll 3
+						for (unsigned int sx = 0; sx < 3; ++sx) { 
+							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
+								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
+							} 
+						} 
+					} 
+				} 
+				outputs[outputOffset + output][oy][ox] = sat(weightedSum, func, shift); 
+			} 
+		} 
+	} 
 }
-#endif
-
-#define DECLARE_CONVCELL_PROPAGATE(M_kernelHeight, M_kernelWidth) \
-    DECLARE_CONVCELL_PROPAGATE_TYPE(, DATA_T, M_kernelHeight, M_kernelWidth)
-
-#define DECLARE_CONVCELL_UPROPAGATE(M_kernelHeight, M_kernelWidth) \
-    DECLARE_CONVCELL_PROPAGATE_TYPE(u, UDATA_T, M_kernelHeight, M_kernelWidth)
-
-#define CONVCELL_PROPAGATE(M_kernelHeight, M_kernelWidth) do { \
-    if (kernelHeight == M_kernelHeight && kernelWidth == M_kernelWidth) { \
-        convcell_propagate_##M_kernelHeight##x##M_kernelWidth(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, \
-            strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, \
-            outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); \
-        return; \
-    } \
-} while (0)
-
-#define CONVCELL_UPROPAGATE(M_kernelHeight, M_kernelWidth) do { \
-    if (kernelHeight == M_kernelHeight && kernelWidth == M_kernelWidth) { \
-        convcell_upropagate_##M_kernelHeight##x##M_kernelWidth(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, \
-            strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, \
-            outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); \
-        return; \
-    } \
-} while (0)
-
-DECLARE_CONVCELL_PROPAGATE(1, 1)
-DECLARE_CONVCELL_PROPAGATE(3, 3)
-DECLARE_CONVCELL_PROPAGATE(5, 5)
 
 ::fap::FloatPrecTy OP_1(8,23);
 ::fap::FloatPrecTy OP_0(8,23);
+void convcell_propagate_5x5(
+		unsigned int nbChannels, 
+		unsigned int channelsHeight, 
+		unsigned int channelsWidth, 
+		int paddingY, 
+		int paddingX, 
+		unsigned int strideY, 
+		unsigned int strideX, 
+		unsigned int subSampleY, 
+		unsigned int subSampleX, 
+		DATA_T * inputs_to_be_cast, 
+		unsigned int oySize, 
+		unsigned int oxSize, 
+		unsigned int nbOutputs_, 
+		unsigned int outputsHeight, 
+		unsigned int outputsWidth, 
+		unsigned int nbOutputs, 
+		unsigned int outputOffset, 
+		DATA_T * outputs_to_be_cast, 
+		BDATA_T * bias_to_be_cast, 
+		WDATA_T * weights_to_be_cast, 
+		ActivationFunction_T func, 
+		int shift) 
+{
+	typedef DATA_T inputs_vla_array_t[nbChannels][channelsHeight][channelsWidth]; 
+	inputs_vla_array_t &inputs = *reinterpret_cast<inputs_vla_array_t*>(inputs_to_be_cast); 
+	typedef DATA_T outputs_vla_array_t[nbOutputs_][outputsHeight][outputsWidth]; 
+	outputs_vla_array_t &outputs = *reinterpret_cast<outputs_vla_array_t*>(outputs_to_be_cast); 
+	typedef BDATA_T bias_vla_array_t[nbOutputs]; 
+	bias_vla_array_t &bias = *reinterpret_cast<bias_vla_array_t*>(bias_to_be_cast); 
+	typedef WDATA_T internal_type_t[5][5]; 
+	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
+	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	#pragma omp parallel for 
+	for (unsigned int output = 0; output < nbOutputs; ++output) { 
+		for (unsigned int oy = 0; oy < oySize; ++oy) { 
+			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
+				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
+				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
+				const unsigned int syMax = (unsigned int)int_max( int_min((int)channelsHeight + paddingY - (int)(oy * strideY), (int)5), 0); 
+				const int ix = (int)(ox * strideX) - (int)paddingX; 
+				const int iy = (int)(oy * strideY) - (int)paddingY; 
+				SUM_T weightedSum = bias[output]; 
+				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
+					if (weights[output][channel] == __null) continue;
+					#pragma unroll 5
+					for (unsigned int sy = 0; sy < 5; ++sy) {
+						#pragma unroll 5
+						for (unsigned int sx = 0; sx < 5; ++sx) { 
+							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
+								weightedSum = ((float)(::fap::FloatingPointType((float) (weightedSum), OP_0)) + ((SUM_T)(float)(::fap::FloatingPointType((float) ( *weights[output][channel])[sy][sx], OP_1)) * (SUM_T)(float)(::fap::FloatingPointType((float) ( (DATA_T) inputs[channel][iy + sy][ix + sx]), OP_1)))); 
+							} 
+						} 
+					} 
+				} 
+				outputs[outputOffset + output][oy][ox] = sat(weightedSum, func, shift); 
+			} 
+		} 
+	} 
+}
+
+void convcell_upropagate_1x1(
+		unsigned int nbChannels, 
+		unsigned int channelsHeight, 
+		unsigned int channelsWidth, 
+		int paddingY, 
+		int paddingX, 
+		unsigned int strideY, 
+		unsigned int strideX, 
+		unsigned int subSampleY, 
+		unsigned int subSampleX, 
+		DATA_T * inputs_to_be_cast, 
+		unsigned int oySize, 
+		unsigned int oxSize, 
+		unsigned int nbOutputs_, 
+		unsigned int outputsHeight, 
+		unsigned int outputsWidth, 
+		unsigned int nbOutputs, 
+		unsigned int outputOffset, 
+		DATA_T * outputs_to_be_cast, 
+		BDATA_T * bias_to_be_cast, 
+		WDATA_T * weights_to_be_cast, 
+		ActivationFunction_T func, 
+		int shift) 
+{ 
+	typedef DATA_T inputs_vla_array_t[nbChannels][channelsHeight][channelsWidth]; 
+	inputs_vla_array_t &inputs = *reinterpret_cast<inputs_vla_array_t*>(inputs_to_be_cast); 
+	typedef DATA_T outputs_vla_array_t[nbOutputs_][outputsHeight][outputsWidth]; 
+	outputs_vla_array_t &outputs = *reinterpret_cast<outputs_vla_array_t*>(outputs_to_be_cast); 
+	typedef BDATA_T bias_vla_array_t[nbOutputs]; 
+	bias_vla_array_t &bias = *reinterpret_cast<bias_vla_array_t*>(bias_to_be_cast); 
+	typedef WDATA_T internal_type_t[1][1]; 
+	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
+	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	#pragma omp parallel for
+	for (unsigned int output = 0; output < nbOutputs; ++output) { 
+		for (unsigned int oy = 0; oy < oySize; ++oy) { 
+			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
+				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
+				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)1), 0); 
+				const unsigned int syMax = (unsigned int)int_max( int_min((int)channelsHeight + paddingY - (int)(oy * strideY), (int)1), 0); 
+				const int ix = (int)(ox * strideX) - (int)paddingX; 
+				const int iy = (int)(oy * strideY) - (int)paddingY; 
+				SUM_T weightedSum = bias[output]; 
+				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
+					if (weights[output][channel] == __null) continue;
+					#pragma unroll 1
+					for (unsigned int sy = 0; sy < 1; ++sy) {
+						#pragma unroll 1
+					   	for (unsigned int sx = 0; sx < 1; ++sx) { 
+							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
+								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (UDATA_T) inputs[channel][iy + sy][ix + sx]))); 
+							} 
+						} 
+					} 
+				} 
+				outputs[outputOffset + output][oy][ox] = usat(weightedSum, func, shift); 
+			} 
+		} 
+	} 
+}
+
+void convcell_upropagate_3x3(
+	   	unsigned int nbChannels, 
+		unsigned int channelsHeight, 
+		unsigned int channelsWidth, 
+		int paddingY, 
+		int paddingX, 
+		unsigned int strideY, 
+		unsigned int strideX, 
+		unsigned int subSampleY, 
+		unsigned int subSampleX, 
+		DATA_T * inputs_to_be_cast, 
+		unsigned int oySize, 
+		unsigned int oxSize, 
+		unsigned int nbOutputs_, 
+		unsigned int outputsHeight, 
+		unsigned int outputsWidth, 
+		unsigned int nbOutputs, 
+		unsigned int outputOffset, 
+		DATA_T * outputs_to_be_cast, 
+		BDATA_T * bias_to_be_cast, 
+		WDATA_T * weights_to_be_cast, 
+		ActivationFunction_T func, 
+		int shift) 
+{ 
+	typedef DATA_T inputs_vla_array_t[nbChannels][channelsHeight][channelsWidth]; 
+	inputs_vla_array_t &inputs = *reinterpret_cast<inputs_vla_array_t*>(inputs_to_be_cast); 
+	typedef DATA_T outputs_vla_array_t[nbOutputs_][outputsHeight][outputsWidth]; 
+	outputs_vla_array_t &outputs = *reinterpret_cast<outputs_vla_array_t*>(outputs_to_be_cast); 
+	typedef BDATA_T bias_vla_array_t[nbOutputs]; 
+	bias_vla_array_t &bias = *reinterpret_cast<bias_vla_array_t*>(bias_to_be_cast); 
+	typedef WDATA_T internal_type_t[3][3]; 
+	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
+	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	#pragma omp parallel for
+ 	for (unsigned int output = 0; output < nbOutputs; ++output) { 
+		for (unsigned int oy = 0; oy < oySize; ++oy) { 
+			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
+				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
+				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)3), 0); 
+				const unsigned int syMax = (unsigned int)int_max( int_min((int)channelsHeight + paddingY - (int)(oy * strideY), (int)3), 0); 
+				const int ix = (int)(ox * strideX) - (int)paddingX; 
+				const int iy = (int)(oy * strideY) - (int)paddingY; 
+				SUM_T weightedSum = bias[output]; 
+				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
+					if (weights[output][channel] == __null) continue;
+					#pragma unroll 3
+					for (unsigned int sy = 0; sy < 3; ++sy) {
+						#pragma unroll 3
+						for (unsigned int sx = 0; sx < 3; ++sx) { 
+							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
+								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (UDATA_T) inputs[channel][iy + sy][ix + sx]))); 
+							} 
+						} 
+					} 
+				} 
+				outputs[outputOffset + output][oy][ox] = usat(weightedSum, func, shift); 
+			} 
+		} 
+	} 
+}
+
+void convcell_upropagate_5x5(
+	   unsigned int nbChannels, 
+	   unsigned int channelsHeight, 
+	   unsigned int channelsWidth, 
+	   int paddingY, 
+	   int paddingX, 
+	   unsigned int strideY, 
+	   unsigned int strideX, 
+	   unsigned int subSampleY, 
+	   unsigned int subSampleX, 
+	   DATA_T * inputs_to_be_cast, 
+	   unsigned int oySize, 
+	   unsigned int oxSize, 
+	   unsigned int nbOutputs_, 
+	   unsigned int outputsHeight, 
+	   unsigned int outputsWidth, 
+	   unsigned int nbOutputs, 
+	   unsigned int outputOffset, 
+	   DATA_T * outputs_to_be_cast, 
+	   BDATA_T * bias_to_be_cast, 
+	   WDATA_T * weights_to_be_cast, 
+	   ActivationFunction_T func, 
+	   int shift) 
+{ 
+	typedef DATA_T inputs_vla_array_t[nbChannels][channelsHeight][channelsWidth]; 
+	inputs_vla_array_t &inputs = *reinterpret_cast<inputs_vla_array_t*>(inputs_to_be_cast); 
+	typedef DATA_T outputs_vla_array_t[nbOutputs_][outputsHeight][outputsWidth]; 
+	outputs_vla_array_t &outputs = *reinterpret_cast<outputs_vla_array_t*>(outputs_to_be_cast); 
+	typedef BDATA_T bias_vla_array_t[nbOutputs]; bias_vla_array_t &bias = *reinterpret_cast<bias_vla_array_t*>(bias_to_be_cast); 
+	typedef WDATA_T internal_type_t[5][5]; 
+	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
+	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	#pragma omp parallel for
+ 	for (unsigned int output = 0; output < nbOutputs; ++output) { 
+		for (unsigned int oy = 0; oy < oySize; ++oy) { 
+			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
+				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
+				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
+				const unsigned int syMax = (unsigned int)int_max( int_min((int)channelsHeight + paddingY - (int)(oy * strideY), (int)5), 0); 
+				const int ix = (int)(ox * strideX) - (int)paddingX; 
+				const int iy = (int)(oy * strideY) - (int)paddingY; 
+				SUM_T weightedSum = bias[output]; 
+				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
+					if (weights[output][channel] == __null) continue;
+					#pragma unroll 5
+					 for (unsigned int sy = 0; sy < 5; ++sy) {
+						#pragma unroll 5
+						for (unsigned int sx = 0; sx < 5; ++sx) { 
+							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
+								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (UDATA_T) inputs[channel][iy + sy][ix + sx]))); 
+							} 
+						} 
+					 } 
+				} 
+				outputs[outputOffset + output][oy][ox] = usat(weightedSum, func, shift);
+			} 
+		} 
+	} 
+}
+
+
+
+::fap::FloatPrecTy OP_3(8,23);
+::fap::FloatPrecTy OP_2(8,23);
 void convcell_propagate(
     unsigned int nbChannels,
     unsigned int channelsHeight,
@@ -628,10 +806,9 @@ void convcell_propagate(
         return;
     }
 
-    // Specialized functions
-    CONVCELL_PROPAGATE(1, 1);
-    CONVCELL_PROPAGATE(3, 3);
-    CONVCELL_PROPAGATE(5, 5);
+    do { if (kernelHeight == 1 && kernelWidth == 1) { convcell_propagate_1x1(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); return; } } while (0);
+    do { if (kernelHeight == 3 && kernelWidth == 3) { convcell_propagate_3x3(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); return; } } while (0);
+    do { if (kernelHeight == 5 && kernelWidth == 5) { convcell_propagate_5x5(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); return; } } while (0);
 
     // Fallback
 #if defined(_OPENMP) && _OPENMP >= 200805
@@ -672,22 +849,17 @@ void convcell_propagate(
 							WDATA_T wei = (*weights[output][channel])[sy][sx];
 							DATA_T inp = inputs[channel][iy + sy][ix + sx];
                             // weightedSum = ADD_SAT(weightedSum,  wei * inp);
-							weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_0)) + (float)(::fap::FloatingPointType((float) wei, OP_1)) * (float)(::fap::FloatingPointType((float) inp, OP_1));
+							weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_2)) + (float)(::fap::FloatingPointType((float) wei, OP_3)) * (float)(::fap::FloatingPointType((float) inp, OP_3));
 
 						}
                     }
                 }
 
-                outputs[outputOffset + output][oy][ox]
-                    = sat(weightedSum, func, shift);
+                outputs[outputOffset + output][oy][ox] = sat(weightedSum, func, shift);
             }
         }
     }
 }
-
-DECLARE_CONVCELL_UPROPAGATE(1, 1)
-DECLARE_CONVCELL_UPROPAGATE(3, 3)
-DECLARE_CONVCELL_UPROPAGATE(5, 5)
 
 void convcell_upropagate(
     unsigned int nbChannels,
@@ -725,10 +897,9 @@ void convcell_upropagate(
         return;
     }
 
-    // Specialized functions
-    CONVCELL_UPROPAGATE(1, 1);
-    CONVCELL_UPROPAGATE(3, 3);
-    CONVCELL_UPROPAGATE(5, 5);
+    do { if (kernelHeight == 1 && kernelWidth == 1) { convcell_upropagate_1x1(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); return; } } while (0);
+    do { if (kernelHeight == 3 && kernelWidth == 3) { convcell_upropagate_3x3(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); return; } } while (0);
+    do { if (kernelHeight == 5 && kernelWidth == 5) { convcell_upropagate_5x5(nbChannels, channelsHeight, channelsWidth, paddingY, paddingX, strideY, strideX, subSampleY, subSampleX, inputs_to_be_cast, oySize, oxSize, nbOutputs_, outputsHeight, outputsWidth, nbOutputs, outputOffset, outputs_to_be_cast, bias_to_be_cast, weights_to_be_cast, func, shift); return; } } while (0);
 
     // Fallback
 #if defined(_OPENMP) && _OPENMP >= 200805
@@ -770,8 +941,7 @@ void convcell_upropagate(
                     }
                 }
 
-                outputs[outputOffset + output][oy][ox]
-                    = usat(weightedSum, func, shift);
+                outputs[outputOffset + output][oy][ox] = usat(weightedSum, func, shift);
             }
         }
     }
@@ -998,8 +1168,7 @@ void lccell_propagate(unsigned int nbChannels,
                     }
                 }
 
-                outputs[outputOffset + output][oy][ox]
-                    = sat(weightedSum, func, shift);
+                outputs[outputOffset + output][oy][ox] = sat(weightedSum, func, shift);
             }
         }
     }
@@ -1080,8 +1249,7 @@ void lccell_upropagate(unsigned int nbChannels,
                     }
                 }
 
-                outputs[outputOffset + output][oy][ox]
-                    = usat(weightedSum, func, shift);
+                outputs[outputOffset + output][oy][ox] = usat(weightedSum, func, shift);
             }
         }
     }
@@ -1623,8 +1791,8 @@ void rbfcell_propagate(unsigned int nbChannels,
 #endif
     }
 }
-::fap::FloatPrecTy OP_3(8,23);
-::fap::FloatPrecTy OP_2(8,23);
+::fap::FloatPrecTy OP_5(8,23);
+::fap::FloatPrecTy OP_4(8,23);
 void
 fccell_propagate_2d(unsigned int nbChannels,
                     unsigned int channelsHeight,
@@ -1652,7 +1820,7 @@ fccell_propagate_2d(unsigned int nbChannels,
         for (unsigned int channel = 0; channel < nbChannels; ++channel) {
             for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
                 for (unsigned int ix = 0; ix < channelsWidth; ++ix)
-                    weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_2)) + (float)(::fap::FloatingPointType((float) weights[output][c++], OP_3)) * (float)(::fap::FloatingPointType((float) inputs[channel][iy][ix], OP_3));
+                    weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_4)) + (float)(::fap::FloatingPointType((float) weights[output][c++], OP_5)) * (float)(::fap::FloatingPointType((float) inputs[channel][iy][ix], OP_5));
             }
         }
 
@@ -1693,8 +1861,8 @@ fccell_upropagate_2d(unsigned int nbChannels,
     }
 }
 
-::fap::FloatPrecTy OP_5(8,23);
-::fap::FloatPrecTy OP_4(8,23);
+::fap::FloatPrecTy OP_7(8,23);
+::fap::FloatPrecTy OP_6(8,23);
 void fccell_propagate(unsigned int nbChannels,
                       DATA_T * inputs_to_be_cast,
                       unsigned int nbOutputs_,
@@ -1715,7 +1883,7 @@ void fccell_propagate(unsigned int nbChannels,
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel)
-            weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_4)) + (float)(::fap::FloatingPointType((float) weights[output][channel], OP_5)) * (float)(::fap::FloatingPointType((float) inputs[channel], OP_5));
+            weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_6)) + (float)(::fap::FloatingPointType((float) weights[output][channel], OP_7)) * (float)(::fap::FloatingPointType((float) inputs[channel], OP_7));
 
         outputs[outputOffset + output] = sat(weightedSum, func, shift);
     }

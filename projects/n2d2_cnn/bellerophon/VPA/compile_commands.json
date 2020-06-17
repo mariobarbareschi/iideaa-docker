@@ -1,17 +1,17 @@
 [
 {
   "directory": "/root/projects/n2d2_cnn/bellerophon/VPA",
-  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /root/projects/n2d2_cnn/clang-chimera/VPA/output/mutants/n2d2.cc/6/n2d2.cc",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -c /root/projects/n2d2_cnn/clang-chimera/VPA/output/mutants/n2d2.cc/6/n2d2.cc",
   "file": "/root/projects/n2d2_cnn/clang-chimera/VPA/output/mutants/n2d2.cc/6/n2d2.cc"
 },
 {
   "directory": "/root/projects/n2d2_cnn/bellerophon/VPA",
-  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /root/projects/n2d2_cnn/code/src/network.cc",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -c /root/projects/n2d2_cnn/code/src/network.cc",
   "file": "/root/projects/n2d2_cnn/code/src/network.cc"
 },
 {
   "directory": "/root/projects/n2d2_cnn/bellerophon/VPA",
-  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -g -std=gnu++11 -c /root/projects/n2d2_cnn/bellerophon/VPA/bellerophon_functions.cpp",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /root/projects/n2d2_cnn/bellerophon/VPA/bellerophon_functions.cpp",
   "file": "/root/projects/n2d2_cnn/bellerophon/VPA/bellerophon_functions.cpp"
 }
 ]

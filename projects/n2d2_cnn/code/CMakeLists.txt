@@ -8,7 +8,7 @@ set (CMAKE_LINKER  		"/usr/bin/llvm-ld")
 set (CMAKE_NM      		"/usr/bin/llvm-nm")
 set (CMAKE_OBJDUMP 		"/usr/bin/llvm-objdump")
 set (CMAKE_RANLIB  		"/usr/bin/llvm-ranlib")
-set (CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion -fsigned-char -march=native")
+set (CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion -fsigned-char -march=native -O3 -fPIC")
 
 set (CMAKE_CXX_STANDARD 11)
 set (CXX_STANDARD_REQUIRED ON)

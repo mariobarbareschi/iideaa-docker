@@ -17,7 +17,7 @@ extern "C" double BELLERO_getError() {
 	omp_set_num_threads(8);
 
 	// Getting the success-rate of the original CNN
-	FILE *oracle_file = fopen("success_rate.txt", "r");
+	FILE *oracle_file = fopen("/root/projects/n2d2_cnn/bellerophon/FLAP/success_rate.txt", "r");
 	if (oracle_file == NULL)
 	{
 		printf("Error opening success_rate.txt file!\n");
@@ -85,12 +85,32 @@ extern "C" double BELLERO_getError() {
 	return error;
 }
 
+extern ::fap::FloatPrecTy OP_7;
+extern ::fap::FloatPrecTy OP_6;
+extern ::fap::FloatPrecTy OP_5;
+extern ::fap::FloatPrecTy OP_4;
+extern ::fap::FloatPrecTy OP_3;
+extern ::fap::FloatPrecTy OP_2;
+extern ::fap::FloatPrecTy OP_1;
+extern ::fap::FloatPrecTy OP_0;
+
 extern "C" double BELLERO_Reward()
 {
-    double reward = 0.0;
+	double reward = 0.0;
+	double num_genes = 8.0;
+	double bits_per_gene = 23.0;
+	double total_bits = num_genes * bits_per_gene;
 
+	double used_bits = (OP_0.mant_size + OP_1.mant_size + OP_2.mant_size + OP_3.mant_size + OP_4.mant_size + OP_5.mant_size + OP_6.mant_size + OP_7.mant_size);
+	double bits_saved = total_bits - (double) used_bits;
 
+	printf("Bits saved: %lf-(%d+%d+%d+%d+%d+%d+%d+%d)=%lf-%lf=%lf\n", total_bits, 
+							OP_0.mant_size, OP_1.mant_size, OP_2.mant_size, OP_3.mant_size, OP_4.mant_size, OP_5.mant_size, OP_6.mant_size, OP_7.mant_size,
+							total_bits, used_bits,
+							bits_saved);
 
+    reward = bits_saved / total_bits;
 	printf("Reward: %lf\n", reward);
+
 	return reward;
 }
