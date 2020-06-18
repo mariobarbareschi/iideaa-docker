@@ -85,6 +85,8 @@ extern "C" double BELLERO_getError() {
 	return error;
 }
 
+extern ::fap::FloatPrecTy OP_9;
+extern ::fap::FloatPrecTy OP_8;
 extern ::fap::FloatPrecTy OP_7;
 extern ::fap::FloatPrecTy OP_6;
 extern ::fap::FloatPrecTy OP_5;
@@ -97,15 +99,15 @@ extern ::fap::FloatPrecTy OP_0;
 extern "C" double BELLERO_Reward()
 {
 	double reward = 0.0;
-	double num_genes = 8.0;
+	double num_genes = 10.0;
 	double bits_per_gene = 23.0;
 	double total_bits = num_genes * bits_per_gene;
 
 	double used_bits = (OP_0.mant_size + OP_1.mant_size + OP_2.mant_size + OP_3.mant_size + OP_4.mant_size + OP_5.mant_size + OP_6.mant_size + OP_7.mant_size);
 	double bits_saved = total_bits - (double) used_bits;
 
-	printf("Bits saved: %lf-(%d+%d+%d+%d+%d+%d+%d+%d)=%lf-%lf=%lf\n", total_bits, 
-							OP_0.mant_size, OP_1.mant_size, OP_2.mant_size, OP_3.mant_size, OP_4.mant_size, OP_5.mant_size, OP_6.mant_size, OP_7.mant_size,
+	printf("Bits saved: %lf-(%d+%d+%d+%d+%d+%d+%d+%d+%d+%d)=%lf-%lf=%lf\n", total_bits, 
+							OP_0.mant_size, OP_1.mant_size, OP_2.mant_size, OP_3.mant_size, OP_4.mant_size, OP_5.mant_size, OP_6.mant_size, OP_7.mant_size, OP_8.mant_size, OP_9.mant_size,
 							total_bits, used_bits,
 							bits_saved);
 

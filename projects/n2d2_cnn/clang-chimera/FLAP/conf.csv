@@ -1,4 +1,5 @@
-convcell_propagate,FLAPOperator
-convcell_propagate_5x5,FLAPOperator
+convcell_propagate_5x5_conv1,FLAPOperator
+convcell_propagate_5x5_conv2,FLAPOperator
+convcell_propagate_5x5_conv3,FLAPOperator
 fccell_propagate_2d,FLAPOperator
 fccell_propagate,FLAPOperator
