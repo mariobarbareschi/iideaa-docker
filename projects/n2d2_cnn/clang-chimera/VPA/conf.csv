@@ -1,4 +1,5 @@
-convcell_propagate,VPANOperator
-convcell_propagate_5x5,VPANOperator
+convcell_propagate_5x5_conv1,VPANOperator
+convcell_propagate_5x5_conv2,VPANOperator
+convcell_propagate_5x5_conv3,VPANOperator
 fccell_propagate_2d,VPANOperator
 fccell_propagate,VPANOperator

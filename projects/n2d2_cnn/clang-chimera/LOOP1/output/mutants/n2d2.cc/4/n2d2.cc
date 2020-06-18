@@ -518,6 +518,8 @@ void convcell_propagate_3x3_conv1(
 	} 
 }
 
+int stride2 = 1;
+int stride1 = 1;
 void convcell_propagate_5x5_conv1(
 		unsigned int nbChannels, 
 		unsigned int channelsHeight, 
@@ -564,10 +566,10 @@ void convcell_propagate_5x5_conv1(
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
 					if (weights[output][channel] == NULL) continue;
-					#pragma unroll 5
-					for (unsigned int sy = 0; sy < 5; ++sy) {
-						#pragma unroll 5
-						for (unsigned int sx = 0; sx < 5; ++sx) { 
+					unsigned int sy;
+					for (sy = 0; sy < 5; sy = sy + stride1) {
+						unsigned int sx;
+						for (sx = 0; sx < 5; sx = sx + stride2) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -703,6 +705,8 @@ void convcell_propagate_3x3_conv2(
 	} 
 }
 
+int stride4 = 1;
+int stride3 = 1;
 void convcell_propagate_5x5_conv2(
 		unsigned int nbChannels, 
 		unsigned int channelsHeight, 
@@ -749,10 +753,10 @@ void convcell_propagate_5x5_conv2(
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
 					if (weights[output][channel] == NULL) continue;
-					#pragma unroll 5
-					for (unsigned int sy = 0; sy < 5; ++sy) {
-						#pragma unroll 5
-						for (unsigned int sx = 0; sx < 5; ++sx) { 
+					unsigned int sy;
+					for (sy = 0; sy < 5; sy = sy + stride3) {
+						unsigned int sx;
+						for (sx = 0; sx < 5; sx = sx + stride4) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -887,6 +891,8 @@ void convcell_propagate_3x3_conv3(
 	} 
 }
 
+int stride6 = 1;
+int stride5 = 1;
 void convcell_propagate_5x5_conv3(
 		unsigned int nbChannels, 
 		unsigned int channelsHeight, 
@@ -933,10 +939,10 @@ void convcell_propagate_5x5_conv3(
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
 					if (weights[output][channel] == NULL) continue;
-					#pragma unroll 5
-					for (unsigned int sy = 0; sy < 5; ++sy) {
-						#pragma unroll 5
-						for (unsigned int sx = 0; sx < 5; ++sx) { 
+					unsigned int sy;
+					for (sy = 0; sy < 5; sy = sy + stride5) {
+						unsigned int sx;
+						for (sx = 0; sx < 5; sx = sx + stride6) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -2349,6 +2355,8 @@ void rbfcell_propagate(unsigned int nbChannels,
 #endif
     }
 }
+int stride8 = 1;
+int stride7 = 1;
 void
 fccell_propagate_2d(unsigned int nbChannels,
                     unsigned int channelsHeight,
@@ -2374,8 +2382,10 @@ fccell_propagate_2d(unsigned int nbChannels,
         unsigned int c = 0;
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel) {
-            for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
-				for (unsigned int ix = 0; ix < channelsWidth; ++ix)
+			unsigned int iy;
+            for (iy = 0; iy < channelsHeight; iy = iy + stride7) {
+                unsigned int ix;
+				for (ix = 0; ix < channelsWidth; ix = ix + stride8)
                     weightedSum += weights[output][c++] * inputs[channel][iy][ix];
             }
         }

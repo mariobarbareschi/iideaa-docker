@@ -1,0 +1,8 @@
+4,convcell_propagate_5x5_conv1,568,6,mutator_loop_perforation_operator,0
+4,convcell_propagate_5x5_conv1,570,7,mutator_loop_perforation_operator,0
+4,convcell_propagate_5x5_conv2,753,6,mutator_loop_perforation_operator,0
+4,convcell_propagate_5x5_conv2,755,7,mutator_loop_perforation_operator,0
+4,convcell_propagate_5x5_conv3,937,6,mutator_loop_perforation_operator,0
+4,convcell_propagate_5x5_conv3,939,7,mutator_loop_perforation_operator,0
+4,fccell_propagate_2d,2378,13,mutator_loop_perforation_operator,0
+4,fccell_propagate_2d,2380,5,mutator_loop_perforation_operator,0
