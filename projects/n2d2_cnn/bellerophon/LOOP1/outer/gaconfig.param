@@ -2,10 +2,10 @@
 ######                 General    ######
 --help=0                                   # -h : Prints this message
 --stopOnUnknownParam=1                     # Stop if unkown param entered
---seed=208708767612                        # -S : Random number seed
+--seed=1203083493                        # -S : Random number seed
 
 ######    Evolution Engine        ######
---popSize=300                              # -P : Population Size
+--popSize=50                              # -P : Population Size
 
 ######    Stopping criterion      ######
 --maxGen=7                               # -G : Maximum number of generations

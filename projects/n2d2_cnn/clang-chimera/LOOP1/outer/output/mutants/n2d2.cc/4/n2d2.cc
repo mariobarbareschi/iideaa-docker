@@ -518,6 +518,7 @@ void convcell_propagate_3x3_conv1(
 	} 
 }
 
+int stride3 = 1;
 int stride2 = 1;
 int stride1 = 1;
 void convcell_propagate_5x5_conv1(
@@ -553,10 +554,14 @@ void convcell_propagate_5x5_conv1(
 	typedef WDATA_T internal_type_t[5][5]; 
 	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
 	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+
+	unsigned int output;
 	#pragma omp parallel for
-	for (unsigned int output = 0; output < nbOutputs; ++output) { 
-		for (unsigned int oy = 0; oy < oySize; ++oy) { 
-			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+	for (output = 0; output < nbOutputs; output = output + stride1) { 
+		unsigned int oy;
+		for (oy = 0; oy < oySize; oy = oy + stride2) { 
+			unsigned int ox;
+			for (ox = 0; ox < oxSize; ox = ox + stride3) { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
@@ -566,10 +571,10 @@ void convcell_propagate_5x5_conv1(
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
 					if (weights[output][channel] == NULL) continue;
-					unsigned int sy;
-					for (sy = 0; sy < 5; sy = sy + stride1) {
-						unsigned int sx;
-						for (sx = 0; sx < 5; sx = sx + stride2) { 
+					#pragma unroll 5
+					for (unsigned int sy = 0; sy < 5; ++sy) {
+						#pragma unroll 5
+						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -705,8 +710,9 @@ void convcell_propagate_3x3_conv2(
 	} 
 }
 
+int stride6 = 1;
+int stride5 = 1;
 int stride4 = 1;
-int stride3 = 1;
 void convcell_propagate_5x5_conv2(
 		unsigned int nbChannels, 
 		unsigned int channelsHeight, 
@@ -740,10 +746,14 @@ void convcell_propagate_5x5_conv2(
 	typedef WDATA_T internal_type_t[5][5]; 
 	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
 	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+
+	unsigned int output;
 	#pragma omp parallel for
-	for (unsigned int output = 0; output < nbOutputs; ++output) { 
-		for (unsigned int oy = 0; oy < oySize; ++oy) { 
-			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+	for (output = 0; output < nbOutputs; output = output + stride4) { 
+		unsigned int oy;
+		for (oy = 0; oy < oySize; oy = oy + stride5) { 
+			unsigned int ox;
+			for (ox = 0; ox < oxSize; ox = ox + stride6) { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
@@ -753,10 +763,10 @@ void convcell_propagate_5x5_conv2(
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
 					if (weights[output][channel] == NULL) continue;
-					unsigned int sy;
-					for (sy = 0; sy < 5; sy = sy + stride3) {
-						unsigned int sx;
-						for (sx = 0; sx < 5; sx = sx + stride4) { 
+					#pragma unroll 5
+					for (unsigned int sy = 0; sy < 5; ++sy) {
+						#pragma unroll 5
+						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -891,8 +901,9 @@ void convcell_propagate_3x3_conv3(
 	} 
 }
 
-int stride6 = 1;
-int stride5 = 1;
+int stride9 = 1;
+int stride8 = 1;
+int stride7 = 1;
 void convcell_propagate_5x5_conv3(
 		unsigned int nbChannels, 
 		unsigned int channelsHeight, 
@@ -926,10 +937,13 @@ void convcell_propagate_5x5_conv3(
 	typedef WDATA_T internal_type_t[5][5]; 
 	typedef internal_type_t* weights_vla_array_t[nbOutputs][nbChannels]; 
 	weights_vla_array_t & weights = *reinterpret_cast<weights_vla_array_t*>(weights_to_be_cast);
+	unsigned int output;
 	#pragma omp parallel for
-	for (unsigned int output = 0; output < nbOutputs; ++output) { 
-		for (unsigned int oy = 0; oy < oySize; ++oy) { 
-			for (unsigned int ox = 0; ox < oxSize; ++ox) { 
+	for (output = 0; output < nbOutputs; output = output + stride7) { 
+		unsigned int oy;
+		for (oy = 0; oy < oySize; oy = oy + stride8) { 
+			unsigned int ox;
+			for (ox = 0; ox < oxSize; ox = ox + stride9) { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
@@ -939,10 +953,10 @@ void convcell_propagate_5x5_conv3(
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < nbChannels; ++channel) { 
 					if (weights[output][channel] == NULL) continue;
-					unsigned int sy;
-					for (sy = 0; sy < 5; sy = sy + stride5) {
-						unsigned int sx;
-						for (sx = 0; sx < 5; sx = sx + stride6) { 
+					#pragma unroll 5
+					for (unsigned int sy = 0; sy < 5; ++sy) {
+						#pragma unroll 5
+						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -2355,8 +2369,6 @@ void rbfcell_propagate(unsigned int nbChannels,
 #endif
     }
 }
-int stride8 = 1;
-int stride7 = 1;
 void
 fccell_propagate_2d(unsigned int nbChannels,
                     unsigned int channelsHeight,
@@ -2382,10 +2394,8 @@ fccell_propagate_2d(unsigned int nbChannels,
         unsigned int c = 0;
 
         for (unsigned int channel = 0; channel < nbChannels; ++channel) {
-			unsigned int iy;
-            for (iy = 0; iy < channelsHeight; iy = iy + stride7) {
-                unsigned int ix;
-				for (ix = 0; ix < channelsWidth; ix = ix + stride8)
+            for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
+				for (unsigned int ix = 0; ix < channelsWidth; ++ix)
                     weightedSum += weights[output][c++] * inputs[channel][iy][ix];
             }
         }

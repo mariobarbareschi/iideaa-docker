@@ -16,7 +16,7 @@ extern "C" double BELLERO_getError() {
 	omp_set_num_threads(8);
 
 	// Getting the success-rate of the original CNN
-	FILE *oracle_file = fopen("/root/projects/n2d2_cnn/bellerophon/VPA/success_rate.txt", "r");
+	FILE *oracle_file = fopen("/root/projects/n2d2_cnn/bellerophon/success_rate.txt", "r");
 	if (oracle_file == NULL)
 	{
 		printf("Error opening success_rate.txt file!\n");
@@ -84,6 +84,7 @@ extern "C" double BELLERO_getError() {
 	return error;
 }
 
+extern int stride9;
 extern int stride8;
 extern int stride7;
 extern int stride6;
@@ -93,34 +94,50 @@ extern int stride3;
 extern int stride2;
 extern int stride1;
 
+#define max(actual, absolute_max) (((actual) > (absolute_max)) ? absolute_max : actual)
+
 extern "C" double BELLERO_Reward()
 {
 	double reward = 0.0;
 
-	int stride8_norm = (stride8 % 5);
-	int stride7_norm = (stride7 % 5);
-	int stride6_norm = (stride6 % 5);
-	int stride5_norm = (stride5 % 5);
-	int stride4_norm = (stride4 % 5);
-	int stride3_norm = (stride3 % 5);
-	int stride2_norm = (stride2 % 5);
-	int stride1_norm = (stride1 % 5);
+	double conv1_inner_loops = CONV1_NB_CHANNELS * 5 * 5;
+	double conv2_inner_loops = CONV2_NB_CHANNELS * 5 * 5;
+	double conv3_inner_loops = CONV3_NB_CHANNELS * 5 * 5;
+	double conv1_outer_loops = CONV1_NB_OUTPUTS * CONV1_OY_SIZE * CONV1_OX_SIZE;
+	double conv2_outer_loops = CONV2_NB_OUTPUTS * CONV2_OY_SIZE * CONV2_OX_SIZE;
+	double conv3_outer_loops = CONV3_NB_OUTPUTS * CONV3_OY_SIZE * CONV3_OX_SIZE;
 
+	int stride9_norm = max(stride9, 5);
+	int stride8_norm = max(stride8, 5);
+	int stride7_norm = max(stride7, CONV3_NB_CHANNELS);
+	int stride6_norm = max(stride6, 5);
+	int stride5_norm = max(stride5, 5);
+	int stride4_norm = max(stride4, CONV2_NB_CHANNELS);
+	int stride3_norm = max(stride3, 5);
+	int stride2_norm = max(stride2, 5);
+	int stride1_norm = max(stride1, CONV1_NB_CHANNELS);
 
-	double conv1_kern_loops = CONV1_NB_CHANNELS * CONV1_NB_OUTPUTS * CONV1_OY_SIZE * CONV1_OX_SIZE;
-	double conv2_kern_loops = CONV2_NB_CHANNELS * CONV2_NB_OUTPUTS * CONV2_OY_SIZE * CONV2_OX_SIZE;
-	double conv3_kern_loops = CONV3_NB_CHANNELS * CONV3_NB_OUTPUTS * CONV3_OY_SIZE * CONV3_OX_SIZE;
-	double fc_2d_kern_loops = CONV3_NB_OUTPUTS * FC1_NB_OUTPUTS;
+	double conv1_skipped_loops = stride1_norm * stride2_norm * stride3_norm;
+	double conv2_skipped_loops = stride4_norm * stride5_norm * stride6_norm;
+	double conv3_skipped_loops = stride7_norm * stride8_norm * stride9_norm;
 
+	double total_loops = conv1_inner_loops * conv1_outer_loops + 
+						 conv2_inner_loops * conv2_outer_loops + 
+						 conv3_inner_loops * conv3_outer_loops;
 
-	double conv1_skipped_loops = stride1_norm * stride2_norm * conv1_kern_loops;
-	double conv2_skipped_loops = stride3_norm * stride3_norm * conv2_kern_loops;
-	double conv3_skipped_loops = stride5_norm * stride6_norm * conv3_kern_loops;
-	double fc_2d_skipped_loops = stride7_norm * stride8_norm * fc_2d_kern_loops;
+	double skipped_loops =  conv1_skipped_loops * conv1_outer_loops + 
+						 	conv2_skipped_loops * conv2_outer_loops + 
+						 	conv3_skipped_loops * conv3_outer_loops;
 
-	reward = (conv1_skipped_loops + conv2_skipped_loops + conv3_skipped_loops + fc_2d_skipped_loops) / (25 * (conv1_kern_loops + conv2_kern_loops + conv3_kern_loops + fc_2d_kern_loops));
+	reward = skipped_loops / total_loops;
 
-
+	printf("Strides: [%d, %d, %d, %d, %d, %d %d, %d, %d]\n", stride1_norm, stride2_norm, stride3_norm, stride4_norm, stride5_norm, stride6_norm, stride7_norm, stride8_norm, stride9_norm);
+	printf("Conv1 (total, skipped): %lf, %lf\n",  conv1_inner_loops * conv1_outer_loops, conv1_skipped_loops * conv1_outer_loops);
+	printf("Conv2 (total, skipped): %lf, %lf\n",  conv2_inner_loops * conv2_outer_loops, conv2_skipped_loops * conv2_outer_loops);
+	printf("Conv3 (total, skipped): %lf, %lf\n",  conv3_inner_loops * conv3_outer_loops, conv3_skipped_loops * conv3_outer_loops);
+	printf("Total loops: %lf\n", total_loops);
+	printf("Skipped loops: %lf\n", skipped_loops);
+	printf("Reward: %lf\n", reward);
 
 	return reward;
 }

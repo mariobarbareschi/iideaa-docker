@@ -1,4 +1,3 @@
 convcell_propagate_5x5_conv1,LoopPerforationOperator1
 convcell_propagate_5x5_conv2,LoopPerforationOperator1
 convcell_propagate_5x5_conv3,LoopPerforationOperator1
-fccell_propagate_2d,LoopPerforationOperator1

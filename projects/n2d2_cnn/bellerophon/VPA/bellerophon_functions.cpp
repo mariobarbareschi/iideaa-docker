@@ -18,7 +18,7 @@ extern "C" double BELLERO_getError() {
 	omp_set_num_threads(8);
 
 	// Getting the success-rate of the original CNN
-	FILE *oracle_file = fopen("/root/projects/n2d2_cnn/bellerophon/VPA/success_rate.txt", "r");
+	FILE *oracle_file = fopen("/root/projects/n2d2_cnn/bellerophon/success_rate.txt", "r");
 	if (oracle_file == NULL)
 	{
 		printf("Error opening success_rate.txt file!\n");
