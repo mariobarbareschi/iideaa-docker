@@ -79,7 +79,7 @@ extern "C" double BELLERO_getError() {
 	float success_rate = 100.0 * success / (float) total_stimuli;
 	double error = original_success_rate - success_rate;
 
-	printf("Success-rate: %f, error: %lf\n", success_rate, error);
+	printf("Success-rate: %f, error: %lf (%lf)\n", success_rate, error, success_rate + error);
 
 	return error;
 }
@@ -106,35 +106,20 @@ extern "C" double BELLERO_Reward()
 	double conv1_outer_loops = CONV1_NB_OUTPUTS * CONV1_OY_SIZE * CONV1_OX_SIZE;
 	double conv2_outer_loops = CONV2_NB_OUTPUTS * CONV2_OY_SIZE * CONV2_OX_SIZE;
 	double conv3_outer_loops = CONV3_NB_OUTPUTS * CONV3_OY_SIZE * CONV3_OX_SIZE;
+	double total_loops = conv1_inner_loops * conv1_outer_loops + conv2_inner_loops * conv2_outer_loops + conv3_inner_loops * conv3_outer_loops;
 
-	int stride9_norm = max(stride9, 5);
-	int stride8_norm = max(stride8, 5);
-	int stride7_norm = max(stride7, CONV3_NB_CHANNELS);
-	int stride6_norm = max(stride6, 5);
-	int stride5_norm = max(stride5, 5);
-	int stride4_norm = max(stride4, CONV2_NB_CHANNELS);
-	int stride3_norm = max(stride3, 5);
-	int stride2_norm = max(stride2, 5);
-	int stride1_norm = max(stride1, CONV1_NB_CHANNELS);
-
-	double conv1_skipped_loops = stride1_norm * stride2_norm * stride3_norm;
-	double conv2_skipped_loops = stride4_norm * stride5_norm * stride6_norm;
-	double conv3_skipped_loops = stride7_norm * stride8_norm * stride9_norm;
-
-	double total_loops = conv1_inner_loops * conv1_outer_loops + 
-						 conv2_inner_loops * conv2_outer_loops + 
-						 conv3_inner_loops * conv3_outer_loops;
-
-	double skipped_loops =  conv1_skipped_loops * conv1_outer_loops + 
-						 	conv2_skipped_loops * conv2_outer_loops + 
-						 	conv3_skipped_loops * conv3_outer_loops;
+	double conv1_skipped_loops = conv1_outer_loops * conv1_inner_loops / (stride1 * stride2 * stride3);
+	double conv2_skipped_loops = conv2_outer_loops * conv2_inner_loops / (stride4 * stride5 * stride6);
+	double conv3_skipped_loops = conv3_outer_loops * conv3_inner_loops / (stride7 * stride8 * stride9);
+	
+	double skipped_loops =  conv1_skipped_loops + conv2_skipped_loops + conv3_skipped_loops;
 
 	reward = skipped_loops / total_loops;
 
-	printf("Strides: [%d, %d, %d, %d, %d, %d %d, %d, %d]\n", stride1_norm, stride2_norm, stride3_norm, stride4_norm, stride5_norm, stride6_norm, stride7_norm, stride8_norm, stride9_norm);
-	printf("Conv1 (total, skipped): %lf, %lf\n",  conv1_inner_loops * conv1_outer_loops, conv1_skipped_loops * conv1_outer_loops);
-	printf("Conv2 (total, skipped): %lf, %lf\n",  conv2_inner_loops * conv2_outer_loops, conv2_skipped_loops * conv2_outer_loops);
-	printf("Conv3 (total, skipped): %lf, %lf\n",  conv3_inner_loops * conv3_outer_loops, conv3_skipped_loops * conv3_outer_loops);
+	printf("Strides: [%d, %d, %d, %d, %d, %d %d, %d, %d]\n", stride1, stride2, stride3, stride4, stride5, stride6, stride7, stride8, stride9);
+	printf("Conv1 (total, skipped, frequency): %lf, %lf, %lf\n",  conv1_inner_loops * conv1_outer_loops, conv1_outer_loops / conv1_skipped_loops, conv1_skipped_loops);
+	printf("Conv2 (total, skipped, frequency): %lf, %lf, %lf\n",  conv2_inner_loops * conv2_outer_loops, conv2_outer_loops / conv2_skipped_loops, conv1_skipped_loops);
+	printf("Conv3 (total, skipped, frequency): %lf, %lf, %lf\n",  conv3_inner_loops * conv3_outer_loops, conv3_outer_loops / conv3_skipped_loops, conv3_skipped_loops);
 	printf("Total loops: %lf\n", total_loops);
 	printf("Skipped loops: %lf\n", skipped_loops);
 	printf("Reward: %lf\n", reward);

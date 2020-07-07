@@ -567,12 +567,10 @@ void convcell_propagate_5x5_conv1(
 				SUM_T weightedSum = bias[output]; 
 				
 				unsigned int channel, sy, sx;
-for (channel = 0; channel < nbChannels; ++channel)if ( channel % stride1 != 0) { { 
+				for (channel = 0; channel < nbChannels; ++channel)if ( channel % stride1 == 0) { { 
 					if (weights[output][channel] == NULL) continue;
-					#pragma unroll 5
-for (sy = 0; sy < 5; ++sy)if ( sy % stride2 != 0) { {
-						#pragma unroll 5
-for (sx = 0; sx < 5; ++sx)if ( sx % stride3 != 0) { { 
+					for (sy = 0; sy < 5; ++sy)if ( sy % stride2 == 0) { {
+						for (sx = 0; sx < 5; ++sx)if ( sx % stride3 == 0) { { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -757,12 +755,10 @@ void convcell_propagate_5x5_conv2(
 				SUM_T weightedSum = bias[output]; 
 
 				unsigned int channel, sy, sx;
-for (channel = 0; channel < nbChannels; ++channel)if ( channel % stride4 != 0) { { 
+					for (channel = 0; channel < nbChannels; ++channel)if ( channel % stride4 == 0) { { 
 					if (weights[output][channel] == NULL) continue;
-					#pragma unroll 5
-for (sy = 0; sy < 5; ++sy)if ( sy % stride5 != 0) { {
-						#pragma unroll 5
-for (sx = 0; sx < 5; ++sx)if ( sx % stride6 != 0) { { 
+					for (sy = 0; sy < 5; ++sy)if ( sy % stride5 == 0) { {
+						for (sx = 0; sx < 5; ++sx)if ( sx % stride6 == 0) { { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
@@ -945,12 +941,10 @@ void convcell_propagate_5x5_conv3(
 				const int iy = (int)(oy * strideY) - (int)paddingY; 
 				SUM_T weightedSum = bias[output]; 
 				unsigned int channel, sy, sx;
-for (channel = 0; channel < nbChannels; ++channel)if ( channel % stride7 != 0) { { 
+				for (channel = 0; channel < nbChannels; ++channel)if ( channel % stride7 == 0) { { 
 					if (weights[output][channel] == NULL) continue;
-					#pragma unroll 5
-for (sy = 0; sy < 5; ++sy)if ( sy % stride8 != 0) { {
-					#pragma unroll 5
-for (sx = 0; sx < 5; ++sx)if ( sx % stride9 != 0) { { 
+					for (sy = 0; sy < 5; ++sy)if ( sy % stride8 == 0) { {
+						for (sx = 0; sx < 5; ++sx)if ( sx % stride9 == 0) { { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 

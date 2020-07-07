@@ -5,10 +5,10 @@
 --seed=29324287087                        # -S : Random number seed
 
 ######    Evolution Engine        ######
---popSize=3                              # -P : Population Siize
+--popSize=3000                              # -P : Population Siize
 
 ######    Stopping criterion      ######
---maxGen=3                               # -G : Maximum number of generations
+--maxGen=7                               # -G : Maximum number of generations
 
 ######    Variation Operators     ######
 --crossRate=0.5                              # Relative rate for the only crossover

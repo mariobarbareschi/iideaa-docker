@@ -557,9 +557,9 @@ void convcell_propagate_5x5_conv1(
 
 	unsigned int output, oy, ox;
 	#pragma omp parallel for 
-for (output = 0; output < nbOutputs; ++output)if ( output % stride1 != 0) { {
-for (oy = 0; oy < oySize; ++oy)if ( oy % stride2 != 0) { {
-for (ox = 0; ox < oxSize; ++ox)if ( ox % stride3 != 0) { { 
+	for (output = 0; output < nbOutputs; ++output)if ( output % stride1 == 0) { {
+		for (oy = 0; oy < oySize; ++oy)if ( oy % stride2 == 0) { {
+			for (ox = 0; ox < oxSize; ++ox)if ( ox % stride3 == 0) { { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
@@ -747,9 +747,9 @@ void convcell_propagate_5x5_conv2(
 
 	unsigned int output, oy, ox;
 	#pragma omp parallel for
-for (output = 0; output < nbOutputs; ++output)if ( output % stride4 != 0) { { 
-for (oy = 0; oy < oySize; ++oy)if ( oy % stride5 != 0) { { 
-for (ox = 0; ox < oxSize; ++ox)if ( ox % stride6 != 0) { { 
+	for (output = 0; output < nbOutputs; ++output)if ( output % stride4 == 0) { { 
+		for (oy = 0; oy < oySize; ++oy)if ( oy % stride5 == 0) { { 
+			for (ox = 0; ox < oxSize; ++ox)if ( ox % stride6 == 0) { { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
@@ -936,9 +936,9 @@ void convcell_propagate_5x5_conv3(
 
 	unsigned int output, oy, ox;
 	#pragma omp parallel for
-for (output = 0; output < nbOutputs; ++output)if ( output % stride7 != 0) { { 
-for (oy = 0; oy < oySize; ++oy)if ( oy % stride8 != 0) { { 
-for (ox = 0; ox < oxSize; ++ox)if ( ox % stride9 != 0) { { 
+	for (output = 0; output < nbOutputs; ++output)if ( output % stride7 == 0) { { 
+		for (oy = 0; oy < oySize; ++oy)if ( oy % stride8 == 0) { { 
+			for (ox = 0; ox < oxSize; ++ox)if ( ox % stride9 == 0) { { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)paddingX - (int)(ox * strideX), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)paddingY - (int)(oy * strideY), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)channelsWidth + paddingX - (int)(ox * strideX), (int)5), 0); 
