@@ -7,6 +7,8 @@ git clone https://github.com/llvm-mirror/llvm.git llvm
 cd llvm
 git checkout release_39
 
+git clone https://github.com/llvm-mirror/compiler-rt.git compiler-rt
+
 cd tools
 git clone https://github.com/llvm-mirror/clang.git clang
 cd clang
@@ -22,3 +24,11 @@ CC=gcc CXX=g++ cmake -DLLVM_ENABLE_CXX1Y=true -DLLVM_ENABLE_RTTI=ON -DLLVM_TARGE
 
 ninja 2> /dev/null
 ninja install
+
+cd ~/llvm
+mkdir build-compiler-rt
+cd build-compiler-rt
+cmake ../compiler-rt -DLLVM_CONFIG_PATH=/usr/bin/llvm-config
+make -j `nproc`
+make install
+ln -s /usr/local/lib /usr/lib/clang/3.9.1/lib
