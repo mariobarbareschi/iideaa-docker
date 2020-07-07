@@ -151,6 +151,7 @@ int main(int argc, char* argv[])
 				"success_rate.txt",
 				successRate);
 
+		return EXIT_SUCCESS;
 }
 
 
