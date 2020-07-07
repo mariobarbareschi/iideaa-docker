@@ -2,4 +2,4 @@
 
 echo "Installing dependencies: cmake git subversion make ninja build-essential zlib ffi edit ncurses boost doxygen tar python wget"
 
-apt-get -qq install -y cmake git libomp-dev ninja-build build-essential zlib1g-dev libffi-dev libedit-dev libncurses5-dev libboost-dev doxygen tar python wget graphviz vim nano lcov > /dev/null
+apt-get -qq install -y git libomp-dev ninja-build build-essential zlib1g-dev libffi-dev libedit-dev libncurses5-dev libboost-dev doxygen tar python wget graphviz vim nano lcov > /dev/null
