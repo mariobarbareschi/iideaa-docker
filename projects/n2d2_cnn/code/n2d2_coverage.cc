@@ -37,10 +37,8 @@ int main(int argc, char* argv[])
 	unsigned int nbPredictions = 0;
 
 	if (argc < 2)
-	{
-		printf("Usage: %s path_to_stimuli\n", argv[0]);
-		return EXIT_FAILURE;
-	}
+		//total = sortedFileList("/root/projects/n2d2_cnn/code/stimuli", &fileList, 0);
+		total = sortedFileList("/home/ssaa/Git/iideaa-docker/projects/n2d2_cnn/code/stimuli", &fileList, 0);
 	else
 		total = sortedFileList(argv[1], &fileList, 0);
 
