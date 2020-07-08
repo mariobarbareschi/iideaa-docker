@@ -21,137 +21,98 @@ void write_success_rate(const char* const file_name, float rate);
 
 int main(int argc, char* argv[])
 {
-	if (argc < 2)
-	{
-		printf("Usage: %s path_to_stimuli\n", argv[0]);
-		exit(1);
-	}
-
+	char** fileList;	
+	unsigned int total;
 	unsigned int confusion[NB_TARGETS][NB_TARGETS] = {{0}};
-
     unsigned int dimX = 1;
     unsigned int dimY = 1;
-    if (OUTPUTS_WIDTH > 1 || OUTPUTS_HEIGHT > 1) {
-        dimX = ENV_SIZE_X;
-        dimY = ENV_SIZE_Y;
-    }
-
     int32_t outputTargets[dimY][dimX];
     double yRatio = ENV_SIZE_Y / OUTPUTS_HEIGHT;
     double xRatio = ENV_SIZE_X / OUTPUTS_WIDTH;
     float successRate = 0.0;
+	double success = 0;
+	struct timeval start, end;
+	double elapsed = 0.0;
+	unsigned int nbValidPredictions = 0;
+	unsigned int nbPredictions = 0;
 
-        double success = 0;
-        struct timeval start, end;
-        double elapsed = 0.0;
+	if (argc < 2)
+//	{
+//		printf("Usage: %s path_to_stimuli\n", argv[0]);
+//		return EXIT_FAILURE;
+//	}
+		total = sortedFileList("/root/projects/n2d2_cnn/code/stimuli", &fileList, 0);
+	else
+		total = sortedFileList(argv[1], &fileList, 0);
 
-        char** fileList;
-        // unsigned int total = sortedFileList("stimuli", &fileList, 0);
-		 unsigned int total = sortedFileList(argv[1], &fileList, 0);
+    if (OUTPUTS_WIDTH > 1 || OUTPUTS_HEIGHT > 1)
+	{
+        dimX = ENV_SIZE_X;
+        dimY = ENV_SIZE_Y;
+    }
 
-        omp_set_num_threads(8);
+	omp_set_num_threads(8);
 
-		FILE *oracle_file = fopen("oracle.txt", "w");
-        if (oracle_file == NULL)
-        {
-            printf("Error opening outputs.txt file!\n");
-            exit(1);
-        }
+	for (unsigned int n = 0; n < total;)
+	{
+		env_read(fileList[n],
+				 ENV_NB_OUTPUTS,
+				 ENV_SIZE_Y,
+				 ENV_SIZE_X,
+				 reinterpret_cast<DATA_T*>(env_data),
+				 dimY,
+				 dimX,
+				 reinterpret_cast<int32_t*>(outputTargets));
+		
+		free(fileList[n]);
 
-        for (unsigned int n = 0; n < total;) {
-            env_read(fileList[n],
-                     ENV_NB_OUTPUTS,
-                     ENV_SIZE_Y,
-                     ENV_SIZE_X,
-                     reinterpret_cast<DATA_T*>(env_data),
-                     dimY,
-                     dimX,
-                     reinterpret_cast<int32_t*>(outputTargets));
-			
-			char resolved_path[PATH_MAX + 1];
-			realpath(fileList[n], resolved_path);
-			fprintf(oracle_file, "%s;", resolved_path);
+		gettimeofday(&start, NULL);
+		network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
+		gettimeofday(&end, NULL);
 
-			for (int dimY_c = 0; dimY_c < dimY; dimY_c++)
-				for (int dimX_c = 0; dimX_c < dimX; dimX_c++)
-					fprintf(oracle_file, "%d;", outputTargets[dimY_c][dimX_c]);
-
-            free(fileList[n]);
-
-            gettimeofday(&start, NULL);
-
-            network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
-
-
-            gettimeofday(&end, NULL);
-
-
-            const double duration = 1.0e6 * (double)(end.tv_sec - start.tv_sec)
-                                    + (double)(end.tv_usec - start.tv_usec);
-            elapsed += duration;
-
-            unsigned int nbValidPredictions = 0;
-            unsigned int nbPredictions = 0;
-
-            for (unsigned int oy = 0; oy < OUTPUTS_HEIGHT; ++oy) {
-                for (unsigned int ox = 0; ox < OUTPUTS_WIDTH; ++ox) {
-					fprintf(oracle_file, "%d;", outputEstimated[oy][ox]);
-
-                    int iy = oy;
-                    int ix = ox;
-                    if (dimX > 1 || dimY > 1) {
-                        iy = (int)floor((oy + 0.5) * yRatio);
-                        ix = (int)floor((ox + 0.5) * xRatio);
-                    }
-
-                    if (outputTargets[iy][ix] >= 0) {
-                        confusion[outputTargets[iy][ix]]
-                                 [outputEstimated[oy][ox]] += 1;
-                            
-                        nbPredictions++;
-                        if (outputTargets[iy][ix] == (int)outputEstimated[oy][ox]) {
-                            nbValidPredictions++;
-							fprintf(oracle_file, "+\n", outputEstimated[oy][ox]);
-
-                        }
-						else
-							fprintf(oracle_file, "-\n", outputEstimated[oy][ox]);
-
-                    }
-                }
-            }
+		const double duration = 1.0e6 * (double)(end.tv_sec - start.tv_sec)
+								+ (double)(end.tv_usec - start.tv_usec);
+		elapsed += duration;
 
 
-            success += (nbPredictions > 0) ? ((float) nbValidPredictions / nbPredictions) : 1.0;
+		for (unsigned int oy = 0; oy < OUTPUTS_HEIGHT; ++oy) {
+			for (unsigned int ox = 0; ox < OUTPUTS_WIDTH; ++ox) {
 
-            ++n;
-            printf("%.02f/%d    (avg = %02f%%)  @  %.02f us\n", success, n, 100.0 * success / (float)n, duration);
-        }
+				int iy = oy;
+				int ix = ox;
+				if (dimX > 1 || dimY > 1) {
+					iy = (int)floor((oy + 0.5) * yRatio);
+					ix = (int)floor((ox + 0.5) * xRatio);
+				}
 
-        free(fileList);
-		fclose(oracle_file);
+				if (outputTargets[iy][ix] >= 0) {
+					confusion[outputTargets[iy][ix]]
+							 [outputEstimated[oy][ox]] += 1;
+						
+					nbPredictions++;
+					if (outputTargets[iy][ix] == (int)outputEstimated[oy][ox]) 
+						nbValidPredictions++;
+				}
+			}
+		}
 
-        printf("%sTested %d stimuli%s\n", ESC_BOLD, total, ESC_ALL_OFF);
-        printf("Success rate = %02f%%\n", 100.0 * success / (float)total);
 
-        successRate = 100.0 * success / (float)total;
+		success += (nbPredictions > 0) ? ((float) nbValidPredictions / nbPredictions) : 1.0;
 
-        printf("Process time per stimulus = %f us (%d threads)\n",
-               elapsed / (double)total,
-               omp_get_max_threads());
-    
+		++n;
+		printf("%.02f/%d    (avg = %02f%%)  @  %.02f us\n", success, n, 100.0 * success / (float)n, duration);
+	}
 
-        write_confusion_matrix(
-				"confusion.txt",
-				"confusion_perc.txt",
-				NB_TARGETS, 
-				reinterpret_cast<unsigned int *>(confusion));
+	free(fileList);
+	successRate = 100.0 * success / (float)total;
 
-		write_success_rate(
-				"success_rate.txt",
-				successRate);
+	printf("%sTested %d stimuli%s\n", ESC_BOLD, total, ESC_ALL_OFF);
+	printf("Success rate = %02f%%\n", 100.0 * success / (float)total);
+	printf("Process time per stimulus = %f us (%d threads)\n", elapsed / (double)total, omp_get_max_threads());
+	write_confusion_matrix("confusion.txt", "confusion_perc.txt", NB_TARGETS, reinterpret_cast<unsigned int *>(confusion));
+	write_success_rate("success_rate.txt", successRate);
 
-		return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
 
