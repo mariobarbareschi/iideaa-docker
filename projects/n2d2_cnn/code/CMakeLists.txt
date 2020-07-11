@@ -1,7 +1,7 @@
 project (N2D2_export_C LANGUAGES CXX)
 cmake_minimum_required (VERSION 3.10)
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(cmake-scripts/code-coverage.cmake)
+#set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+#include(cmake-scripts/code-coverage.cmake)
 
 
 
@@ -39,15 +39,15 @@ add_executable(n2d2_test n2d2_test.cc)
 target_include_directories(n2d2_test PRIVATE include)
 target_link_libraries(n2d2_test m n2d2cnn)
 
-add_executable(n2d2_coverage n2d2_coverage.cc src/n2d2.cc src/network.cc)
-target_include_directories(n2d2_coverage PRIVATE include)
-target_link_libraries(n2d2_coverage m)
+# add_executable(n2d2_coverage n2d2_coverage.cc src/n2d2.cc src/network.cc)
+# target_include_directories(n2d2_coverage PRIVATE include)
+# target_link_libraries(n2d2_coverage m)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message(STATUS "Debug configuration")
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -O0")
-	add_code_coverage()
-	target_code_coverage(n2d2_coverage)
+	#	add_code_coverage()
+	#target_code_coverage(n2d2_coverage)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 	message(STATUS "Release configuration")
 	set (CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} -O3")
