@@ -26,7 +26,9 @@ flags = [
     '-I/usr/local/include',
     # Custom include paths
     '-I.',
-    '-I./code/include'
+    '-I./code/include',
+    '-I./code/include/iideaa',
+    '-I./code/include/n2d2'
 ]
 
 # Set this to the absolute path to the folder (NOT the file!) containing the

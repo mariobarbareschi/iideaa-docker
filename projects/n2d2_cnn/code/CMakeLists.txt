@@ -31,12 +31,43 @@ add_custom_target(library_database
   COMMAND if [ -d ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ]; then ls ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} | grep 'a' >> ${PROJECT_BINARY_DIR}/library_database.csv\; fi
 )
 
-add_library(n2d2cnn SHARED src/n2d2.cc src/network.cc)
-target_include_directories(n2d2cnn PRIVATE include)
+add_library(
+	n2d2cnn SHARED 
+	src/n2d2/file_list.cc
+	src/n2d2/env_read.cc
+	src/n2d2/conv1.cc
+	src/n2d2/pool1.cc
+	src/n2d2/conv2.cc
+	src/n2d2/pool2.cc
+	src/n2d2/conv3.cc
+	src/n2d2/fc1.cc
+	src/n2d2/fc2.cc
+	src/n2d2/output.cc
+	src/n2d2/sat.cc 
+	src/n2d2/network.cc
+)
+
+target_include_directories(
+	n2d2cnn 
+	PRIVATE include
+	PRIVATE include/iideaa
+	PRIVATE include/n2d2
+)
+
 add_dependencies(library_database n2d2cnn)
 
-add_executable(n2d2_test n2d2_test.cc)
-target_include_directories(n2d2_test PRIVATE include)
+add_executable(
+	n2d2_test 
+	src/n2d2_test.cc
+)
+
+target_include_directories(
+	n2d2_test 
+	PRIVATE include
+	PRIVATE include/iideaa
+	PRIVATE include/n2d2
+)
+
 target_link_libraries(n2d2_test m n2d2cnn)
 
 # add_executable(n2d2_coverage n2d2_coverage.cc src/n2d2.cc src/network.cc)

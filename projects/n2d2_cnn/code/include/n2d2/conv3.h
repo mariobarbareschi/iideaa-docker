@@ -5,6 +5,8 @@
 #define N2D2_EXPORTC_CONV3_LAYER_H
 
 #include "typedefs.h"
+#include <stdlib.h>
+
 #define CONV3_NB_OUTPUTS 120
 #define CONV3_NB_CHANNELS 16
 #define CONV3_OUTPUTS_WIDTH 1
@@ -21,7 +23,7 @@
 #define CONV3_STRIDE_Y 1
 #define CONV3_PADDING_X 0
 #define CONV3_PADDING_Y 0
-
+#define CONV3_OUTPUT_OFFSET 0
 #define CONV3_ACTIVATION Rectifier
 #define CONV3_SHIFT 0
 static BDATA_T conv3_biases[CONV3_NB_OUTPUTS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -11667,5 +11669,11 @@ static CONV3_KERNEL_T* conv3_weights[CONV3_NB_OUTPUTS][CONV3_NB_CHANNELS] = {
     {&conv3_weights_117_0, &conv3_weights_117_1, &conv3_weights_117_2, &conv3_weights_117_3, &conv3_weights_117_4, &conv3_weights_117_5, &conv3_weights_117_6, &conv3_weights_117_7, &conv3_weights_117_8, &conv3_weights_117_9, &conv3_weights_117_10, &conv3_weights_117_11, &conv3_weights_117_12, &conv3_weights_117_13, &conv3_weights_117_14, &conv3_weights_117_15},
     {&conv3_weights_118_0, &conv3_weights_118_1, &conv3_weights_118_2, &conv3_weights_118_3, &conv3_weights_118_4, &conv3_weights_118_5, &conv3_weights_118_6, &conv3_weights_118_7, &conv3_weights_118_8, &conv3_weights_118_9, &conv3_weights_118_10, &conv3_weights_118_11, &conv3_weights_118_12, &conv3_weights_118_13, &conv3_weights_118_14, &conv3_weights_118_15},
     {&conv3_weights_119_0, &conv3_weights_119_1, &conv3_weights_119_2, &conv3_weights_119_3, &conv3_weights_119_4, &conv3_weights_119_5, &conv3_weights_119_6, &conv3_weights_119_7, &conv3_weights_119_8, &conv3_weights_119_9, &conv3_weights_119_10, &conv3_weights_119_11, &conv3_weights_119_12, &conv3_weights_119_13, &conv3_weights_119_14, &conv3_weights_119_15}};
+
+void convcell_propagate_conv3(
+    DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
+    DATA_T (&outputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
+    BDATA_T (&bias)[CONV3_NB_OUTPUTS],
+    CONV3_KERNEL_T* (&weights)[CONV3_NB_OUTPUTS][CONV3_NB_CHANNELS]);
 
 #endif // N2D2_EXPORTC_CONV3_LAYER_H

@@ -5,6 +5,8 @@
 #define N2D2_EXPORTC_CONV2_LAYER_H
 
 #include "typedefs.h"
+#include <stdlib.h>
+
 #define CONV2_NB_OUTPUTS 16
 #define CONV2_NB_CHANNELS 6
 #define CONV2_OUTPUTS_WIDTH 10
@@ -21,7 +23,7 @@
 #define CONV2_STRIDE_Y 1
 #define CONV2_PADDING_X 0
 #define CONV2_PADDING_Y 0
-
+#define CONV2_OUTPUT_OFFSET 0
 #define CONV2_ACTIVATION Rectifier
 #define CONV2_SHIFT 0
 static BDATA_T conv2_biases[CONV2_NB_OUTPUTS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -403,5 +405,11 @@ static CONV2_KERNEL_T* conv2_weights[CONV2_NB_OUTPUTS][CONV2_NB_CHANNELS] = {
     {NULL, &conv2_weights_13_1, &conv2_weights_13_2, NULL, &conv2_weights_13_4, &conv2_weights_13_5},
     {&conv2_weights_14_0, NULL, &conv2_weights_14_2, &conv2_weights_14_3, NULL, &conv2_weights_14_5},
     {&conv2_weights_15_0, &conv2_weights_15_1, &conv2_weights_15_2, &conv2_weights_15_3, &conv2_weights_15_4, &conv2_weights_15_5}};
+
+void convcell_propagate_conv2(
+    DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
+    DATA_T (&outputs)[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH],
+    BDATA_T (&bias)[CONV2_NB_OUTPUTS],
+    CONV2_KERNEL_T* (&weights)[CONV2_NB_OUTPUTS][CONV2_NB_CHANNELS]);
 
 #endif // N2D2_EXPORTC_CONV2_LAYER_H

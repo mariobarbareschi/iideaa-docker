@@ -21,7 +21,7 @@
 #define CONV1_STRIDE_Y 1
 #define CONV1_PADDING_X 0
 #define CONV1_PADDING_Y 0
-
+#define CONV1_OUTPUT_OFFSET 0
 #define CONV1_ACTIVATION Rectifier
 #define CONV1_SHIFT 0
 static BDATA_T conv1_biases[CONV1_NB_OUTPUTS] = {0, 0, 0, 0, 0, 0};
@@ -69,5 +69,11 @@ static CONV1_KERNEL_T* conv1_weights[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS] = {
     {&conv1_weights_3_0},
     {&conv1_weights_4_0},
     {&conv1_weights_5_0}};
+
+void convcell_propagate_conv1(
+    DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
+    DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
+    BDATA_T (&bias)[CONV1_NB_OUTPUTS],
+    CONV1_KERNEL_T* (&weights)[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS]);
 
 #endif // N2D2_EXPORTC_CONV1_LAYER_H
