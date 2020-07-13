@@ -3,10 +3,10 @@
 #include <omp.h>
 
 void convcell_propagate_conv1(
-    DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
-    DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
-    BDATA_T (&bias)[CONV1_NB_OUTPUTS],
-    CONV1_KERNEL_T* (&weights)[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS])
+     DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
+     DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
+     BDATA_T (&bias)[CONV1_NB_OUTPUTS],
+     WDATA_T (&weights)[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS][CONV1_KERNEL_HEIGHT][CONV1_KERNEL_WIDTH])
 {
 
 	#pragma omp parallel for
@@ -21,13 +21,12 @@ void convcell_propagate_conv1(
 				const int iy = (int)(oy * CONV1_STRIDE_Y) - (int)CONV1_PADDING_Y; 
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < CONV1_NB_CHANNELS; ++channel) { 
-					if (weights[output][channel] == NULL) continue;
 					#pragma unroll 5
 					for (unsigned int sy = 0; sy < 5; ++sy) {
 						#pragma unroll 5
 						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
-								weightedSum = ((weightedSum) + ((SUM_T)( *weights[output][channel])[sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
+								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
 						} 
 					} 
