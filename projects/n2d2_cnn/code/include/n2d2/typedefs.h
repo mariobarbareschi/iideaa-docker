@@ -23,6 +23,7 @@
 
 #include "params.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef enum {
     Logistic,
