@@ -7,7 +7,6 @@
 #include "file_list.h"
 #include "env_read.h"
 #include "network.h"
-#include "c99_vla_cast_for_cpp.h"
 
 DATA_T env_data[ENV_NB_CHANNELS][ENV_NB_HEIGHT][ENV_NB_WIDTH];
 uint32_t outputEstimated[OUTPUTS_HEIGHT][OUTPUTS_WIDTH];
@@ -83,7 +82,7 @@ int main(int argc, char* argv[])
 	free(fileList);
 	successRate = 100.0 * success / (float)total;
 
-	printf("%sTested %d stimuli%s\n", ESC_BOLD, total, ESC_ALL_OFF);
+	printf("Tested %d stimuli\n", total);
 	printf("Success rate = %02f%%\n", 100.0 * success / (float)total);
 	printf("Process time per stimulus = %f us (%d threads)\n", elapsed / (double)total, omp_get_max_threads());
 	write_success_rate("success_rate.txt", successRate);

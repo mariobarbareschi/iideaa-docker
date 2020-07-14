@@ -3,16 +3,8 @@ set_top network
 #set_top convcell_propagate_conv1
 
 # The following paths are relative to the HLS/exact subdirectory
-add_files src/conv1.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/conv2.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/conv3.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/fc1.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/fc2.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/output.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/pool1.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/pool2.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
-add_files src/sat.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
 add_files src/network.cc -cflags "-std=gnu++11 -I../../code/include -I../../code/include/n2d2 -I../../code/include/iideaa" 
+
 #add_files -tb fir_test.c
 #add_files -tb out.gold.dat
 open_solution -reset "solution1"

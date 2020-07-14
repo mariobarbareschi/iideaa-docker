@@ -1,12 +1,7 @@
 [
 {
   "directory": "/root/projects/n2d2_cnn/code/build",
-  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/n2d2.cc.o -c /root/projects/n2d2_cnn/code/src/n2d2.cc",
-  "file": "/root/projects/n2d2_cnn/code/src/n2d2.cc"
-},
-{
-  "directory": "/root/projects/n2d2_cnn/code/build",
-  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/network.cc.o -c /root/projects/n2d2_cnn/code/src/network.cc",
-  "file": "/root/projects/n2d2_cnn/code/src/network.cc"
+  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/code/include -I/root/projects/n2d2_cnn/code/include/iideaa -I/root/projects/n2d2_cnn/code/include/n2d2   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/n2d2/network.cc.o -c /root/projects/n2d2_cnn/code/src/n2d2/network.cc",
+  "file": "/root/projects/n2d2_cnn/code/src/n2d2/network.cc"
 }
 ]

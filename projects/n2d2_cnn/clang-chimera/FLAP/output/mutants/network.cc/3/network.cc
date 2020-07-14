@@ -2,8 +2,6 @@
 #include "fap.h"
 #include "env.h"
 #include "utils.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 #include <omp.h>
 
@@ -27,6 +25,8 @@ DATA_T sat(SUM_T weightedSum, ActivationFunction_T func)
 
 
 
+::fap::FloatPrecTy OP_1(8,23);
+::fap::FloatPrecTy OP_0(8,23);
 void convcell_propagate_conv1(
      DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
      DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
@@ -51,7 +51,7 @@ void convcell_propagate_conv1(
 						#pragma unroll 5
 						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
-								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
+								weightedSum = ((float)(::fap::FloatingPointType((float) (weightedSum), OP_0)) + ((SUM_T)(float)(::fap::FloatingPointType((float) weights[output][channel][sy][sx], OP_1)) * (SUM_T)(float)(::fap::FloatingPointType((float) ( (DATA_T) inputs[channel][iy + sy][ix + sx]), OP_1)))); 
 							} 
 						} 
 					} 
@@ -107,6 +107,8 @@ void poolcell_propagate_pool1(
     }
 }
 
+::fap::FloatPrecTy OP_3(8,23);
+::fap::FloatPrecTy OP_2(8,23);
 void convcell_propagate_conv2(
     DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
     DATA_T (&outputs)[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH],
@@ -131,7 +133,7 @@ void convcell_propagate_conv2(
 						#pragma unroll 5
 						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
-								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
+								weightedSum = ((float)(::fap::FloatingPointType((float) (weightedSum), OP_2)) + ((SUM_T)(float)(::fap::FloatingPointType((float) weights[output][channel][sy][sx], OP_3)) * (SUM_T)(float)(::fap::FloatingPointType((float) ( (DATA_T) inputs[channel][iy + sy][ix + sx]), OP_3)))); 
 							} 
 						} 
 					} 
@@ -188,6 +190,8 @@ void poolcell_propagate_pool2(
 
 
 
+::fap::FloatPrecTy OP_5(8,23);
+::fap::FloatPrecTy OP_4(8,23);
 void convcell_propagate_conv3(
     DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
     DATA_T (&outputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
@@ -212,7 +216,7 @@ void convcell_propagate_conv3(
 						#pragma unroll 5
 						for (unsigned int sx = 0; sx < 5; ++sx) { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
-								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
+								weightedSum = ((float)(::fap::FloatingPointType((float) (weightedSum), OP_4)) + ((SUM_T)(float)(::fap::FloatingPointType((float) weights[output][channel][sy][sx], OP_5)) * (SUM_T)(float)(::fap::FloatingPointType((float) ( (DATA_T) inputs[channel][iy + sy][ix + sx]), OP_5)))); 
 							} 
 						} 
 					} 
@@ -226,6 +230,8 @@ void convcell_propagate_conv3(
 
 
 
+::fap::FloatPrecTy OP_7(8,23);
+::fap::FloatPrecTy OP_6(8,23);
 void fccell_propagate_2d(
                     DATA_T (&inputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
                     DATA_T (&outputs)[FC1_NB_OUTPUTS],
@@ -241,7 +247,7 @@ void fccell_propagate_2d(
         for (unsigned int channel = 0; channel < CONV3_NB_OUTPUTS; ++channel) {
             for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy) {
 				for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix)
-                    weightedSum += weights[output][c++] * inputs[channel][iy][ix];
+                    weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_6)) + (float)(::fap::FloatingPointType((float) weights[output][c++], OP_7)) * (float)(::fap::FloatingPointType((float) inputs[channel][iy][ix], OP_7));
             }
         }
 
@@ -249,6 +255,8 @@ void fccell_propagate_2d(
     }
 }
 
+::fap::FloatPrecTy OP_9(8,23);
+::fap::FloatPrecTy OP_8(8,23);
 void fccell_propagate(
 	DATA_T (&inputs)[FC2_NB_CHANNELS],
 	DATA_T (&outputs)[OUTPUTS_SIZE*NB_OUTPUTS],
@@ -260,7 +268,7 @@ void fccell_propagate(
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
-            weightedSum += weights[output][channel] * inputs[channel];
+            weightedSum = (float)(::fap::FloatingPointType((float) weightedSum, OP_8)) + (float)(::fap::FloatingPointType((float) weights[output][channel], OP_9)) * (float)(::fap::FloatingPointType((float) inputs[channel], OP_9));
 
         outputs[FC2_OUTPUT_OFFSET + output] = sat(weightedSum, FC2_ACTIVATION);
     }

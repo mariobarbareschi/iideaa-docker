@@ -35,15 +35,6 @@ add_library(
 	n2d2cnn SHARED 
 	src/n2d2/file_list.cc
 	src/n2d2/env_read.cc
-	src/n2d2/conv1.cc
-	src/n2d2/pool1.cc
-	src/n2d2/conv2.cc
-	src/n2d2/pool2.cc
-	src/n2d2/conv3.cc
-	src/n2d2/fc1.cc
-	src/n2d2/fc2.cc
-	src/n2d2/output.cc
-	src/n2d2/sat.cc 
 	src/n2d2/network.cc
 )
 
