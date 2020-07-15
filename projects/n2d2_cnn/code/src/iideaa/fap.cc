@@ -24,7 +24,7 @@
 ///        Implementation File
 //===----------------------------------------------------------------------===//
 
-#include "Fap.h"
+#include "fap.h"
 
 #include <inttypes.h>
 #include <stdio.h>

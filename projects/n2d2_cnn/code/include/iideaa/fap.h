@@ -22,7 +22,7 @@
 
 // New types
 typedef __uint128_t uint128_t;
-typedef __int128_t int128_t;
+typedef __int128 int128_t;
 
 #define INT128_MASK_BIT_HIGH(pos)     (((uint128_t)0x01) << pos)
 #define INT128_MASK_BIT_LOW(pos)      ~(INT128_MASK_BIT_HIGH(pos))
@@ -136,7 +136,7 @@ namespace fap {
             return this->bits;
         }
         
-        int128_t getActualBits() const {return 0;}
+        int128_t getActualBits() const;
         
         void setBits(int128_t bits) {
             this->bits = bits;
@@ -184,6 +184,7 @@ namespace fap {
         // Arithmetic operators
         IntegerType& operator+=(IntegerType);
         IntegerType& operator-=(IntegerType);
+        IntegerType& operator^=(IntegerType);
         IntegerType& operator*=(IntegerType);
         IntegerType& operator/=(IntegerType);
         
