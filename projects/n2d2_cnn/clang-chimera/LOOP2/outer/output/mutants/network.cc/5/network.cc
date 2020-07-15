@@ -27,17 +27,20 @@ DATA_T sat(SUM_T weightedSum, ActivationFunction_T func)
 
 
 
+int stride3 = 1;
+int stride2 = 1;
+int stride1 = 1;
 void convcell_propagate_conv1(
      DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
      DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
      BDATA_T (&bias)[CONV1_NB_OUTPUTS],
      WDATA_T (&weights)[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS][CONV1_KERNEL_HEIGHT][CONV1_KERNEL_WIDTH])
 {
-
+	unsigned int output, oy, ox;
 	#pragma omp parallel for
-	for (unsigned int output = 0; output < CONV1_NB_OUTPUTS; ++output) { 
-		for (unsigned int oy = 0; oy < CONV1_OY_SIZE; ++oy) { 
-			for (unsigned int ox = 0; ox < CONV1_OX_SIZE; ++ox) { 
+	for (output = 0; output < CONV1_NB_OUTPUTS; ++output)if ( output % stride1 == 0) { { 
+		for (oy = 0; oy < CONV1_OY_SIZE; ++oy)if ( oy % stride2 == 0) { { 
+			for (ox = 0; ox < CONV1_OX_SIZE; ++ox)if ( ox % stride3 == 0) { { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)CONV1_PADDING_X - (int)(ox * CONV1_STRIDE_X), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)CONV1_PADDING_Y - (int)(oy * CONV1_STRIDE_Y), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)CONV1_CHANNELS_WIDTH + CONV1_PADDING_X - (int)(ox * CONV1_STRIDE_X), (int)5), 0); 
@@ -57,9 +60,9 @@ void convcell_propagate_conv1(
 					} 
 				} 
 				outputs[CONV1_OUTPUT_OFFSET + output][oy][ox] = sat(weightedSum, CONV1_ACTIVATION); 
-			} 
-		} 
-	} 
+			};} 
+		};} 
+	};} 
 }
 
 
@@ -107,17 +110,20 @@ void poolcell_propagate_pool1(
     }
 }
 
+int stride6 = 1;
+int stride5 = 1;
+int stride4 = 1;
 void convcell_propagate_conv2(
     DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
     DATA_T (&outputs)[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH],
     BDATA_T (&bias)[CONV2_NB_OUTPUTS],
     WDATA_T (&weights)[CONV2_NB_OUTPUTS][CONV2_NB_CHANNELS][CONV2_KERNEL_HEIGHT][CONV2_KERNEL_WIDTH])
 {
-
+	unsigned int output, oy, ox;
 	#pragma omp parallel for
-	for (unsigned int output = 0; output < CONV2_NB_OUTPUTS; ++output) { 
-		for (unsigned int oy = 0; oy < CONV2_OY_SIZE; ++oy) { 
-			for (unsigned int ox = 0; ox < CONV2_OX_SIZE; ++ox) { 
+	for (output = 0; output < CONV2_NB_OUTPUTS; ++output)if ( output % stride4 == 0) { { 
+		for (oy = 0; oy < CONV2_OY_SIZE; ++oy)if ( oy % stride5 == 0) { { 
+			for (ox = 0; ox < CONV2_OX_SIZE; ++ox)if ( ox % stride6 == 0) { { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)CONV2_PADDING_X - (int)(ox * CONV2_STRIDE_X), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)CONV2_PADDING_Y - (int)(oy * CONV2_STRIDE_Y), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)CONV2_CHANNELS_WIDTH + CONV2_PADDING_X - (int)(ox * CONV2_STRIDE_X), (int)5), 0); 
@@ -137,9 +143,9 @@ void convcell_propagate_conv2(
 					} 
 				} 
 				outputs[CONV2_OUTPUT_OFFSET + output][oy][ox] = sat(weightedSum, CONV2_ACTIVATION); 
-			} 
-		} 
-	} 
+			};} 
+		};} 
+	};} 
 }
 
 void poolcell_propagate_pool2(
@@ -188,17 +194,20 @@ void poolcell_propagate_pool2(
 
 
 
+int stride9 = 1;
+int stride8 = 1;
+int stride7 = 1;
 void convcell_propagate_conv3(
     DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
     DATA_T (&outputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
     BDATA_T (&bias)[CONV3_NB_OUTPUTS],
     WDATA_T (&weights)[CONV3_NB_OUTPUTS][CONV3_NB_CHANNELS][CONV3_KERNEL_HEIGHT][CONV3_KERNEL_WIDTH])
 {
-
+	unsigned int output, oy, ox;
 	#pragma omp parallel for
-	for (unsigned int output = 0; output < CONV3_NB_OUTPUTS; ++output) { 
-		for (unsigned int oy = 0; oy < CONV3_OY_SIZE; ++oy) { 
-			for (unsigned int ox = 0; ox < CONV3_OX_SIZE; ++ox) { 
+	for (output = 0; output < CONV3_NB_OUTPUTS; ++output)if ( output % stride7 == 0) { { 
+		for (oy = 0; oy < CONV3_OY_SIZE; ++oy)if ( oy % stride8 == 0) { { 
+			for (ox = 0; ox < CONV3_OX_SIZE; ++ox)if ( ox % stride9 == 0) { { 
 				const unsigned int sxMin = (unsigned int)int_max( (int)CONV3_PADDING_X - (int)(ox * CONV3_STRIDE_X), 0); 
 				const unsigned int syMin = (unsigned int)int_max( (int)CONV3_PADDING_Y - (int)(oy * CONV3_STRIDE_Y), 0); 
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)CONV3_CHANNELS_WIDTH + CONV3_PADDING_X - (int)(ox * CONV3_STRIDE_X), (int)5), 0); 
@@ -218,9 +227,9 @@ void convcell_propagate_conv3(
 					} 
 				} 
 				outputs[CONV3_OUTPUT_OFFSET + output][oy][ox] = sat(weightedSum, CONV3_ACTIVATION); 
-			} 
-		} 
-	} 
+			};} 
+		};} 
+	};} 
 }
 
 

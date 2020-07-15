@@ -2,11 +2,12 @@
 #include "fap.h"
 #include "env.h"
 #include "utils.h"
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <omp.h>
-#include <string.h>
+
 #define ADD_SAT(x, y) ((x) + (y))
 
 DATA_T sat(SUM_T weightedSum, ActivationFunction_T func)
@@ -27,13 +28,15 @@ DATA_T sat(SUM_T weightedSum, ActivationFunction_T func)
 
 
 
+int stride3 = 1;
+int stride2 = 1;
+int stride1 = 1;
 void convcell_propagate_conv1(
      DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
      DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
      BDATA_T (&bias)[CONV1_NB_OUTPUTS],
      WDATA_T (&weights)[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS][CONV1_KERNEL_HEIGHT][CONV1_KERNEL_WIDTH])
 {
-
 	#pragma omp parallel for
 	for (unsigned int output = 0; output < CONV1_NB_OUTPUTS; ++output) { 
 		for (unsigned int oy = 0; oy < CONV1_OY_SIZE; ++oy) { 
@@ -45,17 +48,16 @@ void convcell_propagate_conv1(
 				const int ix = (int)(ox * CONV1_STRIDE_X) - (int)CONV1_PADDING_X; 
 				const int iy = (int)(oy * CONV1_STRIDE_Y) - (int)CONV1_PADDING_Y; 
 				SUM_T weightedSum = bias[output]; 
-				for (unsigned int channel = 0; channel < CONV1_NB_CHANNELS; ++channel) { 
-					#pragma unroll 5
-					for (unsigned int sy = 0; sy < 5; ++sy) {
-						#pragma unroll 5
-						for (unsigned int sx = 0; sx < 5; ++sx) { 
+				unsigned int channel, sy, sx;
+				for (channel = 0; channel < CONV1_NB_CHANNELS; ++channel)if ( channel % stride1 == 0) { { 
+					for (sy = 0; sy < 5; ++sy)if ( sy % stride2 == 0) { {
+						for (sx = 0; sx < 5; ++sx)if ( sx % stride3 == 0) { { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
-						} 
-					} 
-				} 
+						};} 
+					};} 
+				};} 
 				outputs[CONV1_OUTPUT_OFFSET + output][oy][ox] = sat(weightedSum, CONV1_ACTIVATION); 
 			} 
 		} 
@@ -107,6 +109,9 @@ void poolcell_propagate_pool1(
     }
 }
 
+int stride6 = 1;
+int stride5 = 1;
+int stride4 = 1;
 void convcell_propagate_conv2(
     DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
     DATA_T (&outputs)[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH],
@@ -125,17 +130,16 @@ void convcell_propagate_conv2(
 				const int ix = (int)(ox * CONV2_STRIDE_X) - (int)CONV2_PADDING_X; 
 				const int iy = (int)(oy * CONV2_STRIDE_Y) - (int)CONV2_PADDING_Y; 
 				SUM_T weightedSum = bias[output]; 
-				for (unsigned int channel = 0; channel < CONV2_NB_CHANNELS; ++channel) { 
-					#pragma unroll 5
-					for (unsigned int sy = 0; sy < 5; ++sy) {
-						#pragma unroll 5
-						for (unsigned int sx = 0; sx < 5; ++sx) { 
+				unsigned int channel, sy, sx;
+				for (channel = 0; channel < CONV2_NB_CHANNELS; ++channel)if ( channel % stride4 == 0) { { 
+					for (sy = 0; sy < 5; ++sy)if ( sy % stride5 == 0) { {
+						for (sx = 0; sx < 5; ++sx)if ( sx % stride6 == 0) { { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
-						} 
-					} 
-				} 
+						};} 
+					};} 
+				};} 
 				outputs[CONV2_OUTPUT_OFFSET + output][oy][ox] = sat(weightedSum, CONV2_ACTIVATION); 
 			} 
 		} 
@@ -188,6 +192,9 @@ void poolcell_propagate_pool2(
 
 
 
+int stride9 = 1;
+int stride8 = 1;
+int stride7 = 1;
 void convcell_propagate_conv3(
     DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
     DATA_T (&outputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
@@ -206,17 +213,16 @@ void convcell_propagate_conv3(
 				const int ix = (int)(ox * CONV3_STRIDE_X) - (int)CONV3_PADDING_X; 
 				const int iy = (int)(oy * CONV3_STRIDE_Y) - (int)CONV3_PADDING_Y; 
 				SUM_T weightedSum = bias[output]; 
-				for (unsigned int channel = 0; channel < CONV3_NB_CHANNELS; ++channel) { 
-					#pragma unroll 5
-					for (unsigned int sy = 0; sy < 5; ++sy) {
-						#pragma unroll 5
-						for (unsigned int sx = 0; sx < 5; ++sx) { 
+				unsigned int channel, sy, sx;
+				for (channel = 0; channel < CONV3_NB_CHANNELS; ++channel)if ( channel % stride7 == 0) { { 
+					for (sy = 0; sy < 5; ++sy)if ( sy % stride8 == 0) { {
+						for (sx = 0; sx < 5; ++sx)if ( sx % stride9 == 0) { { 
 							if (sx >= sxMin && sx < sxMax && sy >= syMin && sy < syMax) { 
 								weightedSum = ((weightedSum) + ((SUM_T)weights[output][channel][sy][sx] * (SUM_T)( (DATA_T) inputs[channel][iy + sy][ix + sx]))); 
 							} 
-						} 
-					} 
-				} 
+						};} 
+					};} 
+				};} 
 				outputs[CONV3_OUTPUT_OFFSET + output][oy][ox] = sat(weightedSum, CONV3_ACTIVATION); 
 			} 
 		} 
@@ -287,11 +293,11 @@ void output_max(
         outputEstimated[0][0] = (outputs[0] > (BINARY_THRESHOLD * DATA_T_MAX));
 }
 
-#define RESET_MEM(data)	memset(data, 0, sizeof(data))
+
 
 void network(
-		DATA_T (&in_data)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
-		uint32_t (&out_data)[OUTPUTS_HEIGHT][OUTPUTS_WIDTH])
+	DATA_T (&in_data)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
+	uint32_t (&out_data)[OUTPUTS_HEIGHT][OUTPUTS_WIDTH])
 {
 	DATA_T conv1_data[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH];
 	DATA_T pool1_data[POOL1_NB_OUTPUTS][POOL1_OUTPUTS_HEIGHT][POOL1_OUTPUTS_WIDTH];
@@ -301,13 +307,13 @@ void network(
 	DATA_T fc1_data[FC1_NB_OUTPUTS];
 	DATA_T output_data[NB_OUTPUTS*OUTPUTS_HEIGHT*OUTPUTS_WIDTH]; 
 
-	RESET_MEM(conv1_data);
-	RESET_MEM(pool1_data);
-	RESET_MEM(conv2_data);
-	RESET_MEM(pool2_data);
-	RESET_MEM(conv3_data);
-	RESET_MEM(fc1_data);
-	RESET_MEM(output_data);
+	memset(conv1_data, 0, sizeof(conv1_data));
+	memset(pool1_data, 0, sizeof(pool1_data));
+	memset(conv2_data, 0, sizeof(conv2_data));
+	memset(pool2_data, 0, sizeof(pool2_data));
+	memset(conv3_data, 0, sizeof(conv3_data));
+	memset(fc1_data, 0, sizeof(fc1_data));
+	memset(output_data, 0, sizeof(output_data));
 
     convcell_propagate_conv1(in_data, conv1_data, conv1_biases, conv1_weights);
     poolcell_propagate_pool1(conv1_data, pool1_data);

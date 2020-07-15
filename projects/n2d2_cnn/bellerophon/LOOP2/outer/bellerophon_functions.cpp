@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
+#include "env_read.h"
+#include "file_list.h"
 #include "network.h"
 #include "c99_vla_cast_for_cpp.h"
 
@@ -30,24 +32,15 @@ extern "C" double BELLERO_getError() {
 	char** stimuli_list;
 	unsigned int total_stimuli = sortedFileList(stimuli_directory, &stimuli_list, 0);
 
-    unsigned int dimX = 1;
-    unsigned int dimY = 1;
-    if (OUTPUTS_WIDTH > 1 || OUTPUTS_HEIGHT > 1) {
-        dimX = ENV_SIZE_X;
-        dimY = ENV_SIZE_Y;
-    }
-    double yRatio = ENV_SIZE_Y / OUTPUTS_HEIGHT;
-    double xRatio = ENV_SIZE_X / OUTPUTS_WIDTH;
-
-	DATA_T env_data[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X];
+	DATA_T env_data[ENV_NB_CHANNELS][ENV_NB_HEIGHT][ENV_NB_WIDTH];
 	uint32_t outputEstimated[OUTPUTS_HEIGHT][OUTPUTS_WIDTH];
-    int32_t outputTargets[dimY][dimX];
+    int32_t outputTargets[ENV_NB_OUTPUTS_HEIGHT][ENV_NB_OUTPUTS_WIDTH];
 	
 	float success = 0;
 
 	for (unsigned int n = 0; n < total_stimuli; n++) {
-		env_read(stimuli_list[n], ENV_NB_OUTPUTS, ENV_SIZE_Y, ENV_SIZE_X, reinterpret_cast<DATA_T*>(env_data),  dimY,  dimX, reinterpret_cast<int32_t*>(outputTargets));
-		network(reinterpret_cast<DATA_T*>(env_data), reinterpret_cast<uint32_t*>(outputEstimated));
+		env_read(stimuli_list[n], env_data, outputTargets);
+		network(env_data, outputEstimated);
 
 		unsigned int nbValidPredictions = 0;
 		unsigned int nbPredictions = 0;
@@ -57,10 +50,6 @@ extern "C" double BELLERO_getError() {
 
 				int iy = oy;
 				int ix = ox;
-				if (dimX > 1 || dimY > 1) {
-					iy = (int)floor((oy + 0.5) * yRatio);
-					ix = (int)floor((ox + 0.5) * xRatio);
-				}
 
 					nbPredictions++;
 					if (outputTargets[iy][ix] == (int)outputEstimated[oy][ox]) 
@@ -83,7 +72,6 @@ extern "C" double BELLERO_getError() {
 
 	return error;
 }
-
 extern int stride9;
 extern int stride8;
 extern int stride7;
