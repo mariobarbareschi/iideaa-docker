@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/root/projects/n2d2_cnn/bellerophon/LOOP2/single1",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -I/root/projects/n2d2_cnn/code/include/iideaa -I/root/projects/n2d2_cnn/code/include/n2d2 -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -c /root/projects/n2d2_cnn/clang-chimera/LOOP2/single1/output/mutants/network.cc/5/network.cc",
+  "file": "/root/projects/n2d2_cnn/clang-chimera/LOOP2/single1/output/mutants/network.cc/5/network.cc"
+},
+{
+  "directory": "/root/projects/n2d2_cnn/bellerophon/LOOP2/single1",
+  "command": "/usr/bin/clang++ -I/root/projects/n2d2_cnn/code/include -I/root/projects/n2d2_cnn/code/include/iideaa -I/root/projects/n2d2_cnn/code/include/n2d2 -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /root/projects/n2d2_cnn/bellerophon/LOOP2/single1/bellerophon_functions.cpp",
+  "file": "/root/projects/n2d2_cnn/bellerophon/LOOP2/single1/bellerophon_functions.cpp"
+}
+]
