@@ -24,9 +24,8 @@ xilinx_vivado=$(realpath $xilinx_vivado)
 echo $xilinx_vivado
 
 # Making a copy of the original source-files
-rm -rf src
-mkdir src
-cp ../../code/src/n2d2/*.cc ./src
+mkdir -p src
+cp ../../code/src/n2d2/network.cc ./src
 
 # OMP is not sintesizable
 sed "s/#include <omp.h>//g" -i src/network.cc
