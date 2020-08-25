@@ -31,3 +31,15 @@ build/
 .vscode
 *.swp
 tags
+
+*.zip
+
+*.gz
+
+projects/n2d2_cnn/float/HLS/
+
+projects/n2d2_cnn/HLS/
+
+projects/n2d2_cnn/int16/code/build-debug/
+
+projects/n2d2_cnn/int8/code/build-debug/
