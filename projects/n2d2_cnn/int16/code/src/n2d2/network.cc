@@ -1,6 +1,7 @@
 #include <string.h>
 #include "network.h"
 #include "math.h"
+#include "fap.h"
 
 
 void convcell_upropagate_conv1(
@@ -39,11 +40,7 @@ void convcell_upropagate_conv1(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
-                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
-                                       *weights[output][channel])[sy][sx]
-                                   * (SUM_T)(
-                                         (UDATA_T)
-                                         inputs[channel][iy + sy][ix + sx]));
+                            weightedSum += (SUM_T)(*weights[output][channel])[sy][sx] * (SUM_T)((UDATA_T)inputs[channel][iy + sy][ix + sx]);
                         }
                     }
                 }
@@ -91,11 +88,7 @@ void convcell_upropagate_conv2(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
-                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
-                                       *weights[output][channel])[sy][sx]
-                                   * (SUM_T)(
-                                         (UDATA_T)
-                                         inputs[channel][iy + sy][ix + sx]));
+                            weightedSum += (SUM_T)(*weights[output][channel])[sy][sx] * (SUM_T)((UDATA_T)inputs[channel][iy + sy][ix + sx]);
                         }
                     }
                 }
@@ -144,11 +137,7 @@ void convcell_upropagate_conv3(
 
                     for (unsigned int sy = syMin; sy < syMax; ++sy) {
                         for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
-                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
-                                       *weights[output][channel])[sy][sx]
-                                   * (SUM_T)(
-                                         (UDATA_T)
-                                         inputs[channel][iy + sy][ix + sx]));
+                            weightedSum += (SUM_T)(*weights[output][channel])[sy][sx] * (SUM_T)((UDATA_T)inputs[channel][iy + sy][ix + sx]);
                         }
                     }
                 }
@@ -188,18 +177,7 @@ void poolcell_upropagate_unitmap_pool1(
                         }
                     }
                     outputs[POOL1_OUTPUT_OFFSET + output][oy][ox] = poolValue;
-                } else if (POOL1_POOLING == Average) {
-                    SUM_T sum = 0;
-                    for (unsigned int sy = 0; sy < syMax; ++sy) {
-                        for (unsigned int sx = 0; sx < sxMax; ++sx) {
-                            const unsigned int ix = ox * POOL1_STRIDE_X + sx;
-                            const unsigned int iy = oy * POOL1_STRIDE_Y + sy;
-                            sum += ((UDATA_T)inputs[output][iy][ix]);
-                        }
-                    }
-                    sum /= POOL1_POOL_WIDTH * POOL1_POOL_HEIGHT;
-                    outputs[POOL1_OUTPUT_OFFSET + output][oy][ox] = sht(sum, POOL1_SHIFT);
-                }
+                }             
             }
         }
     }
@@ -232,18 +210,7 @@ void poolcell_upropagate_unitmap_pool2(
                         }
                     }
                     outputs[POOL2_OUTPUT_OFFSET + output][oy][ox] = poolValue;
-                } else if (POOL2_POOLING == Average) {
-                    SUM_T sum = 0;
-                    for (unsigned int sy = 0; sy < syMax; ++sy) {
-                        for (unsigned int sx = 0; sx < sxMax; ++sx) {
-                            const unsigned int ix = ox * POOL2_STRIDE_X + sx;
-                            const unsigned int iy = oy * POOL2_STRIDE_Y + sy;
-                            sum += ((UDATA_T)inputs[output][iy][ix]);
-                        }
-                    }
-                    sum /= POOL2_POOL_WIDTH * POOL2_POOL_HEIGHT;
-                    outputs[POOL2_OUTPUT_OFFSET + output][oy][ox] = sht(sum, POOL2_SHIFT);
-                }
+                } 
             }
         }
     }
@@ -263,9 +230,7 @@ void fccell_upropagate_2d(
         for (unsigned int channel = 0; channel < CONV3_NB_OUTPUTS; ++channel) {
             for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy) {
                 for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix)
-                    weightedSum = ADD_SAT(weightedSum,
-                        (SUM_T)weights[output][c++]
-                        * (SUM_T)((UDATA_T)inputs[channel][iy][ix]));
+                    weightedSum += (SUM_T)weights[output][c++] * (SUM_T)((UDATA_T)inputs[channel][iy][ix]);
             }
         }
 
@@ -284,9 +249,7 @@ void fccell_upropagate(
         SUM_T weightedSum = bias[output];
 
         for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
-            weightedSum = ADD_SAT(weightedSum,
-                                  (SUM_T)weights[output][channel]
-                                  * (SUM_T)((UDATA_T)inputs[channel]));
+            weightedSum += (SUM_T)weights[output][channel] * (SUM_T)((UDATA_T)inputs[channel]);
 
         outputs[FC2_OUTPUT_OFFSET + output] = usat(weightedSum, FC2_ACTIVATION, FC2_SHIFT);
     }

@@ -1,7 +1,6 @@
 project (N2D2_export_C LANGUAGES CXX)
 cmake_minimum_required (VERSION 3.10)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(cmake-scripts/code-coverage.cmake)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsigned-char -march=native -fPIC")
 set (CMAKE_CXX_STANDARD 11)
@@ -60,6 +59,7 @@ target_link_libraries(n2d2_test m n2d2cnn)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message(STATUS "Debug configuration")
+  include(cmake-scripts/code-coverage.cmake)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -O0")
 	add_code_coverage()
 

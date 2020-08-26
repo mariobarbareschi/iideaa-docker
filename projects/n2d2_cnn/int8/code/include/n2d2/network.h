@@ -44,13 +44,6 @@
 #include "fc1.h"
 #include "fc2.h"
 
-#ifdef ACC_NB_BITS
-    #define ACC_MAX ((1LL << (ACC_NB_BITS - 1)) - 1)
-    #define ACC_MIN (-(1LL << (ACC_NB_BITS - 1)))
-    #define ADD_SAT(x, y) MAX(ACC_MIN, MIN(ACC_MAX, ((x) + (y))))
-#else
-    #define ADD_SAT(x, y) ((x) + (y))
-#endif
 
 typedef struct RUNNING_MEAN {
     double mean;
@@ -59,31 +52,6 @@ typedef struct RUNNING_MEAN {
 
 typedef enum ACCS_REPORT { CHW, HWC } ACCS_REPORT_T;
 
-#ifdef NL
-static inline DATA_T nl32_tanh(SUM_T x)
-{
-    return (DATA_T)(DATA_T_MAX * tanh(x / 16129.0));
-}
-
-static inline DATA_T nl32_exp(SUM_T x)
-{
-    return (DATA_T)(DATA_T_MAX * exp(x / 16129.0));
-}
-#endif
-
-static inline char sat8(int x)
-{
-    return (char)((x > 127)     ? 127 :
-                  (x < -128)    ? -128 :
-                                  x);
-}
-/*
-static inline unsigned char usat8(int x) {
-    return (unsigned char)((x > 255)    ? 255 :
-                           (x < 0)      ? 0 :
-                                          x);
-}
-*/
 static inline DATA_T sat32(SUM_T x, char rs)
 {
 #if NB_BITS < 0
@@ -105,98 +73,6 @@ static inline UDATA_T usat32(SUM_T x, char rs) {
     return (UDATA_T)((y > UDATA_T_MAX) ? UDATA_T_MAX :
                      (y < 0)           ? 0 :
                                          y);
-}
-
-static inline char msb32(int32_t x)
-{
-    int32_t px = (x < 0) ? -x : x;
-    char r = 1; // sign bit
-    while (px >>= 1)
-        ++r;
-    return r;
-}
-/*
-static inline char umsb32(uint32_t x) {
-    char r = 0;
-    while (x >>= 1)
-        ++r;
-    return r;
-}
-*/
-
-static inline SUM_T sht(SUM_T weightedSum, int shift) {
-#if NB_BITS >= 0
-    if (shift >= 0)
-        return (weightedSum >> shift);
-    else
-        return (weightedSum << (-shift));
-#endif
-}
-
-static inline DATA_T
-sat(SUM_T weightedSum, ActivationFunction_T func, int shift)
-{
-#if NB_BITS >= 0
-    if (shift > 0)
-        weightedSum >>= shift;
-    else if (shift < 0)
-        weightedSum <<= (-shift);
-#endif
-
-    switch (func) {
-    case Tanh:
-    case TanhLeCun:
-#if NB_BITS < 0
-        return tanh(weightedSum);
-#elif defined(NL)
-        return nl32_tanh(weightedSum);
-#endif
-    case Saturation:
-        return sat32(weightedSum, NB_BITS - 1);
-
-    case Logistic:
-    case LogisticWithLoss:
-#if NB_BITS < 0
-        return 1.0 / (1.0 + exp(-weightedSum));
-#else
-  #if BINARY_THRESHOLD != 0
-        weightedSum >>= 2;      // divide by 4
-        weightedSum += (DATA_T_MAX << (NB_BITS - 1));
-        return MAX((DATA_T)0, sat32(weightedSum, NB_BITS));
-  #else
-        // Use the full NB_BITS dynamic. Mapping is:
-        // for NB_BITS = 8: [-2,2] -> [-128,128]
-        return sat32(weightedSum, NB_BITS);
-  #endif
-#endif
-
-    case Rectifier:
-#if NB_BITS < 0
-        return MAX((SUM_T)0, weightedSum);
-#else
-  #if defined(UNSIGNED_DATA) && UNSIGNED_DATA
-        // Keep one more bit because the output data is considered unsigned
-        return usat32(MAX((SUM_T)0, weightedSum), NB_BITS - 2);
-  #else
-        return sat32(MAX((SUM_T)0, weightedSum), NB_BITS - 1);
-  #endif
-#endif
-
-    case Linear:
-#if NB_BITS < 0
-        return weightedSum;
-#else
-        // Max value is 2^(NB_BITS-1)*2^(NB_BITS-1) = 2^(2*NB_BITS-2)
-        // ex. NB_BITS = 8 ==> -128*-128=16384
-        // Output max value is 2^(NB_BITS-1) ==> must be shifted by NB_BITS - 1
-        // 16384>>7 = 128
-        return sat32(weightedSum, NB_BITS - 1);
-#endif
-
-    default:
-        fprintf(stderr, "Unsupported activation function in sat()\n");
-        return 0;
-    }
 }
 
 static inline DATA_T
