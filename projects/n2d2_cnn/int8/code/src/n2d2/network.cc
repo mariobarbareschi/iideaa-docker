@@ -1,166 +1,352 @@
-// N2D2 auto-generated file.
-// @ Mon Sep 16 12:44:14 2019
-
+#include <string.h>
 #include "network.h"
+#include "math.h"
 
-//#define TIME_ANALYSIS
-//#define DATA_DYN_ANALYSIS
-//#define ACC_DYN_ANALYSIS
-#define ACC_DYN_REPORT CHW
 
-static DATA_T conv1_data[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH];
-static DATA_T pool1_data[POOL1_NB_OUTPUTS][POOL1_OUTPUTS_HEIGHT][POOL1_OUTPUTS_WIDTH];
-static DATA_T conv2_data[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH];
-static DATA_T pool2_data[POOL2_NB_OUTPUTS][POOL2_OUTPUTS_HEIGHT][POOL2_OUTPUTS_WIDTH];
-static DATA_T conv3_data[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH];
-static DATA_T fc1_data[FC1_NB_OUTPUTS];
+void convcell_upropagate_conv1(
+    DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
+    DATA_T (&outputs)[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH],
+    const BDATA_T (&bias)[CONV1_NB_OUTPUTS],
+    const WDATA_T (*weights[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS])[CONV1_KERNEL_HEIGHT][CONV1_KERNEL_WIDTH])
+{
+  #pragma omp parallel for
+    for (unsigned int output = 0; output < CONV1_NB_OUTPUTS; ++output) {
+        for (unsigned int oy = 0; oy < CONV1_OY_SIZE; ++oy) {
+            for (unsigned int ox = 0; ox < CONV1_OX_SIZE; ++ox) {
+                const unsigned int sxMin = (unsigned int)int_max(
+                    (int)CONV1_PADDING_X - (int)(ox * CONV1_STRIDE_X), 0);
+                const unsigned int syMin = (unsigned int)int_max(
+                    (int)CONV1_PADDING_Y - (int)(oy * CONV1_STRIDE_Y), 0);
+                const unsigned int sxMax = (unsigned int)int_max(
+                    int_min((int)CONV1_CHANNELS_WIDTH + CONV1_PADDING_X - (int)(ox * CONV1_STRIDE_X),
+                            (int)CONV1_KERNEL_WIDTH),
+                    0);
+                const unsigned int syMax = (unsigned int)int_max(
+                    int_min((int)CONV1_CHANNELS_HEIGHT + CONV1_PADDING_Y
+                            - (int)(oy * CONV1_STRIDE_Y),
+                            (int)CONV1_KERNEL_HEIGHT),
+                    0);
+
+                const int ix = (int)(ox * CONV1_STRIDE_X) - (int)CONV1_PADDING_X;
+                const int iy = (int)(oy * CONV1_STRIDE_Y) - (int)CONV1_PADDING_Y;
+
+                SUM_T weightedSum = bias[output];
+
+                for (unsigned int channel = 0; channel < CONV1_NB_CHANNELS;
+                     ++channel) {
+                    if (weights[output][channel] == NULL)
+                        continue;
+
+                    for (unsigned int sy = syMin; sy < syMax; ++sy) {
+                        for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
+                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
+                                       *weights[output][channel])[sy][sx]
+                                   * (SUM_T)(
+                                         (UDATA_T)
+                                         inputs[channel][iy + sy][ix + sx]));
+                        }
+                    }
+                }
+
+                outputs[CONV1_OUTPUT_OFFSET + output][oy][ox]
+                    = usat(weightedSum, CONV1_ACTIVATION, CONV1_SHIFT);
+            }
+        }
+    }
+}
+
+void convcell_upropagate_conv2(
+    DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
+    DATA_T (&outputs)[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH],
+    const BDATA_T (&bias)[CONV2_NB_OUTPUTS],
+    const WDATA_T (*weights[CONV2_NB_OUTPUTS][CONV2_NB_CHANNELS])[CONV2_KERNEL_HEIGHT][CONV2_KERNEL_WIDTH])
+{
+    #pragma omp parallel for
+    for (unsigned int output = 0; output < CONV2_NB_OUTPUTS; ++output) {
+        for (unsigned int oy = 0; oy < CONV2_OY_SIZE; ++oy) {
+            for (unsigned int ox = 0; ox < CONV2_OX_SIZE; ++ox) {
+                const unsigned int sxMin = (unsigned int)int_max(
+                    (int)CONV2_PADDING_X - (int)(ox * CONV2_STRIDE_X), 0);
+                const unsigned int syMin = (unsigned int)int_max(
+                    (int)CONV2_PADDING_Y - (int)(oy * CONV2_STRIDE_Y), 0);
+                const unsigned int sxMax = (unsigned int)int_max(
+                    int_min((int)CONV2_CHANNELS_WIDTH + CONV2_PADDING_X - (int)(ox * CONV2_STRIDE_X),
+                            (int)CONV2_KERNEL_WIDTH),
+                    0);
+                const unsigned int syMax = (unsigned int)int_max(
+                    int_min((int)CONV2_CHANNELS_HEIGHT + CONV2_PADDING_Y
+                            - (int)(oy * CONV2_STRIDE_Y),
+                            (int)CONV2_KERNEL_HEIGHT),
+                    0);
+
+                const int ix = (int)(ox * CONV2_STRIDE_X) - (int)CONV2_PADDING_X;
+                const int iy = (int)(oy * CONV2_STRIDE_Y) - (int)CONV2_PADDING_Y;
+
+                SUM_T weightedSum = bias[output];
+
+                for (unsigned int channel = 0; channel < CONV2_NB_CHANNELS;
+                     ++channel) {
+                    if (weights[output][channel] == NULL)
+                        continue;
+
+                    for (unsigned int sy = syMin; sy < syMax; ++sy) {
+                        for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
+                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
+                                       *weights[output][channel])[sy][sx]
+                                   * (SUM_T)(
+                                         (UDATA_T)
+                                         inputs[channel][iy + sy][ix + sx]));
+                        }
+                    }
+                }
+
+                outputs[CONV2_OUTPUT_OFFSET + output][oy][ox]
+                    = usat(weightedSum, CONV2_ACTIVATION, CONV2_SHIFT);
+            }
+        }
+    }
+}
+
+void convcell_upropagate_conv3(
+    DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
+    DATA_T (&outputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
+    const BDATA_T (&bias)[CONV3_NB_OUTPUTS],
+    const WDATA_T (*weights[CONV3_NB_OUTPUTS][CONV3_NB_CHANNELS])[CONV3_KERNEL_HEIGHT][CONV3_KERNEL_WIDTH])
+{
+
+  #pragma omp parallel for
+    for (unsigned int output = 0; output < CONV3_NB_OUTPUTS; ++output) {
+        for (unsigned int oy = 0; oy < CONV3_OY_SIZE; ++oy) {
+            for (unsigned int ox = 0; ox < CONV3_OX_SIZE; ++ox) {
+                const unsigned int sxMin = (unsigned int)int_max(
+                    (int)CONV3_PADDING_X - (int)(ox * CONV3_STRIDE_X), 0);
+                const unsigned int syMin = (unsigned int)int_max(
+                    (int)CONV3_PADDING_Y - (int)(oy * CONV3_STRIDE_Y), 0);
+                const unsigned int sxMax = (unsigned int)int_max(
+                    int_min((int)CONV3_CHANNELS_WIDTH + CONV3_PADDING_X - (int)(ox * CONV3_STRIDE_X),
+                            (int)CONV3_KERNEL_WIDTH),
+                    0);
+                const unsigned int syMax = (unsigned int)int_max(
+                    int_min((int)CONV3_CHANNELS_HEIGHT + CONV3_PADDING_Y
+                            - (int)(oy * CONV3_STRIDE_Y),
+                            (int)CONV3_KERNEL_HEIGHT),
+                    0);
+
+                const int ix = (int)(ox * CONV3_STRIDE_X) - (int)CONV3_PADDING_X;
+                const int iy = (int)(oy * CONV3_STRIDE_Y) - (int)CONV3_PADDING_Y;
+
+                SUM_T weightedSum = bias[output];
+
+                for (unsigned int channel = 0; channel < CONV3_NB_CHANNELS;
+                     ++channel) {
+                    if (weights[output][channel] == NULL)
+                        continue;
+
+                    for (unsigned int sy = syMin; sy < syMax; ++sy) {
+                        for (unsigned int sx = sxMin; sx < sxMax; ++sx) {
+                            weightedSum = ADD_SAT(weightedSum, (SUM_T)(
+                                       *weights[output][channel])[sy][sx]
+                                   * (SUM_T)(
+                                         (UDATA_T)
+                                         inputs[channel][iy + sy][ix + sx]));
+                        }
+                    }
+                }
+
+                outputs[CONV3_OUTPUT_OFFSET + output][oy][ox]
+                    = usat(weightedSum, CONV3_ACTIVATION, CONV3_SHIFT);
+            }
+        }
+    }
+}
+
+
+void poolcell_upropagate_unitmap_pool1(
+    DATA_T (&inputs)[POOL1_NB_CHANNELS][POOL1_CHANNELS_HEIGHT][POOL1_CHANNELS_WIDTH],
+    DATA_T (&outputs)[POOL1_NB_OUTPUTS][POOL1_OUTPUTS_HEIGHT][POOL1_OUTPUTS_WIDTH])
+{
+
+  #pragma omp parallel for collapse(3)
+    for (unsigned int output = 0; output < POOL1_NB_OUTPUTS; ++output) {
+        for (unsigned int oy = 0; oy < POOL1_OUTPUTS_HEIGHT; ++oy) {
+            for (unsigned int ox = 0; ox < POOL1_OUTPUTS_WIDTH; ++ox) {
+                const unsigned int sxMax
+                    = uint_min(POOL1_CHANNELS_WIDTH - ox * POOL1_STRIDE_X, POOL1_POOL_WIDTH);
+                const unsigned int syMax
+                    = uint_min(POOL1_CHANNELS_HEIGHT - oy * POOL1_STRIDE_Y, POOL1_POOL_HEIGHT);
+
+                if (POOL1_POOLING == Max) {
+                    UDATA_T poolValue = 0;
+
+                    for (unsigned int sy = 0; sy < syMax; ++sy) {
+                        for (unsigned int sx = 0; sx < sxMax; ++sx) {
+                            const unsigned int ix = ox * POOL1_STRIDE_X + sx;
+                            const unsigned int iy = oy * POOL1_STRIDE_Y + sy;
+
+                            if (((UDATA_T)inputs[output][iy][ix]) > poolValue)
+                                poolValue = (UDATA_T)inputs[output][iy][ix];
+                        }
+                    }
+                    outputs[POOL1_OUTPUT_OFFSET + output][oy][ox] = poolValue;
+                } else if (POOL1_POOLING == Average) {
+                    SUM_T sum = 0;
+                    for (unsigned int sy = 0; sy < syMax; ++sy) {
+                        for (unsigned int sx = 0; sx < sxMax; ++sx) {
+                            const unsigned int ix = ox * POOL1_STRIDE_X + sx;
+                            const unsigned int iy = oy * POOL1_STRIDE_Y + sy;
+                            sum += ((UDATA_T)inputs[output][iy][ix]);
+                        }
+                    }
+                    sum /= POOL1_POOL_WIDTH * POOL1_POOL_HEIGHT;
+                    outputs[POOL1_OUTPUT_OFFSET + output][oy][ox] = sht(sum, POOL1_SHIFT);
+                }
+            }
+        }
+    }
+}
+
+void poolcell_upropagate_unitmap_pool2(
+    DATA_T (&inputs)[POOL2_NB_CHANNELS][POOL2_CHANNELS_HEIGHT][POOL2_CHANNELS_WIDTH],
+    DATA_T (&outputs)[POOL2_NB_OUTPUTS][POOL2_OUTPUTS_HEIGHT][POOL2_OUTPUTS_WIDTH])
+{
+
+#pragma omp parallel for collapse(3)
+    for (unsigned int output = 0; output < POOL2_NB_OUTPUTS; ++output) {
+        for (unsigned int oy = 0; oy < POOL2_OUTPUTS_HEIGHT; ++oy) {
+            for (unsigned int ox = 0; ox < POOL2_OUTPUTS_WIDTH; ++ox) {
+                const unsigned int sxMax
+                    = uint_min(POOL2_CHANNELS_WIDTH - ox * POOL2_STRIDE_X, POOL2_POOL_WIDTH);
+                const unsigned int syMax
+                    = uint_min(POOL2_CHANNELS_HEIGHT - oy * POOL2_STRIDE_Y, POOL2_POOL_HEIGHT);
+
+                if (POOL2_POOLING == Max) {
+                    UDATA_T poolValue = 0;
+
+                    for (unsigned int sy = 0; sy < syMax; ++sy) {
+                        for (unsigned int sx = 0; sx < sxMax; ++sx) {
+                            const unsigned int ix = ox * POOL2_STRIDE_X + sx;
+                            const unsigned int iy = oy * POOL2_STRIDE_Y + sy;
+
+                            if (((UDATA_T)inputs[output][iy][ix]) > poolValue)
+                                poolValue = (UDATA_T)inputs[output][iy][ix];
+                        }
+                    }
+                    outputs[POOL2_OUTPUT_OFFSET + output][oy][ox] = poolValue;
+                } else if (POOL2_POOLING == Average) {
+                    SUM_T sum = 0;
+                    for (unsigned int sy = 0; sy < syMax; ++sy) {
+                        for (unsigned int sx = 0; sx < sxMax; ++sx) {
+                            const unsigned int ix = ox * POOL2_STRIDE_X + sx;
+                            const unsigned int iy = oy * POOL2_STRIDE_Y + sy;
+                            sum += ((UDATA_T)inputs[output][iy][ix]);
+                        }
+                    }
+                    sum /= POOL2_POOL_WIDTH * POOL2_POOL_HEIGHT;
+                    outputs[POOL2_OUTPUT_OFFSET + output][oy][ox] = sht(sum, POOL2_SHIFT);
+                }
+            }
+        }
+    }
+}
+
+void fccell_upropagate_2d(
+  DATA_T (&inputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
+  DATA_T (&outputs)[FC1_NB_OUTPUTS],
+  const BDATA_T (&bias)[FC1_NB_OUTPUTS],
+  const WDATA_T (&weights)[FC1_NB_OUTPUTS][FC1_NB_CHANNELS])
+{
+#pragma omp parallel for if (FC1_NB_OUTPUTS > 32)
+    for (unsigned int output = 0; output < FC1_NB_OUTPUTS; ++output) {
+        SUM_T weightedSum = bias[output];
+        unsigned int c = 0;
+
+        for (unsigned int channel = 0; channel < CONV3_NB_OUTPUTS; ++channel) {
+            for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy) {
+                for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix)
+                    weightedSum = ADD_SAT(weightedSum,
+                        (SUM_T)weights[output][c++]
+                        * (SUM_T)((UDATA_T)inputs[channel][iy][ix]));
+            }
+        }
+
+        outputs[FC1_OUTPUT_OFFSET + output] = usat(weightedSum, FC1_ACTIVATION, FC1_SHIFT);
+    }
+}
+
+void fccell_upropagate(
+  DATA_T (&inputs)[FC2_NB_CHANNELS],
+  DATA_T (&outputs)[FC2_NB_OUTPUTS],
+  const BDATA_T (&bias)[OUTPUTS_SIZE*NB_OUTPUTS],
+  const WDATA_T (&weights)[OUTPUTS_SIZE*NB_OUTPUTS][FC2_NB_CHANNELS])
+{
+#pragma omp parallel for if (OUTPUTS_SIZE*NB_OUTPUTS > 32)
+    for (unsigned int output = 0; output < OUTPUTS_SIZE*NB_OUTPUTS; ++output) {
+        SUM_T weightedSum = bias[output];
+
+        for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
+            weightedSum = ADD_SAT(weightedSum,
+                                  (SUM_T)weights[output][channel]
+                                  * (SUM_T)((UDATA_T)inputs[channel]));
+
+        outputs[FC2_OUTPUT_OFFSET + output] = usat(weightedSum, FC2_ACTIVATION, FC2_SHIFT);
+    }
+}
+
+
+void output_max(unsigned int nbOutputs,
+                DATA_T outputs[nbOutputs],
+                uint32_t outputEstimated[1][1])
+{
+    if (nbOutputs > 1) {
+        DATA_T maxVal = outputs[0];
+        unsigned int outputMax = 0;
+
+        for (unsigned int output = 1; output < nbOutputs; ++output) {
+            if (outputs[output] > maxVal) {
+                maxVal = outputs[output];
+                outputMax = output;
+            }
+        }
+
+        outputEstimated[0][0] = outputMax;
+    }
+    else
+        outputEstimated[0][0] = (outputs[0] > (BINARY_THRESHOLD * DATA_T_MAX));
+}
+
+#define RESET_MEM(data)	memset(data, 0, sizeof(data))
+
+void network(DATA_T (&in_data)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X], uint32_t (&out_data)[OUTPUTS_HEIGHT][OUTPUTS_WIDTH]) {
+DATA_T conv1_data[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH];
+DATA_T pool1_data[POOL1_NB_OUTPUTS][POOL1_OUTPUTS_HEIGHT][POOL1_OUTPUTS_WIDTH];
+DATA_T conv2_data[CONV2_NB_OUTPUTS][CONV2_OUTPUTS_HEIGHT][CONV2_OUTPUTS_WIDTH];
+DATA_T pool2_data[POOL2_NB_OUTPUTS][POOL2_OUTPUTS_HEIGHT][POOL2_OUTPUTS_WIDTH];
+DATA_T conv3_data[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH];
+DATA_T fc1_data[FC1_NB_OUTPUTS];
 DATA_T output_data[NB_OUTPUTS*OUTPUTS_HEIGHT*OUTPUTS_WIDTH]; 
-static DATA_T output_spatial_data[NB_OUTPUTS][OUTPUTS_HEIGHT][OUTPUTS_WIDTH]; 
 
-void network(DATA_T in_data[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X], uint32_t out_data[OUTPUTS_HEIGHT][OUTPUTS_WIDTH]) {
-#ifdef SAVE_OUTPUTS
-    convcell_outputs_save("in_data.txt", ENV_NB_OUTPUTS, ENV_SIZE_Y, ENV_SIZE_X, in_data);
-#endif
+	RESET_MEM(conv1_data);
+	RESET_MEM(pool1_data);
+	RESET_MEM(conv2_data);
+	RESET_MEM(pool2_data);
+	RESET_MEM(conv3_data);
+	RESET_MEM(fc1_data);
+	RESET_MEM(output_data);
 
-#ifdef TIME_ANALYSIS
-    struct timeval start, end;
-#endif
+
 /************************************LAYER (1)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    convcell_upropagate_conv1(CONV1_NB_CHANNELS, CONV1_CHANNELS_HEIGHT, CONV1_CHANNELS_WIDTH, CONV1_PADDING_Y, CONV1_PADDING_X, CONV1_STRIDE_Y, CONV1_STRIDE_X, CONV1_SUB_SAMPLE_Y, CONV1_SUB_SAMPLE_X, in_data, CONV1_OY_SIZE, CONV1_OX_SIZE, CONV1_NB_OUTPUTS, CONV1_OUTPUTS_HEIGHT, CONV1_OUTPUTS_WIDTH, CONV1_NB_OUTPUTS, CONV1_OUTPUT_OFFSET, conv1_data, CONV1_KERNEL_HEIGHT, CONV1_KERNEL_WIDTH, conv1_biases, conv1_weights, CONV1_ACTIVATION, CONV1_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T conv1_timing = {0.0, 0};
-    time_analysis("conv1", start, end, &conv1_timing);
-#endif
-#ifdef ACC_DYN_ANALYSIS
-    static SUM_T conv1_acc_min = 0;
-    static SUM_T conv1_acc_max = 0;
-    static SUM_T conv1_presat_min = 0;
-    static SUM_T conv1_presat_max = 0;
-    convcell_propagate_accs_report("conv1", CONV1_NB_CHANNELS, CONV1_CHANNELS_HEIGHT, CONV1_CHANNELS_WIDTH, CONV1_PADDING_Y, CONV1_PADDING_X, CONV1_STRIDE_Y, CONV1_STRIDE_X, CONV1_SUB_SAMPLE_Y, CONV1_SUB_SAMPLE_X, in_data, CONV1_OY_SIZE, CONV1_OX_SIZE, CONV1_OUTPUTS_HEIGHT, CONV1_OUTPUTS_WIDTH, CONV1_NB_OUTPUTS, &conv1_acc_min, &conv1_acc_max, &conv1_presat_min, &conv1_presat_max, CONV1_KERNEL_HEIGHT, CONV1_KERNEL_WIDTH, conv1_biases, conv1_weights, ACC_DYN_REPORT);
-#endif
-#ifdef DATA_DYN_ANALYSIS
-    static DATA_T conv1_min = DATA_T_MAX;
-    static DATA_T conv1_max = DATA_T_MIN;
-    static RUNNING_MEAN_T conv1_mean = {0.0, 0};
-    convcell_outputs_dynamic_print("conv1", CONV1_NB_OUTPUTS, CONV1_OUTPUTS_HEIGHT, CONV1_OUTPUTS_WIDTH, conv1_data, &conv1_min, &conv1_max, &conv1_mean);
-#endif
-#ifdef SAVE_OUTPUTS
-    convcell_outputs_save("conv1.txt", CONV1_NB_OUTPUTS, CONV1_OUTPUTS_HEIGHT, CONV1_OUTPUTS_WIDTH, conv1_data);
-#endif
+    convcell_upropagate_conv1(in_data, conv1_data, conv1_biases, conv1_weights);
 /************************************LAYER (2)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    poolcell_upropagate_unitmap(POOL1_NB_CHANNELS, POOL1_CHANNELS_HEIGHT, POOL1_CHANNELS_WIDTH, POOL1_STRIDE_Y, POOL1_STRIDE_X, conv1_data, POOL1_NB_OUTPUTS, POOL1_OUTPUTS_HEIGHT, POOL1_OUTPUTS_WIDTH, POOL1_NB_OUTPUTS, POOL1_OUTPUT_OFFSET, pool1_data, POOL1_POOL_HEIGHT, POOL1_POOL_WIDTH, POOL1_POOLING, POOL1_ACTIVATION, POOL1_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T pool1_timing = {0.0, 0};
-    time_analysis("pool1", start, end, &pool1_timing);
-#endif
+    poolcell_upropagate_unitmap_pool1(conv1_data, pool1_data);
 /************************************LAYER (3)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    convcell_upropagate_conv2(CONV2_NB_CHANNELS, CONV2_CHANNELS_HEIGHT, CONV2_CHANNELS_WIDTH, CONV2_PADDING_Y, CONV2_PADDING_X, CONV2_STRIDE_Y, CONV2_STRIDE_X, CONV2_SUB_SAMPLE_Y, CONV2_SUB_SAMPLE_X, pool1_data, CONV2_OY_SIZE, CONV2_OX_SIZE, CONV2_NB_OUTPUTS, CONV2_OUTPUTS_HEIGHT, CONV2_OUTPUTS_WIDTH, CONV2_NB_OUTPUTS, CONV2_OUTPUT_OFFSET, conv2_data, CONV2_KERNEL_HEIGHT, CONV2_KERNEL_WIDTH, conv2_biases, conv2_weights, CONV2_ACTIVATION, CONV2_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T conv2_timing = {0.0, 0};
-    time_analysis("conv2", start, end, &conv2_timing);
-#endif
-#ifdef ACC_DYN_ANALYSIS
-    static SUM_T conv2_acc_min = 0;
-    static SUM_T conv2_acc_max = 0;
-    static SUM_T conv2_presat_min = 0;
-    static SUM_T conv2_presat_max = 0;
-    convcell_propagate_accs_report("conv2", CONV2_NB_CHANNELS, CONV2_CHANNELS_HEIGHT, CONV2_CHANNELS_WIDTH, CONV2_PADDING_Y, CONV2_PADDING_X, CONV2_STRIDE_Y, CONV2_STRIDE_X, CONV2_SUB_SAMPLE_Y, CONV2_SUB_SAMPLE_X, pool1_data, CONV2_OY_SIZE, CONV2_OX_SIZE, CONV2_OUTPUTS_HEIGHT, CONV2_OUTPUTS_WIDTH, CONV2_NB_OUTPUTS, &conv2_acc_min, &conv2_acc_max, &conv2_presat_min, &conv2_presat_max, CONV2_KERNEL_HEIGHT, CONV2_KERNEL_WIDTH, conv2_biases, conv2_weights, ACC_DYN_REPORT);
-#endif
-#ifdef DATA_DYN_ANALYSIS
-    static DATA_T conv2_min = DATA_T_MAX;
-    static DATA_T conv2_max = DATA_T_MIN;
-    static RUNNING_MEAN_T conv2_mean = {0.0, 0};
-    convcell_outputs_dynamic_print("conv2", CONV2_NB_OUTPUTS, CONV2_OUTPUTS_HEIGHT, CONV2_OUTPUTS_WIDTH, conv2_data, &conv2_min, &conv2_max, &conv2_mean);
-#endif
-#ifdef SAVE_OUTPUTS
-    convcell_outputs_save("conv2.txt", CONV2_NB_OUTPUTS, CONV2_OUTPUTS_HEIGHT, CONV2_OUTPUTS_WIDTH, conv2_data);
-#endif
+    convcell_upropagate_conv2(pool1_data,  conv2_data, conv2_biases, conv2_weights);
 /************************************LAYER (4)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    poolcell_upropagate_unitmap(POOL2_NB_CHANNELS, POOL2_CHANNELS_HEIGHT, POOL2_CHANNELS_WIDTH, POOL2_STRIDE_Y, POOL2_STRIDE_X, conv2_data, POOL2_NB_OUTPUTS, POOL2_OUTPUTS_HEIGHT, POOL2_OUTPUTS_WIDTH, POOL2_NB_OUTPUTS, POOL2_OUTPUT_OFFSET, pool2_data, POOL2_POOL_HEIGHT, POOL2_POOL_WIDTH, POOL2_POOLING, POOL2_ACTIVATION, POOL2_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T pool2_timing = {0.0, 0};
-    time_analysis("pool2", start, end, &pool2_timing);
-#endif
+    poolcell_upropagate_unitmap_pool2(conv2_data, pool2_data);
 /************************************LAYER (5)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    convcell_upropagate_conv3(CONV3_NB_CHANNELS, CONV3_CHANNELS_HEIGHT, CONV3_CHANNELS_WIDTH, CONV3_PADDING_Y, CONV3_PADDING_X, CONV3_STRIDE_Y, CONV3_STRIDE_X, CONV3_SUB_SAMPLE_Y, CONV3_SUB_SAMPLE_X, pool2_data, CONV3_OY_SIZE, CONV3_OX_SIZE, CONV3_NB_OUTPUTS, CONV3_OUTPUTS_HEIGHT, CONV3_OUTPUTS_WIDTH, CONV3_NB_OUTPUTS, CONV3_OUTPUT_OFFSET, conv3_data, CONV3_KERNEL_HEIGHT, CONV3_KERNEL_WIDTH, conv3_biases, conv3_weights, CONV3_ACTIVATION, CONV3_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T conv3_timing = {0.0, 0};
-    time_analysis("conv3", start, end, &conv3_timing);
-#endif
-#ifdef ACC_DYN_ANALYSIS
-    static SUM_T conv3_acc_min = 0;
-    static SUM_T conv3_acc_max = 0;
-    static SUM_T conv3_presat_min = 0;
-    static SUM_T conv3_presat_max = 0;
-    convcell_propagate_accs_report("conv3", CONV3_NB_CHANNELS, CONV3_CHANNELS_HEIGHT, CONV3_CHANNELS_WIDTH, CONV3_PADDING_Y, CONV3_PADDING_X, CONV3_STRIDE_Y, CONV3_STRIDE_X, CONV3_SUB_SAMPLE_Y, CONV3_SUB_SAMPLE_X, pool2_data, CONV3_OY_SIZE, CONV3_OX_SIZE, CONV3_OUTPUTS_HEIGHT, CONV3_OUTPUTS_WIDTH, CONV3_NB_OUTPUTS, &conv3_acc_min, &conv3_acc_max, &conv3_presat_min, &conv3_presat_max, CONV3_KERNEL_HEIGHT, CONV3_KERNEL_WIDTH, conv3_biases, conv3_weights, ACC_DYN_REPORT);
-#endif
-#ifdef DATA_DYN_ANALYSIS
-    static DATA_T conv3_min = DATA_T_MAX;
-    static DATA_T conv3_max = DATA_T_MIN;
-    static RUNNING_MEAN_T conv3_mean = {0.0, 0};
-    convcell_outputs_dynamic_print("conv3", CONV3_NB_OUTPUTS, CONV3_OUTPUTS_HEIGHT, CONV3_OUTPUTS_WIDTH, conv3_data, &conv3_min, &conv3_max, &conv3_mean);
-#endif
-#ifdef SAVE_OUTPUTS
-    convcell_outputs_save("conv3.txt", CONV3_NB_OUTPUTS, CONV3_OUTPUTS_HEIGHT, CONV3_OUTPUTS_WIDTH, conv3_data);
-#endif
+    convcell_upropagate_conv3(pool2_data, conv3_data, conv3_biases, conv3_weights);
 /************************************LAYER (6)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    fccell_upropagate_2d(CONV3_NB_OUTPUTS, CONV3_OUTPUTS_HEIGHT, CONV3_OUTPUTS_WIDTH, conv3_data, FC1_NB_OUTPUTS, FC1_NB_OUTPUTS, FC1_OUTPUT_OFFSET, fc1_data, FC1_NB_CHANNELS, fc1_biases, fc1_weights, FC1_ACTIVATION, FC1_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T fc1_timing = {0.0, 0};
-    time_analysis("fc1", start, end, &fc1_timing);
-#endif
-#ifdef DATA_DYN_ANALYSIS
-    static DATA_T fc1_min = DATA_T_MAX;
-    static DATA_T fc1_max = DATA_T_MIN;
-    static RUNNING_MEAN_T fc1_mean = {0.0, 0};
-    fccell_outputs_dynamic_print("fc1", FC1_NB_OUTPUTS, fc1_data, &fc1_min, &fc1_max, &fc1_mean);
-#endif
-#ifdef SAVE_OUTPUTS
-    fccell_outputs_save("fc1.txt", FC1_NB_OUTPUTS, fc1_data);
-#endif
+    fccell_upropagate_2d(conv3_data, fc1_data, fc1_biases, fc1_weights);
 /************************************LAYER (7)***/
-#ifdef TIME_ANALYSIS
-   gettimeofday(&start, NULL);
-#endif
-    fccell_upropagate(FC2_NB_CHANNELS, fc1_data, OUTPUTS_SIZE*NB_OUTPUTS, FC2_NB_OUTPUTS, FC2_OUTPUT_OFFSET, output_data, fc2_biases, fc2_weights, FC2_ACTIVATION, FC2_SHIFT);
-#ifdef TIME_ANALYSIS
-    gettimeofday(&end, NULL);
-    static RUNNING_MEAN_T fc2_timing = {0.0, 0};
-    time_analysis("fc2", start, end, &fc2_timing);
-#endif
-#ifdef DATA_DYN_ANALYSIS
-    static DATA_T fc2_min = DATA_T_MAX;
-    static DATA_T fc2_max = DATA_T_MIN;
-    static RUNNING_MEAN_T fc2_mean = {0.0, 0};
-    fccell_outputs_dynamic_print("fc2", FC2_NB_OUTPUTS, output_data, &fc2_min, &fc2_max, &fc2_mean);
-#endif
-#ifdef SAVE_OUTPUTS
-    fccell_outputs_save("fc2.txt", FC2_NB_OUTPUTS, output_data);
-#endif
-
+    fccell_upropagate(fc1_data, output_data, fc2_biases, fc2_weights);
     output_max(FC2_NB_OUTPUTS, output_data, out_data);
 }

@@ -7,6 +7,7 @@
 #include "typedefs.h"
 #define FC1_NB_OUTPUTS 84
 #define FC1_NB_CHANNELS 120
+#define FC1_OUTPUT_OFFSET 0
 
 #define FC1_ACTIVATION Rectifier
 #define FC1_SHIFT 0

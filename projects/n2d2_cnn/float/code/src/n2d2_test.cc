@@ -11,20 +11,14 @@
 DATA_T env_data[ENV_NB_CHANNELS][ENV_NB_HEIGHT][ENV_NB_WIDTH];
 uint32_t outputEstimated[OUTPUTS_HEIGHT][OUTPUTS_WIDTH];
 
-void write_confusion_matrix(
-		const char * const absolute_cm_file_name,
-		const char * const percentage_cm_file_name,
-		unsigned int nbOutputs,
-        unsigned int * confusion_to_be_cast);
-
 void write_success_rate(const char* const file_name, float rate);
 
 int main(int argc, char* argv[])
 {
 	char** fileList;	
 	unsigned int total;
-    int32_t outputTargets[ENV_NB_OUTPUTS_HEIGHT][ENV_NB_OUTPUTS_WIDTH];
-    float successRate = 0.0;
+  int32_t outputTargets[ENV_NB_OUTPUTS_HEIGHT][ENV_NB_OUTPUTS_WIDTH];
+  float successRate = 0.0;
 	double success = 0;
 	struct timeval start, end;
 	double elapsed = 0.0;
@@ -36,9 +30,8 @@ int main(int argc, char* argv[])
 		printf("Usage: %s path_to_stimuli\n", argv[0]);
 		return EXIT_FAILURE;
 	}
-	else
-		total = sortedFileList(argv[1], &fileList, 0);
-
+		
+  total = sortedFileList(argv[1], &fileList, 0);
 
 	omp_set_num_threads(8);
 

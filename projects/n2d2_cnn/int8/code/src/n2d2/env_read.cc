@@ -3,13 +3,8 @@
 #include <stdio.h>
 
 void env_read(char* fileName,
-              unsigned int nbChannels,
-              unsigned int channelsHeight,
-              unsigned int channelsWidth,
-              DATA_T inputs[nbChannels][channelsHeight][channelsWidth],
-              unsigned int outputsHeight,
-              unsigned int outputsWidth,
-              int32_t outputTargets[outputsHeight][outputsWidth])
+              DATA_T (&inputs)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X],
+              int32_t (&outputTargets)[ENV_NB_OUTPUTS_HEIGHT][ENV_NB_OUTPUTS_WIDTH])
 {
     FILE* filePtr = fopen(fileName, "rb");
 
@@ -33,8 +28,8 @@ void env_read(char* fileName,
     fscanf(filePtr, "%d %d %d", &pixelWidth, &pixelHeight, &maxValue);
     fgetc(filePtr);
 
-    if (pixelWidth != (int)channelsWidth || pixelHeight
-                                            != (int)channelsHeight) {
+    if (pixelWidth != (int)ENV_SIZE_X || pixelHeight
+                                            != (int)ENV_SIZE_Y) {
         fprintf(stderr,
                 "PGM image size does not match array size for file %s\n",
                 fileName);
@@ -47,35 +42,35 @@ void env_read(char* fileName,
 #if NB_BITS > 0 && NB_BITS != 8 && NB_BITS != 16 && NB_BITS != 32 && NB_BITS   \
                                                                      != 64
 #if NB_BITS > 0 && NB_BITS < 8
-    char inputs_fixed[nbChannels][channelsHeight][channelsWidth];
+    char inputs_fixed[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X];
 #elif NB_BITS > 8 && NB_BITS < 16
-    short inputs_fixed[nbChannels][channelsHeight][channelsWidth];
+    short inputs_fixed[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X];
 #elif NB_BITS > 16 && NB_BITS < 32
-    int inputs_fixed[nbChannels][channelsHeight][channelsWidth];
+    int inputs_fixed[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X];
 #elif NB_BITS > 32 && NB_BITS < 64
-    long long int inputs_fixed[nbChannels][channelsHeight][channelsWidth];
+    long long int inputs_fixed[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X];
 #endif
-    nbRead = fread(inputs_fixed, sizeof(inputs_fixed[0]), nbChannels, filePtr);
+    nbRead = fread(inputs_fixed, sizeof(inputs_fixed[0]), ENV_NB_OUTPUTS, filePtr);
 
-    for (unsigned int channel = 0; channel < nbChannels; ++channel) {
-        for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
-            for (unsigned int ix = 0; ix < channelsWidth; ++ix)
+    for (unsigned int channel = 0; channel < ENV_NB_OUTPUTS; ++channel) {
+        for (unsigned int iy = 0; iy < ENV_SIZE_Y; ++iy) {
+            for (unsigned int ix = 0; ix < ENV_SIZE_X; ++ix)
                 inputs[channel][iy][ix] = (DATA_T)inputs_fixed[channel][iy][ix];
         }
     }
 #else
-    nbRead = fread(inputs, sizeof(inputs[0]), nbChannels, filePtr);
+    nbRead = fread(inputs, sizeof(inputs[0]), ENV_NB_OUTPUTS, filePtr);
 #endif
 
-    if (nbRead != nbChannels)
+    if (nbRead != ENV_NB_OUTPUTS)
         fprintf(stderr,
                 "fread() number of read objects different than expected\n");
 
     /*
-        for (unsigned int channel = 0; channel < nbChannels; ++channel) {
+        for (unsigned int channel = 0; channel < ENV_NB_OUTPUTS; ++channel) {
             // DEBUG
-            for (unsigned int iy = 0; iy < channelsHeight; ++iy) {
-                for (unsigned int ix = 0; ix < channelsWidth; ++ix) {
+            for (unsigned int iy = 0; iy < ENV_SIZE_Y; ++iy) {
+                for (unsigned int ix = 0; ix < ENV_SIZE_X; ++ix) {
                     printf("%d", inputs[channel][iy][ix]);
                 }
 
@@ -84,9 +79,9 @@ void env_read(char* fileName,
         }
     */
     nbRead = fread(
-        outputTargets, sizeof(outputTargets[0]), outputsHeight, filePtr);
+        outputTargets, sizeof(outputTargets[0]), ENV_NB_OUTPUTS_HEIGHT, filePtr);
 
-    if (nbRead != outputsHeight)
+    if (nbRead != ENV_NB_OUTPUTS_HEIGHT)
         fprintf(stderr,
                 "fread() number of read objects different than expected\n");
 

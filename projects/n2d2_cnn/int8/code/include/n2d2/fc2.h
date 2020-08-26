@@ -7,6 +7,7 @@
 #include "typedefs.h"
 #define FC2_NB_OUTPUTS 10
 #define FC2_NB_CHANNELS 84
+#define FC2_OUTPUT_OFFSET 0
 
 #define FC2_ACTIVATION Linear
 #define FC2_SHIFT 3
