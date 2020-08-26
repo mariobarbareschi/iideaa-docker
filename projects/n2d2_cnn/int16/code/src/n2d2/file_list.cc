@@ -6,8 +6,8 @@
 
 int compare(void const* a, void const* b)
 {
-    char const* const* pa = (char const* const*)a;
-    char const* const* pb = (char const* const*)b;
+    char const* const* pa = (char const * const *) a;
+    char const* const* pb = (char const * const *) b;
     return strcmp(*pa, *pb);
 }
 
@@ -60,7 +60,7 @@ int sortedFileList(const char* const dirName,
 #endif
 
     // Allocate enough space
-    (*fileList) = (char**) malloc(count * sizeof(*(*fileList)));
+    (*fileList) = (char **) malloc(count * sizeof(*(*fileList)));
 
     if ((*fileList) == NULL) {
 #ifndef NO_DIRENT

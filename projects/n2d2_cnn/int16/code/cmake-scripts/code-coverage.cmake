@@ -81,7 +81,7 @@ option(
 
 # Programs
 find_program(LLVM_COV_PATH llvm-cov-7)
-find_program(LLVM_PROFDATA_PATH llvm-profdata)
+find_program(LLVM_PROFDATA_PATH llvm-profdata-7)
 find_program(LCOV_PATH lcov)
 find_program(GENHTML_PATH genhtml)
 # Hide behind the 'advanced' mode flag for GUI/ccmake

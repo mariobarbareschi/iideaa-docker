@@ -32,7 +32,6 @@ add_library(
 	n2d2cnn SHARED 
 	src/n2d2/file_list.cc
 	src/n2d2/env_read.cc
-  src/n2d2/n2d2.cc
 	src/n2d2/network.cc
 )
 
@@ -67,7 +66,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_executable(n2d2_coverage 
     src/n2d2/file_list.cc
     src/n2d2/env_read.cc
-    src/n2d2/n2d2.cc
     src/n2d2/network.cc
     src/n2d2_coverage.cc
   )
