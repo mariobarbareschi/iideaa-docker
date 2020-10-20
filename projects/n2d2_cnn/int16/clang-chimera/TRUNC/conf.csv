@@ -1,0 +1,5 @@
+convcell_upropagate_conv1,TruncAdder-Operator
+convcell_upropagate_conv2,TruncAdder-Operator
+convcell_upropagate_conv3,TruncAdder-Operator
+fccell_upropagate_2d,TruncAdder-Operator
+fccell_upropagate,TruncAdder-Operator
