@@ -2,7 +2,7 @@
 
 #Clone Clang-Chimera repo
 cd ~
-git clone https://github.com/mariobarbareschi/clang-chimera.git
+git clone https://github.com/SalvatoreBarone/clang-chimera.git
 
 #Solve LLVM 3.9.1 bug of jit cmake
 sed -i 's/list(APPEND link_components "jit")/list(APPEND link_components "mcjit")/g' /usr/lib/cmake/llvm/LLVM-Config.cmake

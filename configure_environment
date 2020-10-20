@@ -5,19 +5,31 @@ chmod +x /opt/scripts/install_*
 echo "*********** INSTALLING IIDEAA DEPENDENCIES ***********"
 /opt/scripts/install_dependencies
 
-echo "*********** INSTALLING CMake 3.17 ***********"
+echo "*********** INSTALLING CMake 3.17 ********************"
 /opt/scripts/install_cmake
 
-echo "*********** INSTALLING LLVM/Clang 3.9.1 ***********"
+echo "*********** INSTALLING LLVM/Clang 3.9.1 **************"
 /opt/scripts/install_llvm391
 
-echo "*********** INSTALLING Clang-Chimera ***********"
+echo "*********** INSTALLING Clang-Chimera *****************"
 /opt/scripts/install_clang-chimera
 
-echo "*********** INSTALLING ParadisEO ***********"
+echo "*********** INSTALLING ParadisEO *********************"
 /opt/scripts/install_paradisEO
 
-echo "*********** INSTALLING Bellerophon ***********"
+echo "*********** INSTALLING Bellerophon *******************"
 /opt/scripts/install_bellerophon
 
-echo "*********** ENVIRONMENT CONFIGURATION COMPLETED ***********"
+echo "*********** INSTALLING OPENCV ************************"
+/opt/scripts/install_opencv
+
+echo "*********** INSTALLING CNL **************************"
+/opt/scripts/install_cnl
+
+echo "*********** INSTALLING AxC-Adders *******************"
+/opt/scripts/install_axc_adders
+
+#echo "*********** INSTALLING AxDCT ************************"
+#/opt/scripts/install_axdct
+
+echo "*********** BUILD COMPLETED *************************"

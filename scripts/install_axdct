@@ -1,0 +1,5 @@
+#!/bin/bash
+cd ~/projects/AxDCT
+mkdir build && cd build
+cmake .. -G Ninja
+ninja

@@ -8,7 +8,7 @@ RUN apt-get -qq dist-upgrade -y > /dev/null && apt-get -qq autoremove -y > /dev/
 # Copy install script
 ADD ./configure_environment /opt
 ADD ./scripts /opt/scripts
-ADD ./projects /opt/projects
+#ADD ./projects /opt/projects
 
 SHELL ["/bin/bash", "-c"]
 
