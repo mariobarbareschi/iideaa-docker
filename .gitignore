@@ -49,3 +49,9 @@ projects/n2d2_cnn/int8/export_C_int8/
 projects/n2d2_cnn/clustered/code/.idea/
 
 projects/n2d2_cnn/clustered/code/cmake-build-debug/
+
+projects/n2d2_cnn/int16/code/cmake-build-debug/
+
+projects/n2d2_cnn/int16/code/.idea/
+
+projects/n2d2_cnn/int8/code/.idea/
