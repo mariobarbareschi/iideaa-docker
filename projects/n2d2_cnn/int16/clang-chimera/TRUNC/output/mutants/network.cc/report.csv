@@ -1,0 +1,10 @@
+6,neuron_conv1,32,22,mutator_truncadder,0
+6,neuron_conv1,33,23,mutator_truncadder,0
+6,neuron_conv2,92,22,mutator_truncadder,0
+6,neuron_conv2,93,23,mutator_truncadder,0
+6,neuron_conv3,145,19,mutator_truncadder,0
+6,neuron_conv3,146,23,mutator_truncadder,0
+6,fccell_upropagate_2d,282,21,mutator_truncadder,0
+6,fccell_upropagate_2d,283,25,mutator_truncadder,0
+6,fccell_upropagate,302,20,mutator_truncadder,0
+6,fccell_upropagate,303,21,mutator_truncadder,0

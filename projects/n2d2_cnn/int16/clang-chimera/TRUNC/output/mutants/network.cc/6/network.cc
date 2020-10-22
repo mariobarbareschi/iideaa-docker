@@ -4,6 +4,8 @@
 #include "fap.h"
 #include "trunc.h"
 
+int nab_1 = 0;
+int nab_0 = 0;
 SUM_T neuron_conv1
   (
     DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
@@ -29,8 +31,8 @@ SUM_T neuron_conv1
         //// weightedSum += (SUM_T) (*weights[output][channel])[sy][sx] * (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix + sx]);
         SUM_T weight = (SUM_T) (*weights[output][channel])[sy][sx];
         SUM_T input = (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix +sx]);
-        SUM_T prod = weight * input;
-        weightedSum = weightedSum + prod;
+        SUM_T prod = TRUNCATE(TRUNCATE(weight, nab_0)*TRUNCATE(input, nab_0), nab_0);
+        weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_1)+TRUNCATE(prod, nab_1), nab_1);
       }
   }
   return weightedSum;
@@ -51,7 +53,10 @@ void convcell_upropagate_conv1(
         const unsigned int sxMin = (unsigned int) int_max((int) CONV1_PADDING_X - (int) (ox * CONV1_STRIDE_X), 0);
         const unsigned int syMin = (unsigned int) int_max((int) CONV1_PADDING_Y - (int) (oy * CONV1_STRIDE_Y), 0);
         const unsigned int sxMax = (unsigned int) int_max(int_min((int) CONV1_CHANNELS_WIDTH + CONV1_PADDING_X - (int) (ox * CONV1_STRIDE_X), (int) CONV1_KERNEL_WIDTH), 0);
-        const unsigned int syMax = (unsigned int) int_max(int_min((int) CONV1_CHANNELS_HEIGHT + CONV1_PADDING_Y - (int) (oy * CONV1_STRIDE_Y), (int) CONV1_KERNEL_HEIGHT), 0);
+        const unsigned int syMax = (unsigned int) int_max(int_min(
+          (int) CONV1_CHANNELS_HEIGHT + CONV1_PADDING_Y -
+          (int) (oy * CONV1_STRIDE_Y), (int) CONV1_KERNEL_HEIGHT), 0);
+        
         const int ix = (int) (ox * CONV1_STRIDE_X) - (int) CONV1_PADDING_X;
         const int iy = (int) (oy * CONV1_STRIDE_Y) - (int) CONV1_PADDING_Y;
         
@@ -62,6 +67,8 @@ void convcell_upropagate_conv1(
       }
 }
 
+int nab_3 = 0;
+int nab_2 = 0;
 SUM_T neuron_conv2
 (
   DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
@@ -86,8 +93,8 @@ SUM_T neuron_conv2
         //// weightedSum += (SUM_T) (*weights[output][channel])[sy][sx] * (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix + sx]);
         SUM_T weight = (SUM_T) (*weights[output][channel])[sy][sx];
         SUM_T input = (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix +sx]);
-        SUM_T prod = weight * input;
-        weightedSum = weightedSum + prod;
+        SUM_T prod = TRUNCATE(TRUNCATE(weight, nab_2)*TRUNCATE(input, nab_2), nab_2);
+        weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_3)+TRUNCATE(prod, nab_3), nab_3);
       }
   }
   return weightedSum;
@@ -116,6 +123,8 @@ void convcell_upropagate_conv2(
       }
 }
 
+int nab_5 = 0;
+int nab_4 = 0;
 SUM_T neuron_conv3
 (
   DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
@@ -139,8 +148,8 @@ SUM_T neuron_conv3
       {
         SUM_T w = (*weights[output][channel])[sy][sx];
         SUM_T i = ((UDATA_T) inputs[channel][iy + sy][ix + sx]);
-        SUM_T p = w * i;
-        weightedSum = weightedSum + p;
+        SUM_T p = TRUNCATE(TRUNCATE(w, nab_4)*TRUNCATE(i, nab_4), nab_4);
+        weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_5)+TRUNCATE(p, nab_5), nab_5);
       }
   }
   return weightedSum;
@@ -257,6 +266,8 @@ void poolcell_upropagate_unitmap_pool2(
   }
 }
 
+int nab_7 = 0;
+int nab_6 = 0;
 void fccell_upropagate_2d(
   DATA_T (&inputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
   DATA_T (&outputs)[FC1_NB_OUTPUTS],
@@ -267,19 +278,26 @@ void fccell_upropagate_2d(
   {
     SUM_T weightedSum = bias[output];
     unsigned int c = 0;
+    
     for (unsigned int channel = 0; channel < CONV3_NB_OUTPUTS; ++channel)
+    {
       for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy)
+      {
         for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix, c++)
         {
           SUM_T w = weights[output][c];
           SUM_T i = ((UDATA_T) inputs[channel][iy][ix]);
-          SUM_T p = w * i;
-          weightedSum = weightedSum + p;
+          SUM_T p = TRUNCATE(TRUNCATE(w, nab_6)*TRUNCATE(i, nab_6), nab_6);
+          weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_7)+TRUNCATE(p, nab_7), nab_7);
         }
+     }
+    }
     outputs[FC1_OUTPUT_OFFSET + output] = usat(weightedSum, FC1_ACTIVATION, FC1_SHIFT);
   }
 }
 
+int nab_9 = 0;
+int nab_8 = 0;
 void fccell_upropagate(
   DATA_T (&inputs)[FC2_NB_CHANNELS],
   DATA_T (&outputs)[FC2_NB_OUTPUTS],
@@ -291,9 +309,10 @@ void fccell_upropagate(
     SUM_T weightedSum = bias[output];
     for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
     {
-      SUM_T prod = weights[output][channel] * ((UDATA_T) inputs[channel]);
-      weightedSum = weightedSum + prod;
+      SUM_T prod = TRUNCATE(TRUNCATE(weights[output][channel], nab_8)*TRUNCATE(((UDATA_T) inputs[channel]), nab_8), nab_8);
+      weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_9)+TRUNCATE(prod, nab_9), nab_9);
     }
+    
     outputs[FC2_OUTPUT_OFFSET + output] = usat(weightedSum, FC2_ACTIVATION, FC2_SHIFT);
   }
 }
@@ -314,6 +333,7 @@ void output_max(unsigned int nbOutputs, DATA_T outputs[nbOutputs], uint32_t outp
         outputMax = output;
       }
     }
+    
     outputEstimated[0][0] = outputMax;
   } else
     outputEstimated[0][0] = (outputs[0] > (BINARY_THRESHOLD * DATA_T_MAX));
