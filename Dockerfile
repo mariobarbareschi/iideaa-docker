@@ -28,7 +28,7 @@ RUN echo "Installing a fancy shell..."
 RUN ["apt-get", "-qq", "install", "-y", "zsh", "nano"]
 RUN wget --quiet https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-RUN clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 RUN ~/.fzf/install --all
 RUN sed -i "s/git/git sudo docker zsh-autosuggestions fzf/g" ~/.zshrc
 RUN sed -i "s/robbyrussell/af-magic/g" ~/.zshrc
