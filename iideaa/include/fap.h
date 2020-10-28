@@ -108,7 +108,7 @@ namespace fap {
     
     using IntegerPrecision = uint8_t;
     
-    /// @brief Class for integer type
+    /// @brief Class for ax_integer type
     class IntegerType {
     public:
         IntegerType()
@@ -175,7 +175,7 @@ namespace fap {
         }
         
         // Overloaded operators
-        /// @brief Conversion to integer types
+        /// @brief Conversion to ax_integer types
         template<typename intType>
         explicit operator intType() const {
             return (intType) this->bits;
@@ -206,7 +206,7 @@ namespace fap {
         }
         
         // Public methods
-        /// @brief Change the precision of this integer
+        /// @brief Change the precision of this ax_integer
         void changePrec(IntegerPrecision);
         
         /// @brief Adapt the precision of this and \p i IntegerType to the lowest

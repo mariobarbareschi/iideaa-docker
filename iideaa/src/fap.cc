@@ -121,6 +121,7 @@ void fap_shift_left_(uint128_t *bit_vector, int to_shift, uint8_t *grs) {
   this->setGrs(0);
   return *this;
 }
+
 ::fap::FloatingPointType & ::fap::FloatingPointType::operator=(double fp) {
   this->prec.mant_size = DOUBLE_MANT_SIZE;
   this->prec.exp_size = DOUBLE_EXP_SIZE;
