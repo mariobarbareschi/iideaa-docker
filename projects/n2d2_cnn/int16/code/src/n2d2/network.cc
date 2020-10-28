@@ -1,7 +1,6 @@
 #include <string.h>
 #include "network.h"
 #include "math.h"
-#include "fap.h"
 #include "trunc.h"
 
 SUM_T neuron_conv1
@@ -299,14 +298,14 @@ void fccell_upropagate(
 }
 
 
-void output_max(unsigned int nbOutputs, DATA_T outputs[nbOutputs], uint32_t outputEstimated[1][1])
+void output_max(DATA_T outputs[FC2_NB_OUTPUTS], uint32_t outputEstimated[1][1])
 {
-  if (nbOutputs > 1)
+  if (FC2_NB_OUTPUTS > 1)
   {
     DATA_T maxVal = outputs[0];
     unsigned int outputMax = 0;
     
-    for (unsigned int output = 1; output < nbOutputs; ++output)
+    for (unsigned int output = 1; output < FC2_NB_OUTPUTS; ++output)
     {
       if (outputs[output] > maxVal)
       {
@@ -357,5 +356,5 @@ void network(DATA_T (&in_data)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X],
   fccell_upropagate_2d(conv3_data, fc1_data, fc1_biases, fc1_weights);
 /************************************LAYER (7)***/
   fccell_upropagate(fc1_data, output_data, fc2_biases, fc2_weights);
-  output_max(FC2_NB_OUTPUTS, output_data, out_data);
+  output_max(output_data, out_data);
 }

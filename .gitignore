@@ -63,3 +63,5 @@ projects/iideaa/cmake-build-debug/
 iideaa/.idea/
 
 iideaa/cmake-build-debug/
+
+projects/n2d2_cnn/int8/code/cmake-build-debug/

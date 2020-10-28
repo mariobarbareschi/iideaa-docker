@@ -1,7 +1,6 @@
 #include <string.h>
 #include "network.h"
 #include "math.h"
-#include "fap.h"
 #include "trunc.h"
 
 int nab_1 = 0;
@@ -27,8 +26,8 @@ SUM_T neuron_conv1
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = TRUNCATE(TRUNCATE((*weights[output][channel])[sy][sx], nab_0)*TRUNCATE(((UDATA_T) inputs[channel][iy + sy][ix + sx]), nab_0), nab_0);
-        weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_1)+TRUNCATE(prod, nab_1), nab_1);
+        SUM_T prod = truncate::ax_integer(nab_0, (*weights[output][channel])[sy][sx]) * truncate::ax_integer(nab_0, ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
+        weightedSum = truncate::ax_integer(nab_1, weightedSum) + truncate::ax_integer(nab_1, prod);
       }
   }
   return weightedSum;
@@ -78,8 +77,8 @@ SUM_T neuron_conv2
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = TRUNCATE(TRUNCATE((*weights[output][channel])[sy][sx], nab_2)*TRUNCATE(((UDATA_T) inputs[channel][iy + sy][ix + sx]), nab_2), nab_2);
-        weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_3)+TRUNCATE(prod, nab_3), nab_3);
+        SUM_T prod = truncate::ax_integer(nab_2, (*weights[output][channel])[sy][sx]) * truncate::ax_integer(nab_2, ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
+        weightedSum = truncate::ax_integer(nab_3, weightedSum) + truncate::ax_integer(nab_3, prod);
       }
   }
   return weightedSum;
@@ -129,8 +128,8 @@ SUM_T neuron_conv3
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = TRUNCATE(TRUNCATE((*weights[output][channel])[sy][sx], nab_4)*TRUNCATE(((UDATA_T) inputs[channel][iy + sy][ix + sx]), nab_4), nab_4);
-        weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_5)+TRUNCATE(prod, nab_5), nab_5);
+        SUM_T prod = truncate::ax_integer(nab_4, (*weights[output][channel])[sy][sx]) * truncate::ax_integer(nab_4, ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
+        weightedSum = truncate::ax_integer(nab_5, weightedSum) + truncate::ax_integer(nab_5, prod);
       }
   }
   return weightedSum;
@@ -251,8 +250,8 @@ void fccell_upropagate_2d(
       for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy)
         for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix)
         {
-          SUM_T prod = TRUNCATE(TRUNCATE(weights[output][c++], nab_6)*TRUNCATE(((UDATA_T) inputs[channel][iy][ix]), nab_6), nab_6);
-          weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_7)+TRUNCATE(prod, nab_7), nab_7);
+          SUM_T prod = truncate::ax_integer(nab_6, weights[output][c++]) * truncate::ax_integer(nab_6, ((UDATA_T) inputs[channel][iy][ix]));
+          weightedSum = truncate::ax_integer(nab_7, weightedSum) + truncate::ax_integer(nab_7, prod);
         }
     outputs[FC1_OUTPUT_OFFSET + output] = usat(weightedSum, FC1_ACTIVATION, FC1_SHIFT);
   }
@@ -271,24 +270,23 @@ void fccell_upropagate(
     SUM_T weightedSum = bias[output];
     for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
     {
-      SUM_T prod = TRUNCATE(TRUNCATE(weights[output][channel], nab_8)*TRUNCATE(((UDATA_T) inputs[channel]), nab_8), nab_8);
-      weightedSum = TRUNCATE(TRUNCATE(weightedSum, nab_9)+TRUNCATE(prod, nab_9), nab_9);
+      SUM_T prod = truncate::ax_integer(nab_8, weights[output][channel]) * truncate::ax_integer(nab_8, ((UDATA_T) inputs[channel]));
+      weightedSum = truncate::ax_integer(nab_9, weightedSum) + truncate::ax_integer(nab_9, prod);
     }
     outputs[FC2_OUTPUT_OFFSET + output] = usat(weightedSum, FC2_ACTIVATION, FC2_SHIFT);
   }
 }
 
 
-void output_max(unsigned int nbOutputs,
-                DATA_T outputs[nbOutputs],
+void output_max(DATA_T outputs[FC2_NB_OUTPUTS],
                 uint32_t outputEstimated[1][1])
 {
-  if (nbOutputs > 1)
+  if (FC2_NB_OUTPUTS > 1)
   {
     DATA_T maxVal = outputs[0];
     unsigned int outputMax = 0;
     
-    for (unsigned int output = 1; output < nbOutputs; ++output)
+    for (unsigned int output = 1; output < FC2_NB_OUTPUTS; ++output)
     {
       if (outputs[output] > maxVal)
       {
@@ -337,5 +335,5 @@ void network(DATA_T (&in_data)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X], uint32_t
   fccell_upropagate_2d(conv3_data, fc1_data, fc1_biases, fc1_weights);
 /************************************LAYER (7)***/
   fccell_upropagate(fc1_data, output_data, fc2_biases, fc2_weights);
-  output_max(FC2_NB_OUTPUTS, output_data, out_data);
+  output_max(output_data, out_data);
 }

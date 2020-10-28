@@ -36,8 +36,7 @@ add_library(
 
 target_include_directories(
 	n2d2cnn 
-	PRIVATE include
-	PRIVATE include/iideaa
+	PRIVATE ~/iideaa/include
 	PRIVATE include/n2d2
 )
 
@@ -50,8 +49,7 @@ add_executable(
 
 target_include_directories(
 	n2d2_test 
-	PRIVATE include
-	PRIVATE include/iideaa
+	PRIVATE ~/iideaa/include
 	PRIVATE include/n2d2
 )
 
