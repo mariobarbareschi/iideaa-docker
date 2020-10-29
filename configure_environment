@@ -5,8 +5,6 @@ chmod +x /opt/scripts/install_*
 echo "*********** INSTALLING IIDEAA DEPENDENCIES ***********"
 /opt/scripts/install_dependencies
 
-#echo "*********** INSTALLING CMake 3.17 ********************"
-#/opt/scripts/install_cmake
 
 echo "*********** INSTALLING LLVM/Clang 3.9.1 **************"
 /opt/scripts/install_llvm391
@@ -31,5 +29,8 @@ echo "*********** INSTALLING AxC-Adders *******************"
 
 #echo "*********** INSTALLING AxDCT ************************"
 #/opt/scripts/install_axdct
+
+#echo "*********** INSTALLING CMake 3.17 ********************"
+#/opt/scripts/install_cmake
 
 echo "*********** BUILD COMPLETED *************************"
