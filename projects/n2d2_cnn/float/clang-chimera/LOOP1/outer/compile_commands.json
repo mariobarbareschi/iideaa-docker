@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/root/projects/n2d2_cnn/float/code/build",
-  "command": "/usr/bin/clang++   -I/root/projects/n2d2_cnn/float/code/include  -I/root/projects/n2d2_cnn/float/code/include/iideaa -I/root/projects/n2d2_cnn/float/code/include/n2d2  -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/n2d2/network.cc.o -c /root/projects/n2d2_cnn/float/code/src/n2d2/network.cc",
-  "file": "/root/projects/n2d2_cnn/float/code/src/n2d2/network.cc"
-}
-]
