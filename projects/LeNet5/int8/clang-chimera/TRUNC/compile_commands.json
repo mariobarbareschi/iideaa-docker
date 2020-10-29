@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/root/projects/LeNet5/int8/code/build",
+  "command": "/usr/bin/clang++   -I/root/projects/LeNet5/int8/code/include -I/root/iideaa/include/ -I/root/projects/LeNet5/int8/code/include/n2d2 -DNB_BITS=16  -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/n2d2/network.cc.o -c /root/projects/LeNet5/int8/code/src/n2d2/network.cc",
+  "file": "/root/projects/LeNet5/int8/code/src/n2d2/network.cc"
+}
+]
