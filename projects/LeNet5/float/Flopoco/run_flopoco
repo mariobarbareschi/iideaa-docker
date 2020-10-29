@@ -1,0 +1,2 @@
+#!/bin/bash
+docker run --rm=true -v `pwd`:/flopoco_workspace flopoco "$@"
