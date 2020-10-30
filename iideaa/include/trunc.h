@@ -9,7 +9,6 @@ class ax_integer
 {
   public:
     
-    
     ////////////////////////////////////////////////////////////////////////////
     /// Constructors
     explicit ax_integer(uint8_t nab, int8_t value) : internal_type(int8), nab(nab), actual_value(value), apprx_mask(axmask(nab)) {}
@@ -45,7 +44,7 @@ class ax_integer
     
     ////////////////////////////////////////////////////////////////////////////
     /// Relational operators
-    inline bool operator==(const ax_integer& rhs) const;
+    bool operator==(const ax_integer& rhs) const;
     inline bool operator!=(const ax_integer& rhs) const {return !(*this == rhs);}
     bool operator< (const ax_integer& rhs) const;
     inline bool operator> (const ax_integer& rhs) const {return rhs < *this;}
@@ -80,7 +79,9 @@ class ax_integer
     uint64_t actual_value;
     uint64_t apprx_mask;
     
-    static inline uint64_t axmask(uint8_t nab) {return ~((1U << nab)-1);}
+    explicit ax_integer(uint8_t nab, internal_type_t type, uint64_t value) : internal_type(type), nab(nab), actual_value(value), apprx_mask(axmask(nab)) {}
+    inline uint64_t axmask(uint8_t nab) {return ~((1U << nab)-1);}
+    inline bool is_signed() const;
 
 };
 
