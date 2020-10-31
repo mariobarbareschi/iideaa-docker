@@ -32,7 +32,7 @@ int main()
   truncate::ax_integer ax_uint64(9, var_uint64);
   
   std::cout << ax_int8.getNab()   << "\t" << std::hex << ax_int8.getMask()   << "\t" << std::hex << (int8_t) ax_int8     << std::endl;
-  std::cout << ax_uint8.getNab()  << "\t" << std::hex << ax_uint8.getMask()  << "\t" << std::hex << (uint8_t)  ax_uint8  << std::endl;
+  std::cout << ax_uint8.getNab()  << "\t" << std::hex << ax_uint8.getMask()  << "\t" << std::hex << (uint8_t) ax_uint8  << std::endl;
   
   std::cout << ax_int16.getNab()  << "\t" << std::hex << ax_int16.getMask()  << "\t" << std::hex << (int16_t) ax_int16   << std::endl;
   std::cout << ax_uint16.getNab() << "\t" << std::hex << ax_uint16.getMask() << "\t" << std::hex << (uint16_t) ax_uint16 << std::endl;

@@ -1,23 +1,20 @@
-project (LeNet5_float LANGUAGES CXX)
+project (LeNet5_int16_debug LANGUAGES CXX)
 cmake_minimum_required (VERSION 3.10)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-include(cmake-scripts/code-coverage.cmake)
-
-if (NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Release)
-endif()
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsigned-char -march=native -fPIC")
 set (CMAKE_CXX_STANDARD 11)
 set (CXX_STANDARD_REQUIRED ON)
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Release)
+endif()
 
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -43,6 +40,7 @@ add_library(
 target_include_directories(
 	n2d2cnn 
 	PRIVATE ~/iideaa/include
+	PRIVATE include
 	PRIVATE include/n2d2
 )
 
@@ -51,6 +49,7 @@ add_dependencies(library_database n2d2cnn)
 add_executable(
 	n2d2_test 
 	src/n2d2_test.cc
+	src/trunc.cc
 )
 
 target_include_directories(
@@ -60,35 +59,15 @@ target_include_directories(
 )
 
 target_link_libraries(
-	n2d2_test 
-	OpenMP::OpenMP_CXX
-	m 
-	n2d2cnn )
+	n2d2_test
+	m
+	n2d2cnn
+	OpenMP::OpenMP_CXX)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message(STATUS "Debug configuration")
+  include(cmake-scripts/code-coverage.cmake)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -O0")
-	add_code_coverage()
-
-  add_executable(n2d2_coverage 
-    src/n2d2/file_list.cc
-    src/n2d2/env_read.cc
-    src/n2d2/network.cc
-    src/n2d2_coverage.cc
-  )
-
-  target_include_directories(
-    n2d2_coverage 
-    PRIVATE ~/iideaa/include
-    PRIVATE include/n2d2
-  )
-
-  target_link_libraries(
-	  n2d2_coverage 
-	  OpenMP::OpenMP_CXX
-	  m)
-
-   target_code_coverage(n2d2_coverage)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 	message(STATUS "Release configuration")
 	set (CMAKE_CXX_FLAGS	"${CMAKE_CXX_FLAGS} -O3")
