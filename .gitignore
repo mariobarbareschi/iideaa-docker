@@ -69,3 +69,5 @@ projects/n2d2_cnn/int8/code/cmake-build-debug/
 projects/LeNet5/clustered/code/.idea/
 
 projects/LeNet5/int8/clang-chimera/TRUNC/output/
+
+projects/LeNet5/int16/clang-chimera/TRUNC/output/
