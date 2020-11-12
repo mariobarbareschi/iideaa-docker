@@ -386,23 +386,32 @@ static const WDATA_T conv2_weights_15_5[CONV2_KERNEL_HEIGHT][CONV2_KERNEL_WIDTH]
     {51, 69, 21, -24, -34},
     {45, 0, -30, -34, -27},
     {-17, -35, -11, -11, 13}};
+
+static const WDATA_T null_weights[CONV2_KERNEL_HEIGHT][CONV2_KERNEL_WIDTH] = {
+  {0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0},
+  {0, 0, 0, 0, 0}};
+
+
 typedef WDATA_T CONV2_KERNEL_T[CONV2_KERNEL_HEIGHT][CONV2_KERNEL_WIDTH];
 static const CONV2_KERNEL_T* conv2_weights[CONV2_NB_OUTPUTS][CONV2_NB_CHANNELS] = {
-    {&conv2_weights_0_0, &conv2_weights_0_1, &conv2_weights_0_2, NULL, NULL, NULL},
-    {NULL, &conv2_weights_1_1, &conv2_weights_1_2, &conv2_weights_1_3, NULL, NULL},
-    {NULL, NULL, &conv2_weights_2_2, &conv2_weights_2_3, &conv2_weights_2_4, NULL},
-    {NULL, NULL, NULL, &conv2_weights_3_3, &conv2_weights_3_4, &conv2_weights_3_5},
-    {&conv2_weights_4_0, NULL, NULL, NULL, &conv2_weights_4_4, &conv2_weights_4_5},
-    {&conv2_weights_5_0, &conv2_weights_5_1, NULL, NULL, NULL, &conv2_weights_5_5},
-    {&conv2_weights_6_0, &conv2_weights_6_1, &conv2_weights_6_2, &conv2_weights_6_3, NULL, NULL},
-    {NULL, &conv2_weights_7_1, &conv2_weights_7_2, &conv2_weights_7_3, &conv2_weights_7_4, NULL},
-    {NULL, NULL, &conv2_weights_8_2, &conv2_weights_8_3, &conv2_weights_8_4, &conv2_weights_8_5},
-    {&conv2_weights_9_0, NULL, NULL, &conv2_weights_9_3, &conv2_weights_9_4, &conv2_weights_9_5},
-    {&conv2_weights_10_0, &conv2_weights_10_1, NULL, NULL, &conv2_weights_10_4, &conv2_weights_10_5},
-    {&conv2_weights_11_0, &conv2_weights_11_1, &conv2_weights_11_2, NULL, NULL, &conv2_weights_11_5},
-    {&conv2_weights_12_0, &conv2_weights_12_1, NULL, &conv2_weights_12_3, &conv2_weights_12_4, NULL},
-    {NULL, &conv2_weights_13_1, &conv2_weights_13_2, NULL, &conv2_weights_13_4, &conv2_weights_13_5},
-    {&conv2_weights_14_0, NULL, &conv2_weights_14_2, &conv2_weights_14_3, NULL, &conv2_weights_14_5},
+    {&conv2_weights_0_0, &conv2_weights_0_1, &conv2_weights_0_2, &null_weights, &null_weights, &null_weights},
+    {&null_weights, &conv2_weights_1_1, &conv2_weights_1_2, &conv2_weights_1_3, &null_weights, &null_weights},
+    {&null_weights, &null_weights, &conv2_weights_2_2, &conv2_weights_2_3, &conv2_weights_2_4, &null_weights},
+    {&null_weights, &null_weights, &null_weights, &conv2_weights_3_3, &conv2_weights_3_4, &conv2_weights_3_5},
+    {&conv2_weights_4_0, &null_weights, &null_weights, &null_weights, &conv2_weights_4_4, &conv2_weights_4_5},
+    {&conv2_weights_5_0, &conv2_weights_5_1, &null_weights, &null_weights, &null_weights, &conv2_weights_5_5},
+    {&conv2_weights_6_0, &conv2_weights_6_1, &conv2_weights_6_2, &conv2_weights_6_3, &null_weights, &null_weights},
+    {&null_weights, &conv2_weights_7_1, &conv2_weights_7_2, &conv2_weights_7_3, &conv2_weights_7_4, &null_weights},
+    {&null_weights, &null_weights, &conv2_weights_8_2, &conv2_weights_8_3, &conv2_weights_8_4, &conv2_weights_8_5},
+    {&conv2_weights_9_0, &null_weights, &null_weights, &conv2_weights_9_3, &conv2_weights_9_4, &conv2_weights_9_5},
+    {&conv2_weights_10_0, &conv2_weights_10_1, &null_weights, &null_weights, &conv2_weights_10_4, &conv2_weights_10_5},
+    {&conv2_weights_11_0, &conv2_weights_11_1, &conv2_weights_11_2, &null_weights, &null_weights, &conv2_weights_11_5},
+    {&conv2_weights_12_0, &conv2_weights_12_1, &null_weights, &conv2_weights_12_3, &conv2_weights_12_4, &null_weights},
+    {&null_weights, &conv2_weights_13_1, &conv2_weights_13_2, &null_weights, &conv2_weights_13_4, &conv2_weights_13_5},
+    {&conv2_weights_14_0, &null_weights, &conv2_weights_14_2, &conv2_weights_14_3, &null_weights, &conv2_weights_14_5},
     {&conv2_weights_15_0, &conv2_weights_15_1, &conv2_weights_15_2, &conv2_weights_15_3, &conv2_weights_15_4, &conv2_weights_15_5}};
 
 #endif // N2D2_EXPORTC_CONV2_LAYER_H

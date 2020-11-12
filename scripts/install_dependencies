@@ -1,4 +1,4 @@
 #!/bin/bash
 echo "Installing dependencies..."
-apt-get -qq install -y git cmake libssl-dev libomp-dev ninja-build build-essential zlib1g-dev libffi-dev libedit-dev libncurses5-dev libboost-dev doxygen tar python wget graphviz vim nano lcov gdb > /dev/null
+apt-get -qq install -y screen git cmake libssl-dev libomp-dev ninja-build build-essential zlib1g-dev libffi-dev libedit-dev libncurses5-dev libboost-dev doxygen tar python wget graphviz vim nano lcov gdb > /dev/null
 apt-get -qq install -y make ninja-build build-essential wget unzip zlib1g-dev libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev jasper libdc1394-22-dev libffi-dev libedit-dev libncurses5-dev libboost-dev > /dev/null 

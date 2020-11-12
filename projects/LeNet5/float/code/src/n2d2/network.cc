@@ -43,7 +43,8 @@ void convcell_propagate_conv1(
 				const unsigned int sxMax = (unsigned int)int_max( int_min((int)CONV1_CHANNELS_WIDTH + CONV1_PADDING_X - (int)(ox * CONV1_STRIDE_X), (int)5), 0); 
 				const unsigned int syMax = (unsigned int)int_max( int_min((int)CONV1_CHANNELS_HEIGHT + CONV1_PADDING_Y - (int)(oy * CONV1_STRIDE_Y), (int)5), 0); 
 				const int ix = (int)(ox * CONV1_STRIDE_X) - (int)CONV1_PADDING_X; 
-				const int iy = (int)(oy * CONV1_STRIDE_Y) - (int)CONV1_PADDING_Y; 
+				const int iy = (int)(oy * CONV1_STRIDE_Y) - (int)CONV1_PADDING_Y;
+				
 				SUM_T weightedSum = bias[output]; 
 				for (unsigned int channel = 0; channel < CONV1_NB_CHANNELS; ++channel) { 
 					#pragma unroll 5

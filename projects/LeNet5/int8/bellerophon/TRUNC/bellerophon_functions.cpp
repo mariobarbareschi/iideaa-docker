@@ -83,30 +83,33 @@ extern int nab_0;
 
 extern "C" double BELLERO_Reward()
 {
-  long int conv1_num_neurons = CONV1_OUTPUTS_WIDTH * CONV1_OUTPUTS_HEIGHT * CONV1_NB_OUTPUTS;
-  long int conv2_num_neurons = CONV2_OUTPUTS_WIDTH * CONV2_OUTPUTS_HEIGHT * CONV2_NB_OUTPUTS;
-  long int conv3_num_neurons = CONV3_OUTPUTS_WIDTH * CONV3_OUTPUTS_HEIGHT * CONV2_NB_OUTPUTS;
-  long int full1_num_neurons = FC1_NB_OUTPUTS;
-  long int full2_num_neurons = FC2_NB_OUTPUTS;
-  long int conv1_num_operations = CONV1_KERNEL_HEIGHT * CONV1_KERNEL_WIDTH * conv1_num_neurons;
-  long int conv2_num_operations = CONV2_KERNEL_HEIGHT * CONV2_KERNEL_WIDTH * conv2_num_neurons;
-  long int conv3_num_operations = CONV3_KERNEL_HEIGHT * CONV3_KERNEL_WIDTH * conv3_num_neurons;
-  long int full1_num_operations = FC1_NB_CHANNELS * full1_num_neurons;
-  long int full2_num_operations = FC2_NB_OUTPUTS * full2_num_neurons;
-  
-  long int data_length = 64;
-  double total_bits =  2 * data_length * (  conv1_num_operations +
-                                            conv2_num_operations +
-                                            conv3_num_operations +
-                                            full1_num_operations +
-                                            full2_num_operations);
-  
-  double saved_bits =  // prod                         sum
-                       nab_0 * conv1_num_operations  + nab_1 * conv1_num_operations +
-                       nab_2 * conv2_num_operations  + nab_3 * conv2_num_operations +
-                       nab_4 * conv3_num_operations  + nab_5 * conv3_num_operations +
-                       nab_6 * full1_num_operations  + nab_7 * full1_num_operations +
-                       nab_8 * full2_num_operations  + nab_9 * full2_num_operations;
+  const int layers = 5;
+  long input_volumes[layers] = {
+    CONV1_NB_CHANNELS * CONV1_KERNEL_HEIGHT * CONV1_KERNEL_WIDTH,
+    CONV2_NB_CHANNELS * CONV2_KERNEL_HEIGHT * CONV2_KERNEL_WIDTH,
+    CONV3_NB_CHANNELS * CONV3_KERNEL_HEIGHT * CONV3_KERNEL_WIDTH,
+    CONV3_NB_OUTPUTS * CONV3_OUTPUTS_HEIGHT * CONV3_OUTPUTS_WIDTH,
+    FC2_NB_CHANNELS};
+  long output_volumes[layers] = {
+    CONV1_OUTPUTS_WIDTH * CONV1_OUTPUTS_HEIGHT * CONV1_NB_OUTPUTS,
+    CONV2_OUTPUTS_WIDTH * CONV2_OUTPUTS_HEIGHT * CONV2_NB_OUTPUTS,
+    CONV3_OUTPUTS_WIDTH * CONV3_OUTPUTS_HEIGHT * CONV2_NB_OUTPUTS,
+    FC1_NB_OUTPUTS,
+    FC2_NB_OUTPUTS};
+  long nab_mul[layers] = {nab_0, nab_2, nab_4, nab_6, nab_8};
+  long nab_add[layers] = {nab_1, nab_3, nab_5, nab_7, nab_9};
+
+  double saved_bits = 0, total_bits = 0;
+  for (int i = 0; i < layers; i++)
+  {
+    double saved_sum = 0;
+    long sums = (log10(input_volumes[i])+1)/log10(2);
+    for (int j = 0; j < sums; j++)
+      saved_sum += input_volumes[i] / (2 << (j+1));
+    saved_bits += input_volumes[i] * nab_mul[i] + saved_sum * nab_add[i];
+    total_bits += input_volumes[i] + saved_sum;
+  }
+  total_bits *= NB_BITS;
   
   double reward = saved_bits / total_bits;
   printf("Reward %lf / %lf = %lf\n", saved_bits, total_bits, reward);
