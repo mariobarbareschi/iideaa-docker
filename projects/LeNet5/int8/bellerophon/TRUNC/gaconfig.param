@@ -5,7 +5,7 @@
 --seed=208708767612                        # -S : Random number seed
 
 ######    Evolution Engine        ######
---popSize=1000                             # -P : Population Size
+--popSize=300                             # -P : Population Size
 
 ######    Stopping criterion      ######
 --maxGen=3                               # -G : Maximum number of generations
