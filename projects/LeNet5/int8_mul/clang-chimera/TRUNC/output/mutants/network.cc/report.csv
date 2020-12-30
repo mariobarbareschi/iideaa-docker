@@ -1,0 +1,5 @@
+6,neuron_conv1,27,22,mutator_trunc_integer,0
+6,neuron_conv2,76,22,mutator_trunc_integer,0
+6,neuron_conv3,125,22,mutator_trunc_integer,0
+6,fccell_upropagate_2d,245,24,mutator_trunc_integer,0
+6,fccell_upropagate,263,20,mutator_trunc_integer,0
