@@ -152,3 +152,19 @@ extern "C" double BELLERO_Reward()
   
 	return reward;
 }
+
+extern "C" double BELLERO_Penality()
+{
+  const int nabs = 25;
+  int nab_mul[] = {nab_0, nab_1, nab_2, nab_3, nab_4, nab_5, nab_6, nab_22, nab_21, nab_20, nab_19, nab_18, nab_17, nab_16, nab_15, nab_14, nab_13, nab_12, nab_11, nab_10, nab_9, nab_8, nab_7, nab_23, nab_24};
+  double penalty = HUGE_VAL;
+  for (int i = 0; i < nabs; i++)
+    if (nab_mul[i] != 0)
+    {
+      penalty = HUGE_VAL;
+      break;
+    }
+
+  printf("Penalty: %lf\n", penalty);
+  return penalty;
+}
