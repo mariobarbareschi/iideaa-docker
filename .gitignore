@@ -71,3 +71,5 @@ projects/LeNet5/clustered/code/.idea/
 projects/LeNet5/int8/clang-chimera/TRUNC/output/
 
 projects/LeNet5/int16/clang-chimera/TRUNC/output/
+
+*.code-workspace
