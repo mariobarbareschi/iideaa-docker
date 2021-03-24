@@ -37,7 +37,8 @@ add_library(
     src/fap.cc
     src/trunc.cc
     src/vpa.cc
-    src/vpa_n.cc)
+    src/vpa_n.cc
+    src/evoapproxlib.cc)
 
 target_include_directories(iideaa PRIVATE include)
 

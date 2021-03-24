@@ -1,0 +1,6 @@
+neuron_conv1,EvoApprox8u
+neuron_conv2,EvoApprox8u
+neuron_conv3,EvoApprox8u
+fccell_upropagate_2d,EvoApprox8u
+fccell_upropagate,EvoApprox8u
+

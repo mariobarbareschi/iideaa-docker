@@ -73,3 +73,5 @@ projects/LeNet5/int8/clang-chimera/TRUNC/output/
 projects/LeNet5/int16/clang-chimera/TRUNC/output/
 
 *.code-workspace
+
+projects/LeNet5/int8_evoapproxlib/code/success_rate.txt

@@ -1,6 +1,0 @@
-neuron_conv1,Trunc-Operator
-neuron_conv2,Trunc-Operator
-neuron_conv3,Trunc-Operator
-fccell_upropagate_2d,Trunc-Operator
-fccell_upropagate,Trunc-Operator
-

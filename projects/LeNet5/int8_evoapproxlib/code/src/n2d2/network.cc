@@ -1,7 +1,7 @@
 #include <string.h>
 #include "network.h"
 #include "math.h"
-#include "trunc.h"
+#include "evoapproxlib.h"
 
 SUM_T neuron_conv1
 (
@@ -24,7 +24,7 @@ SUM_T neuron_conv1
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = (SUM_T) (*weights[output][channel])[sy][sx] * (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix + sx]);
+        SUM_T prod = (SUM_T) ((*weights[output][channel])[sy][sx] * ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
         weightedSum += prod;
       }
   }
@@ -73,7 +73,7 @@ SUM_T neuron_conv2
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = (SUM_T) (*weights[output][channel])[sy][sx] * (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix + sx]);
+        SUM_T prod = (SUM_T) ((*weights[output][channel])[sy][sx] * ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
         weightedSum += prod;
       }
   }
@@ -122,7 +122,7 @@ SUM_T neuron_conv3
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = (SUM_T) (*weights[output][channel])[sy][sx] * (SUM_T) ((UDATA_T) inputs[channel][iy + sy][ix + sx]);
+        SUM_T prod = (SUM_T) ((*weights[output][channel])[sy][sx] * ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
         weightedSum += prod;
       }
   }
@@ -242,7 +242,7 @@ void fccell_upropagate_2d(
       for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy)
         for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix)
         {
-          SUM_T prod = (SUM_T) weights[output][c++] * (SUM_T) ((UDATA_T) inputs[channel][iy][ix]);
+          SUM_T prod = (SUM_T) (weights[output][c++] * ((UDATA_T) inputs[channel][iy][ix]));
           weightedSum += prod;
         }
     outputs[FC1_OUTPUT_OFFSET + output] = usat(weightedSum, FC1_ACTIVATION, FC1_SHIFT);
@@ -260,7 +260,7 @@ void fccell_upropagate(
     SUM_T weightedSum = bias[output];
     for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
     {
-      SUM_T prod = (SUM_T) weights[output][channel] * (SUM_T) ((UDATA_T) inputs[channel]);
+      SUM_T prod = (SUM_T) (weights[output][channel] * ((UDATA_T) inputs[channel]));
       weightedSum += prod;
     }
     outputs[FC2_OUTPUT_OFFSET + output] = usat(weightedSum, FC2_ACTIVATION, FC2_SHIFT);
