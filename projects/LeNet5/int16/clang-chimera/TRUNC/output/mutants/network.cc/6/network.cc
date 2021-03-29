@@ -1,21 +1,23 @@
 #include <string.h>
 #include "network.h"
 #include "math.h"
-#include "evoapproxlib.h"
+#include "trunc.h"
 
+int nab_1 = 0;
+int nab_0 = 0;
 SUM_T neuron_conv1
-(
-  DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
-  const BDATA_T (&bias)[CONV1_NB_OUTPUTS],
-  const WDATA_T (*weights[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS])[CONV1_KERNEL_HEIGHT][CONV1_KERNEL_WIDTH],
-  unsigned int output,
-  unsigned int sxMin,
-  unsigned int syMin,
-  unsigned int sxMax,
-  unsigned int syMax,
-  int ix,
-  int iy
-)
+  (
+    DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
+    const BDATA_T (&bias)[CONV1_NB_OUTPUTS],
+    const WDATA_T (*weights[CONV1_NB_OUTPUTS][CONV1_NB_CHANNELS])[CONV1_KERNEL_HEIGHT][CONV1_KERNEL_WIDTH],
+    unsigned int output,
+    unsigned int sxMin,
+    unsigned int syMin,
+    unsigned int sxMax,
+    unsigned int syMax,
+    int ix,
+    int iy
+   )
 {
   SUM_T weightedSum = bias[output];
   for (unsigned int channel = 0; channel < CONV1_NB_CHANNELS; ++channel)
@@ -24,12 +26,13 @@ SUM_T neuron_conv1
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = (SUM_T) ((int16_t)(*weights[output][channel])[sy][sx] * (int16_t)((UDATA_T) inputs[channel][iy + sy][ix + sx]));
-        weightedSum += prod;
+        SUM_T prod = truncate::ax_integer(nab_0, (*weights[output][channel])[sy][sx]) * truncate::ax_integer(nab_0, ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
+        weightedSum = truncate::ax_integer(nab_1, weightedSum) + truncate::ax_integer(nab_1, prod);
       }
   }
   return weightedSum;
 }
+
 
 void convcell_upropagate_conv1(
   DATA_T (&inputs)[CONV1_NB_CHANNELS][CONV1_CHANNELS_HEIGHT][CONV1_CHANNELS_WIDTH],
@@ -44,14 +47,17 @@ void convcell_upropagate_conv1(
       {
         const unsigned int sxMin = (unsigned int) int_max((int) CONV1_PADDING_X - (int) (ox * CONV1_STRIDE_X), 0);
         const unsigned int syMin = (unsigned int) int_max((int) CONV1_PADDING_Y - (int) (oy * CONV1_STRIDE_Y), 0);
-        const unsigned int sxMax = (unsigned int) int_max(int_min((int) CONV1_CHANNELS_WIDTH + CONV1_PADDING_X - (int) (ox * CONV1_STRIDE_X),(int) CONV1_KERNEL_WIDTH),0);
-        const unsigned int syMax = (unsigned int) int_max(int_min((int) CONV1_CHANNELS_HEIGHT + CONV1_PADDING_Y - (int) (oy * CONV1_STRIDE_Y),(int) CONV1_KERNEL_HEIGHT),0);
+        const unsigned int sxMax = (unsigned int) int_max(int_min((int) CONV1_CHANNELS_WIDTH + CONV1_PADDING_X - (int) (ox * CONV1_STRIDE_X), (int) CONV1_KERNEL_WIDTH), 0);
+        const unsigned int syMax = (unsigned int) int_max(int_min((int) CONV1_CHANNELS_HEIGHT + CONV1_PADDING_Y - (int) (oy * CONV1_STRIDE_Y), (int) CONV1_KERNEL_HEIGHT), 0);
         const int ix = (int) (ox * CONV1_STRIDE_X) - (int) CONV1_PADDING_X;
         const int iy = (int) (oy * CONV1_STRIDE_Y) - (int) CONV1_PADDING_Y;
-        outputs[CONV1_OUTPUT_OFFSET + output][oy][ox] = usat(neuron_conv1(inputs, bias, weights, output, sxMin, syMin, sxMax, syMax, ix, iy), CONV1_ACTIVATION, CONV1_SHIFT);
+        SUM_T weightedSum = neuron_conv1(inputs, bias, weights, output, sxMin, syMin, sxMax, syMax, ix, iy);
+        outputs[CONV1_OUTPUT_OFFSET + output][oy][ox] = usat(weightedSum, CONV1_ACTIVATION, CONV1_SHIFT);
       }
 }
 
+int nab_3 = 0;
+int nab_2 = 0;
 SUM_T neuron_conv2
 (
   DATA_T (&inputs)[CONV2_NB_CHANNELS][CONV2_CHANNELS_HEIGHT][CONV2_CHANNELS_WIDTH],
@@ -67,14 +73,14 @@ SUM_T neuron_conv2
 )
 {
   SUM_T weightedSum = bias[output];
-  for (unsigned int channel = 0; channel < CONV2_NB_CHANNELS; ++channel)
+  for (unsigned int channel = 0; channel < CONV2_NB_CHANNELS;  ++channel)
   {
     if (weights[output][channel] == NULL) continue;
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = (SUM_T) ((int16_t)(*weights[output][channel])[sy][sx] * (int16_t)((UDATA_T) inputs[channel][iy + sy][ix + sx]));
-        weightedSum += prod;
+        SUM_T prod = truncate::ax_integer(nab_2, (*weights[output][channel])[sy][sx]) * truncate::ax_integer(nab_2, ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
+        weightedSum = truncate::ax_integer(nab_3, weightedSum) + truncate::ax_integer(nab_3, prod);
       }
   }
   return weightedSum;
@@ -86,21 +92,23 @@ void convcell_upropagate_conv2(
   const BDATA_T (&bias)[CONV2_NB_OUTPUTS],
   const WDATA_T (*weights[CONV2_NB_OUTPUTS][CONV2_NB_CHANNELS])[CONV2_KERNEL_HEIGHT][CONV2_KERNEL_WIDTH])
 {
-  #pragma omp parallel for
+#pragma omp parallel for
   for (unsigned int output = 0; output < CONV2_NB_OUTPUTS; ++output)
     for (unsigned int oy = 0; oy < CONV2_OY_SIZE; ++oy)
       for (unsigned int ox = 0; ox < CONV2_OX_SIZE; ++ox)
       {
         const unsigned int sxMin = (unsigned int) int_max((int) CONV2_PADDING_X - (int) (ox * CONV2_STRIDE_X), 0);
         const unsigned int syMin = (unsigned int) int_max((int) CONV2_PADDING_Y - (int) (oy * CONV2_STRIDE_Y), 0);
-        const unsigned int sxMax = (unsigned int) int_max(int_min((int) CONV2_CHANNELS_WIDTH + CONV2_PADDING_X - (int) (ox * CONV2_STRIDE_X),(int) CONV2_KERNEL_WIDTH), 0);
+        const unsigned int sxMax = (unsigned int) int_max(int_min((int) CONV2_CHANNELS_WIDTH + CONV2_PADDING_X - (int) (ox * CONV2_STRIDE_X),(int) CONV2_KERNEL_WIDTH),0);
         const unsigned int syMax = (unsigned int) int_max(int_min((int) CONV2_CHANNELS_HEIGHT + CONV2_PADDING_Y - (int) (oy * CONV2_STRIDE_Y),(int) CONV2_KERNEL_HEIGHT),0);
         const int ix = (int) (ox * CONV2_STRIDE_X) - (int) CONV2_PADDING_X;
         const int iy = (int) (oy * CONV2_STRIDE_Y) - (int) CONV2_PADDING_Y;
-        outputs[CONV2_OUTPUT_OFFSET + output][oy][ox] = usat(neuron_conv2(inputs, bias, weights, output, sxMin, syMin, sxMax, syMax, ix, iy), CONV2_ACTIVATION, CONV2_SHIFT);
+        outputs[CONV2_OUTPUT_OFFSET + output][oy][ox] = usat(neuron_conv2(inputs,bias,weights,output,sxMin, syMin, sxMax, syMax, ix, iy), CONV2_ACTIVATION, CONV2_SHIFT);
       }
 }
 
+int nab_5 = 0;
+int nab_4 = 0;
 SUM_T neuron_conv3
 (
   DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
@@ -122,21 +130,25 @@ SUM_T neuron_conv3
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
-        SUM_T prod = (SUM_T) ((int16_t)(*weights[output][channel])[sy][sx] * (int16_t)((UDATA_T) inputs[channel][iy + sy][ix + sx]));
-        weightedSum += prod;
+        SUM_T prod = truncate::ax_integer(nab_4, (*weights[output][channel])[sy][sx]) * truncate::ax_integer(nab_4, ((UDATA_T) inputs[channel][iy + sy][ix + sx]));
+        weightedSum = truncate::ax_integer(nab_5, weightedSum) + truncate::ax_integer(nab_5, prod);
       }
   }
   return weightedSum;
 }
+
 void convcell_upropagate_conv3(
   DATA_T (&inputs)[CONV3_NB_CHANNELS][CONV3_CHANNELS_HEIGHT][CONV3_CHANNELS_WIDTH],
   DATA_T (&outputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
   const BDATA_T (&bias)[CONV3_NB_OUTPUTS],
   const WDATA_T (*weights[CONV3_NB_OUTPUTS][CONV3_NB_CHANNELS])[CONV3_KERNEL_HEIGHT][CONV3_KERNEL_WIDTH])
 {
-  #pragma omp parallel for
+
+#pragma omp parallel for
   for (unsigned int output = 0; output < CONV3_NB_OUTPUTS; ++output)
+  {
     for (unsigned int oy = 0; oy < CONV3_OY_SIZE; ++oy)
+    {
       for (unsigned int ox = 0; ox < CONV3_OX_SIZE; ++ox)
       {
         const unsigned int sxMin = (unsigned int) int_max((int) CONV3_PADDING_X - (int) (ox * CONV3_STRIDE_X), 0);
@@ -147,6 +159,8 @@ void convcell_upropagate_conv3(
         const int iy = (int) (oy * CONV3_STRIDE_Y) - (int) CONV3_PADDING_Y;
         outputs[CONV3_OUTPUT_OFFSET + output][oy][ox] = usat(neuron_conv3(inputs, bias, weights, output, sxMin, syMin, sxMax, syMax, ix, iy), CONV3_ACTIVATION, CONV3_SHIFT);
       }
+    }
+  }
 }
 
 
@@ -163,9 +177,11 @@ void poolcell_upropagate_unitmap_pool1(
       for (unsigned int ox = 0; ox < POOL1_OUTPUTS_WIDTH; ++ox)
       {
         const unsigned int sxMax
-          = uint_min(POOL1_CHANNELS_WIDTH - ox * POOL1_STRIDE_X, POOL1_POOL_WIDTH);
+          = uint_min(POOL1_CHANNELS_WIDTH - ox * POOL1_STRIDE_X,
+                     POOL1_POOL_WIDTH);
         const unsigned int syMax
-          = uint_min(POOL1_CHANNELS_HEIGHT - oy * POOL1_STRIDE_Y, POOL1_POOL_HEIGHT);
+          = uint_min(POOL1_CHANNELS_HEIGHT - oy * POOL1_STRIDE_Y,
+                     POOL1_POOL_HEIGHT);
         
         if (POOL1_POOLING == Max)
         {
@@ -202,9 +218,11 @@ void poolcell_upropagate_unitmap_pool2(
       for (unsigned int ox = 0; ox < POOL2_OUTPUTS_WIDTH; ++ox)
       {
         const unsigned int sxMax
-          = uint_min(POOL2_CHANNELS_WIDTH - ox * POOL2_STRIDE_X, POOL2_POOL_WIDTH);
+          = uint_min(POOL2_CHANNELS_WIDTH - ox * POOL2_STRIDE_X,
+                     POOL2_POOL_WIDTH);
         const unsigned int syMax
-          = uint_min(POOL2_CHANNELS_HEIGHT - oy * POOL2_STRIDE_Y, POOL2_POOL_HEIGHT);
+          = uint_min(POOL2_CHANNELS_HEIGHT - oy * POOL2_STRIDE_Y,
+                     POOL2_POOL_HEIGHT);
         
         if (POOL2_POOLING == Max)
         {
@@ -228,6 +246,8 @@ void poolcell_upropagate_unitmap_pool2(
   }
 }
 
+int nab_7 = 0;
+int nab_6 = 0;
 void fccell_upropagate_2d(
   DATA_T (&inputs)[CONV3_NB_OUTPUTS][CONV3_OUTPUTS_HEIGHT][CONV3_OUTPUTS_WIDTH],
   DATA_T (&outputs)[FC1_NB_OUTPUTS],
@@ -240,15 +260,17 @@ void fccell_upropagate_2d(
     unsigned int c = 0;
     for (unsigned int channel = 0; channel < CONV3_NB_OUTPUTS; ++channel)
       for (unsigned int iy = 0; iy < CONV3_OUTPUTS_HEIGHT; ++iy)
-        for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix)
+        for (unsigned int ix = 0; ix < CONV3_OUTPUTS_WIDTH; ++ix, c++)
         {
-          SUM_T prod = (SUM_T) ((int16_t)weights[output][c++] * (int16_t)((UDATA_T) inputs[channel][iy][ix]));
-          weightedSum += prod;
+          SUM_T prod = truncate::ax_integer(nab_6, weights[output][c]) * truncate::ax_integer(nab_6, ((UDATA_T) inputs[channel][iy][ix]));
+          weightedSum = truncate::ax_integer(nab_7, weightedSum) + truncate::ax_integer(nab_7, prod);
         }
     outputs[FC1_OUTPUT_OFFSET + output] = usat(weightedSum, FC1_ACTIVATION, FC1_SHIFT);
   }
 }
 
+int nab_9 = 0;
+int nab_8 = 0;
 void fccell_upropagate(
   DATA_T (&inputs)[FC2_NB_CHANNELS],
   DATA_T (&outputs)[FC2_NB_OUTPUTS],
@@ -260,16 +282,15 @@ void fccell_upropagate(
     SUM_T weightedSum = bias[output];
     for (unsigned int channel = 0; channel < FC2_NB_CHANNELS; ++channel)
     {
-      SUM_T prod = (SUM_T) ((int16_t)weights[output][channel] * (int16_t)((UDATA_T) inputs[channel]));
-      weightedSum += prod;
+      SUM_T prod = truncate::ax_integer(nab_8, weights[output][channel]) * truncate::ax_integer(nab_8, ((UDATA_T) inputs[channel]));
+      weightedSum = truncate::ax_integer(nab_9, weightedSum) + truncate::ax_integer(nab_9, prod);
     }
     outputs[FC2_OUTPUT_OFFSET + output] = usat(weightedSum, FC2_ACTIVATION, FC2_SHIFT);
   }
 }
 
 
-void output_max(DATA_T outputs[FC2_NB_OUTPUTS],
-                uint32_t outputEstimated[1][1])
+void output_max(DATA_T outputs[FC2_NB_OUTPUTS], uint32_t outputEstimated[1][1])
 {
   if (FC2_NB_OUTPUTS > 1)
   {
@@ -284,7 +305,6 @@ void output_max(DATA_T outputs[FC2_NB_OUTPUTS],
         outputMax = output;
       }
     }
-    
     outputEstimated[0][0] = outputMax;
   } else
     outputEstimated[0][0] = (outputs[0] > (BINARY_THRESHOLD * DATA_T_MAX));
@@ -292,7 +312,8 @@ void output_max(DATA_T outputs[FC2_NB_OUTPUTS],
 
 #define RESET_MEM(data)  memset(data, 0, sizeof(data))
 
-void network(DATA_T (&in_data)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X], uint32_t (&out_data)[OUTPUTS_HEIGHT][OUTPUTS_WIDTH])
+void network(DATA_T (&in_data)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X],
+             uint32_t (&out_data)[OUTPUTS_HEIGHT][OUTPUTS_WIDTH])
 {
   DATA_T conv1_data[CONV1_NB_OUTPUTS][CONV1_OUTPUTS_HEIGHT][CONV1_OUTPUTS_WIDTH];
   DATA_T pool1_data[POOL1_NB_OUTPUTS][POOL1_OUTPUTS_HEIGHT][POOL1_OUTPUTS_WIDTH];
@@ -316,11 +337,13 @@ void network(DATA_T (&in_data)[ENV_NB_OUTPUTS][ENV_SIZE_Y][ENV_SIZE_X], uint32_t
 /************************************LAYER (2)***/
   poolcell_upropagate_unitmap_pool1(conv1_data, pool1_data);
 /************************************LAYER (3)***/
-  convcell_upropagate_conv2(pool1_data, conv2_data, conv2_biases, conv2_weights);
+  convcell_upropagate_conv2(pool1_data, conv2_data, conv2_biases,
+                            conv2_weights);
 /************************************LAYER (4)***/
   poolcell_upropagate_unitmap_pool2(conv2_data, pool2_data);
 /************************************LAYER (5)***/
-  convcell_upropagate_conv3(pool2_data, conv3_data, conv3_biases, conv3_weights);
+  convcell_upropagate_conv3(pool2_data, conv3_data, conv3_biases,
+                            conv3_weights);
 /************************************LAYER (6)***/
   fccell_upropagate_2d(conv3_data, fc1_data, fc1_biases, fc1_weights);
 /************************************LAYER (7)***/

@@ -101,11 +101,11 @@ extern "C" double BELLERO_Reward()
   double area = 0;
   for (int i = 0; i < layers; i++)
   {
-    area += evoapproxlib::evoapprox_u8_t::mul8u_area(nab_mul[i]) * input_volumes[i] * output_volumes[i];
+    area += evoapproxlib::evoapprox_t::mul16s_area(nab_mul[i]) * input_volumes[i] * output_volumes[i];
   }
   
   printf("Circuit area %lf\n", area);
-  return area;
+  return -area; // area must be minimized
 
 }
 
@@ -134,7 +134,7 @@ extern "C" double BELLERO_Penality()
   double power = 0;
   for (int i = 0; i < layers; i++)
   {
-    power += evoapproxlib::evoapprox_u8_t::mul8u_power(nab_mul[i]) * input_volumes[i] * output_volumes[i];
+    power += evoapproxlib::evoapprox_t::mul16s_power(nab_mul[i]) * input_volumes[i] * output_volumes[i];
   }
   
   printf("Circuit power = %lf\n", power);
