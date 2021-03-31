@@ -1,0 +1,5 @@
+evoApprox8u_component_4,263,"(int16_t)weights[output][channel]","*","((int16_t)(UDATA_T) inputs[channel])","NULL"
+evoApprox8u_component_3,245,"(int16_t)weights[output][c++]","*","((int16_t)(UDATA_T) inputs[channel][iy][ix])","NULL"
+evoApprox8u_component_2,125,"(int16_t)(*weights[output][channel])[sy][sx]","*","((int16_t)(UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"
+evoApprox8u_component_1,76,"(int16_t)(*weights[output][channel])[sy][sx]","*","((int16_t)(UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"
+evoApprox8u_component_0,27,"(int16_t)(*weights[output][channel])[sy][sx]","*","((int16_t)(UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"

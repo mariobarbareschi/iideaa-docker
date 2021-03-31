@@ -3,8 +3,11 @@
 
 int main()
 {
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
-        std::cout << "circuit " << i << " area " << evoapproxlib::evoapprox_t::mul8u_area(i) << std::endl;
+        evoapproxlib::evoapprox_t a((int16_t)10, i);
+        evoapproxlib::evoapprox_t b((int16_t)10, i);
+        int16_t c = a * b;
+        std::cout << c << std::endl;
     }
 }
