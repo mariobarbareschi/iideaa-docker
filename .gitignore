@@ -46,3 +46,12 @@ projects/iideaa/cmake-build-debug/
 projects/LeNet5/prova/
 
 projects/LeNet5/clustered/code/.idea/
+
+projects/Sobel/code/build-clang/
+
+projects/Sobel/code/sobel_dse_result_2d_area.pdf
+
+projects/Sobel/code/sobel_dse_result_2d_power.pdf
+
+projects/Sobel/code/sobel_dse_result_3d.pdf
+projects/Sobel/results/*.pdf

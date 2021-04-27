@@ -1,0 +1,131 @@
+#!/usr/bin/python3
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from matplotlib.lines import Line2D
+
+
+def identify_pareto(scores):
+    # Count number of items
+    population_size = scores.shape[0]
+    # Create a NumPy index for scores on the pareto front (zero indexed)
+    population_ids = np.arange(population_size)
+    # Create a starting list of items on the Pareto front
+    # All items start off as being labelled as on the Parteo front
+    pareto_front = np.ones(population_size, dtype=bool)
+    # Loop through each item. This will then be compared with all other items
+    for i in range(population_size):
+        # Loop through all other items
+        for j in range(population_size):
+            # Check if our 'i' pint is dominated by out 'j' point
+            # NOTE: PSNR (0) is to be maximized
+            if ( scores[j, 0] >= scores[i, 0] and scores[j, 1] <= scores[i, 1] and scores[j, 2] <= scores[i, 2] ) and ( scores[j, 0] > scores[i, 0] or scores[j, 1] < scores[i, 1] or scores[j, 2] < scores[i, 2] ): 
+                # j dominates i. Label 'i' point as not on Pareto front
+                pareto_front[i] = 0
+                # Stop further comparisons with 'i' (no more comparisons needed)
+                break
+    # Return ids of scenarios on pareto front
+    return scores[population_ids[pareto_front]]
+
+def distance_h_to_o(heuristic, optimal):
+    heuristic_size = heuristic.shape[0]
+    optimal_size = optimal.shape[0]
+    minimum = float('inf')              ## minimum distance between nearest points
+    maximum = float('-inf')             ## maximum distance between nearest points
+    avg = 0;                            ## average distance between nearest points
+    for i in range(heuristic_size):
+        nearest = float('inf')          ## distance of point i with the nearest points
+        ## for each points in heuristics solutions, the distance with the nearest neighbor is computed
+        for j in range(optimal_size):
+           dist = np.linalg.norm(heuristic[i] - optimal[j]) 
+           if dist < nearest:
+               nearest = dist
+        # I keep track of the maximum  and minimum distance of nearest neigbors
+        if minimum > nearest:
+            minimum = nearest
+        if nearest != float('inf') and maximum < nearest:
+            maximum = nearest
+        # I keep track of the avg distance between nearest neighbors    
+        if nearest != float('inf'):
+            avg += nearest
+    avg /= heuristic_size
+    return minimum, avg, maximum
+
+
+
+def plot_pareto(bellero_high, bellero_medium, bellero_low, exhaustive_csv_file):
+    exhaustive = np.genfromtxt(exhaustive_csv_file, delimiter='\t', usecols=(1,2,3), skip_header=1)
+    idea_high = np.genfromtxt(bellero_high, delimiter='\t', usecols=(0,1,2), skip_header=1)
+    idea_medium = np.genfromtxt(bellero_medium, delimiter='\t', usecols=(0,1,2), skip_header=1)
+    idea_low = np.genfromtxt(bellero_low, delimiter='\t', usecols=(0,1,2), skip_header=1)
+    pareto = identify_pareto(exhaustive)
+
+    idea_high_min, idea_high_avg, idea_high_max = distance_h_to_o(idea_high, pareto)
+    idea_medium_min, idea_medium_avg, idea_medium_max = distance_h_to_o(idea_medium, pareto)
+    idea_low_min, idea_low_avg, idea_low_max = distance_h_to_o(idea_low, pareto)
+
+    print ('Results\tMin.Distance\tAvg.Distance\tMax.Distance')
+    print ('High\t', idea_high_min, '\t', idea_high_avg, '\t', idea_high_max)
+    print ('Medium\t', idea_medium_min, '\t', idea_medium_avg, '\t', idea_medium_max)
+    print ('Low\t', idea_low_min, '\t', idea_low_avg, '\t', idea_low_max)
+
+    lines = [
+        Line2D([0], [0], color='tab:blue', lw=4), 
+        Line2D([0], [0], color='tab:orange', lw=4), 
+        Line2D([0], [0], color='tab:green', lw=4), 
+        Line2D([0], [0], color='tab:red', lw=4),
+        Line2D([0], [0], color='tab:purple', lw=4)
+    ]
+    labels = (
+        'Exhaustive evaluation', 
+        'Pareto-front', 
+        'High-effort estimation from IIDEAA', 
+        'Medium-effort estimation from IIDEAA', 
+        'Low-effort estimation from IIDEAA'
+    )
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    ax.set_xlabel('PSNR')
+    ax.set_ylabel('Silicon Area (um²)')
+    ax.set_zlabel('Power Consumption (mW)')
+    ax.scatter(exhaustive[:,0], exhaustive[:,1], exhaustive[:,2], marker='.')
+    ax.scatter(pareto[:,0], pareto[:,1], pareto[:,2], marker='.')
+    ax.scatter(idea_high[:,0], idea_high[:,1], idea_high[:,2], marker='.')
+    ax.scatter(idea_medium[:,0], idea_medium[:,1], idea_medium[:,2], marker='.')
+    ax.scatter(idea_low[:,0], idea_low[:,1], idea_low[:,2], marker='.')
+    plt.legend(lines, labels, frameon=False, loc='lower right', ncol=1)
+    plt.tight_layout()
+    plt.savefig('plot_3d.pdf', pad_inches=0)
+    plt.savefig('plot_3d.png', pad_inches=0)
+
+    fig = plt.figure()
+    plt.xlabel('PSNR')
+    plt.ylabel('Silicon Area (um²)')
+    plt.scatter(exhaustive[:,0], exhaustive[:,1], marker='.')
+    plt.scatter(pareto[:,0], pareto[:,1], marker='.')
+    plt.scatter(idea_high[:,0], idea_high[:,1], marker='.')
+    plt.scatter(idea_medium[:,0], idea_medium[:,1], marker='.')
+    plt.scatter(idea_low[:,0], idea_low[:,1], marker='.')
+    plt.legend(lines, labels, frameon=False, loc='lower right', ncol=1)
+    plt.tight_layout()
+    plt.savefig('plot_psnr_area.pdf', pad_inches=0)
+    plt.savefig('plot_psnr_area.png', pad_inches=0)
+
+    fig = plt.figure()
+    plt.xlabel('PSNR')
+    plt.ylabel('Power Consumption (mW)')
+    plt.scatter(exhaustive[:,0], exhaustive[:,2], marker='.')
+    plt.scatter(pareto[:,0], pareto[:,2], marker='.')
+    plt.scatter(idea_high[:,0], idea_high[:,2], marker='.')
+    plt.scatter(idea_medium[:,0], idea_medium[:,2], marker='.')
+    plt.scatter(idea_low[:,0], idea_low[:,2], marker='.')
+    plt.legend(lines, labels, frameon=False, loc='lower right', ncol=1)
+    plt.tight_layout()
+    plt.savefig('plot_psnr_power.pdf', pad_inches=0)
+    plt.savefig('plot_psnr_power.png', pad_inches=0)
+
+
+
+print ('Please wait... This will take some time.')
+plot_pareto('bellerophon_high.csv', 'bellerophon_medium.csv', 'bellerophon_low.csv', 'exhaustive.csv')

@@ -1,0 +1,5 @@
+evoApprox8u_component_4,39,"add2","+","add4n","NULL"
+evoApprox8u_component_3,37,"add3","+","mul2","NULL"
+evoApprox8u_component_2,36,"orig.at<int16_t>(row-1, col+1)","+","orig.at<int16_t>(row+1, col+1)","NULL"
+evoApprox8u_component_1,35,"add1","+","mul1","NULL"
+evoApprox8u_component_0,34,"orig.at<int16_t>(row-1, col-1)","+","orig.at<int16_t>(row+1, col-1)","NULL"

@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/root/projects/Sobel/code/build-clang",
+  "command": "/usr/bin/clang++   -I../include -isystem /usr/include/opencv   -O3 -o CMakeFiles/sobel.dir/src/sobel.cc.o -c /root/projects/Sobel/code/src/sobel.cc",
+  "file": "/root/projects/Sobel/code/src/sobel.cc"
+}
+]
