@@ -26,7 +26,9 @@ SUM_T neuron_conv1
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
+        //printf("--------------\n%s %d %d\n", __func__, (int16_t)(*weights[output][channel])[sy][sx], ((int16_t)(UDATA_T) inputs[channel][iy + sy][ix + sx]));
         SUM_T prod = (SUM_T) (evoapproxlib::evoapprox_t((int16_t)(*weights[output][channel])[sy][sx], evoApprox8u_component_0) * evoapproxlib::evoapprox_t(((int16_t)(UDATA_T) inputs[channel][iy + sy][ix + sx]), evoApprox8u_component_0));
+        //printf("%s %d\n",__func__, prod);
         weightedSum += prod;
       }
   }

@@ -24,6 +24,7 @@ SUM_T neuron_conv1
     for (unsigned int sy = syMin; sy < syMax; ++sy)
       for (unsigned int sx = sxMin; sx < sxMax; ++sx)
       {
+        
         SUM_T prod = (SUM_T) ((int16_t)(*weights[output][channel])[sy][sx] * (int16_t)((UDATA_T) inputs[channel][iy + sy][ix + sx]));
         weightedSum += prod;
       }
