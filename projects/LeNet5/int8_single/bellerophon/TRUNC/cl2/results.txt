@@ -1,0 +1,7 @@
+[BELLEROPHON INFO] Acceptable solutions:
+Error   Reward  Penalty #OP     OP_0
+65.7572 0.75 0  1 6 
+12.6772 0.625 0  1 5 
+0.137192 0.375 0  1 3 
+1.28719 0.5 0  1 4 
+-0.0328064 0.25 0  1 2 

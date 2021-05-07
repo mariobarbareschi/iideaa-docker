@@ -1,4 +1,4 @@
 #!/bin/bash
 [ ! -d ~/iideaa_shared ] && mkdir ~/iideaa_shared
 
-docker run -v ~/iideaa_shared:/root/mnt -w /root -it andreaaletto/iideaa-docker /bin/zsh
+docker run -v ~/iideaa_shared:/root/mnt -v $PWD/projects:/root/projects -w /root -it iideaa-docker /bin/zsh

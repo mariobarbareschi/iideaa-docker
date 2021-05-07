@@ -1,4 +1,0 @@
-/opt/newton/src/build/CMakeFiles/rebuild_cache.dir
-/opt/newton/src/build/CMakeFiles/edit_cache.dir
-/opt/newton/src/build/CMakeFiles/demo.dir
-/opt/newton/src/build/CMakeFiles/library_database.dir

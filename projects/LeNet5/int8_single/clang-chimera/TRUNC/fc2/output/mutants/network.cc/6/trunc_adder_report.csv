@@ -1,0 +1,1 @@
+nab_0,263,"weights[output][channel]","*","((UDATA_T) inputs[channel])","NULL"

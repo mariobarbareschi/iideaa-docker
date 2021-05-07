@@ -1,0 +1,5 @@
+nab_4,263,"weights[output][channel]","*","((UDATA_T) inputs[channel])","NULL"
+nab_3,245,"weights[output][c++]","*","((UDATA_T) inputs[channel][iy][ix])","NULL"
+nab_2,125,"(*weights[output][channel])[sy][sx]","*","((UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"
+nab_1,76,"(*weights[output][channel])[sy][sx]","*","((UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"
+nab_0,27,"(*weights[output][channel])[sy][sx]","*","((UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"

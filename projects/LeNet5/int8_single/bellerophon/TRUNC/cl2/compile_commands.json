@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/root/projects/LeNet5/int8_single/bellerophon/TRUNC/cl2",
+  "command": "/usr/bin/clang++ -I/root/projects/LeNet5/int8_mul/code/include -I/root/iideaa/include -I/root/projects/LeNet5/int8_mul/code/include/n2d2 -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -rdynamic -c /root/projects/LeNet5/int8_single/clang-chimera/TRUNC/cl2/output/mutants/network.cc/6/network.cc",
+  "file": "/root/projects/LeNet5/int8_single/clang-chimera/TRUNC/cl2/output/mutants/network.cc/6/network.cc"
+},
+{
+  "directory": "/root/projects/LeNet5/int8_single/bellerophon/TRUNC/cl2",
+  "command": "/usr/bin/clang++ -I/root/projects/LeNet5/int8_mul/code/include -I/root/iideaa/include -I/root/projects/LeNet5/int8_mul/code/include/n2d2 -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -rdynamic -c /root/projects/LeNet5/int8_single/bellerophon/TRUNC/cl2/bellerophon_functions.cpp",
+  "file": "/root/projects/LeNet5/int8_single/bellerophon/TRUNC/cl2/bellerophon_functions.cpp"
+}
+]

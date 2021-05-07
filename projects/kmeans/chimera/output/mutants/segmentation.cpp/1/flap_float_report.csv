@@ -1,6 +1,0 @@
-OP_0,331,FLOAT,ADD,"clusters->centroids[image->pixels[y][x].cluster].r","image->pixels[y][x].r","NULL"
-OP_1,332,FLOAT,ADD,"clusters->centroids[image->pixels[y][x].cluster].g","image->pixels[y][x].g","NULL"
-OP_2,333,FLOAT,ADD,"clusters->centroids[image->pixels[y][x].cluster].b","image->pixels[y][x].b","NULL"
-OP_3,339,FLOAT,DIV,"clusters->centroids[c].r","clusters->centroids[c].n","NULL"
-OP_4,340,FLOAT,DIV,"clusters->centroids[c].g","clusters->centroids[c].n","NULL"
-OP_5,341,FLOAT,DIV,"clusters->centroids[c].b","clusters->centroids[c].n","NULL"

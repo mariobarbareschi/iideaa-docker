@@ -1,0 +1,1 @@
+nab_0,27,"(*weights[output][channel])[sy][sx]","*","((UDATA_T) inputs[channel][iy + sy][ix + sx])","NULL"

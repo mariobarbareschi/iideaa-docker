@@ -1,5 +1,5 @@
 # iideaa-docker
-[![Build Status](https://travis-ci.org/andreaaletto/iideaa-docker.svg?branch=master)](https://travis-ci.org/andreaaletto/iideaa-docker) [![](https://images.microbadger.com/badges/image/andreaaletto/iideaa-docker.svg)](https://microbadger.com/images/andreaaletto/iideaa-docker "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/andreaaletto/iideaa-docker.svg)](https://microbadger.com/images/andreaaletto/iideaa-docker "Get your own version badge on microbadger.com") [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
+[![Build Status](https://travis-ci.org/mariobarbareschi/iideaa-docker.svg?branch=master)](https://travis-ci.org/mariobarbareschi/iideaa-docker) [![](https://images.microbadger.com/badges/image/mariobarbareschi/iideaa-docker.svg)](https://microbadger.com/images/mariobarbareschi/iideaa-docker "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/mariobarbareschi/iideaa-docker.svg)](https://microbadger.com/images/mariobarbareschi/iideaa-docker "Get your own version badge on microbadger.com") [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 ------------
 
 Docker image based on Ubuntu 18.04 featuring IIDEAA tools.
@@ -17,7 +17,7 @@ $ sudo usermod -aG docker your-user
 
 ##### Download from Docker Hub
 
-IIDEAA Docker has been pushed to Docker Hub. You can pull it from [here](https://hub.docker.com/r/andreaaletto/iideaa-docker).
+IIDEAA Docker has been pushed to Docker Hub. You can pull it from [here](https://hub.docker.com/r/mariobarbareschi/iideaa-docker).
 
 
 ##### Build your own image
@@ -25,7 +25,7 @@ IIDEAA Docker has been pushed to Docker Hub. You can pull it from [here](https:/
 If, instead, you prefer to build Docker image from scratch, use the following commands:
 
 ```sh
-$ git clone https://github.com/andreaaletto/iideaa-docker
+$ git clone https://github.com/mariobarbareschi/iideaa-docker
 $ cd iideaa-docker
 $ chmod +x build_iideaa_docker
 $ ./build_iideaa_docker
@@ -69,8 +69,8 @@ The output of Bellerophon will be displayed on terminal.
 
 For further information about IIDEAA tools, please refer to the following repos:
 
-- [Clang-Chimera](https://github.com/andreaaletto/clang-chimera) 
-- [Bellerophon](https://github.com/andreaaletto/Bellerophon)
+- [Clang-Chimera](https://github.com/mariobarbareschi/clang-chimera) 
+- [Bellerophon](https://github.com/mariobarbareschi/Bellerophon)
 
 #### LICENSE
 --------

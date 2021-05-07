@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/root/projects/LeNet5/float/code/build",
+  "command": "/usr/bin/clang++   -I/root/projects/LeNet5/float/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/n2d2.cc.o -c /root/projects/LeNet5/float/code/src/n2d2.cc",
+  "file": "/root/projects/LeNet5/float/code/src/n2d2.cc"
+},
+{
+  "directory": "/root/projects/LeNet5/float/code/build",
+  "command": "/usr/bin/clang++   -I/root/projects/LeNet5/float/code/include   -fopenmp -Wall -Wextra -Wno-unused-label -pedantic -Wconversion -fsigned-char -march=native  -O3 -DNDEBUG   -std=gnu++11 -o CMakeFiles/n2d2_test.dir/src/network.cc.o -c /root/projects/LeNet5/float/code/src/network.cc",
+  "file": "/root/projects/LeNet5/float/code/src/network.cc"
+}
+]

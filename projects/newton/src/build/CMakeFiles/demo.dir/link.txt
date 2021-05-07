@@ -1,1 +1,0 @@
-/usr/bin/clang++    -Wfatal-errors -fno-use-cxa-atexit -fPIC -g   CMakeFiles/demo.dir/newton.cpp.o  -o demo  -L/opt/newton/src/. -rdynamic 

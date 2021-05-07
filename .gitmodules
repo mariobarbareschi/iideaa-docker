@@ -1,0 +1,3 @@
+[submodule "projects/AxDCT"]
+	path = projects/AxDCT
+	url = https://github.com/SalvatoreBarone/AxDCT

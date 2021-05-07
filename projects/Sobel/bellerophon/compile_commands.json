@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/root/projects/Sobel/bellerophon",
+  "command": "/usr/bin/clang++ -I/usr/local/include/opencv4 -I/root/projects/Sobel/code/include -I/root/iideaa/include -nostartfiles -fno-use-cxa-atexit -fPIC -O3 -std=gnu++11 -rdynamic -DNDEBUG -c /root/projects/Sobel/bellerophon/bellerophon_functions.cpp",
+  "file": "/root/projects/Sobel/bellerophon/bellerophon_functions.cpp"
+}
+]

@@ -1,0 +1,6 @@
+#!/bin/bash
+cd ~/projects
+git clone https://github.com/SalvatoreBarone/AxC-Adders.git axc-adders && cd axc-adders
+mkdir build && cd build
+cmake .. -G Ninja
+ninja && sudo ninja install

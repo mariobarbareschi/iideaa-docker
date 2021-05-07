@@ -1,0 +1,18 @@
+
+######                 General    ######
+--help=0                                   # -h : Prints this message
+--stopOnUnknownParam=1                     # Stop if unkown param entered
+--seed=12371187                        # -S : Random number seed
+
+######    Evolution Engine        ######
+--popSize=900                              # -P : Population Size
+
+######    Stopping criterion      ######
+--maxGen=35                               # -G : Maximum number of generations
+
+######    Variation Operators     ######
+--crossRate=1                              # Relative rate for the only crossover
+--shiftMutRate=0.5                         # Relative rate for shift mutation
+--exchangeMutRate=0.5                      # Relative rate for exchange mutation
+--pCross=0.5                              # -c : Probability of Crossover
+--pMut=0.15                                # -m : Probability of Mutation

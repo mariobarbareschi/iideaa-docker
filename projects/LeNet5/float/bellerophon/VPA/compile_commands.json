@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/root/projects/LeNet5/float/bellerophon/VPA",
+  "command": "/usr/bin/clang++ -I/root/projects/LeNet5/float/code/include -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -c /root/projects/LeNet5/float/clang-chimera/VPA/output/mutants/n2d2.cc/6/n2d2.cc",
+  "file": "/root/projects/LeNet5/float/clang-chimera/VPA/output/mutants/n2d2.cc/6/n2d2.cc"
+},
+{
+  "directory": "/root/projects/LeNet5/float/bellerophon/VPA",
+  "command": "/usr/bin/clang++ -I/root/projects/LeNet5/float/code/include -Wfatal-errors -fno-use-cxa-atexit -O3 -fPIC -fopenmp -std=gnu++11 -c /root/projects/LeNet5/float/code/src/network.cc",
+  "file": "/root/projects/LeNet5/float/code/src/network.cc"
+},
+{
+  "directory": "/root/projects/LeNet5/float/bellerophon/VPA",
+  "command": "/usr/bin/clang++ -I/root/projects/LeNet5/float/code/include -Wfatal-errors -fno-use-cxa-atexit -g -fPIC -std=gnu++11 -c /root/projects/LeNet5/float/bellerophon/VPA/bellerophon_functions.cpp",
+  "file": "/root/projects/LeNet5/float/bellerophon/VPA/bellerophon_functions.cpp"
+}
+]

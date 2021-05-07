@@ -1,0 +1,6 @@
+#!/bin/bash
+cd ~
+git clone https://github.com/johnmcfarlane/cnl.git && cd cnl
+mkdir build && cd build
+cmake .. -G Ninja
+ninja install

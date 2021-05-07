@@ -1,0 +1,9 @@
+#!/bin/bash
+apt remove -y cmake
+wget https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0.tar.gz
+tar -xzf cmake-3.17.0.tar.gz
+cd cmake-3.17.0 
+ ./bootstrap 
+make -j `nproc` 
+make install
+ln -s /usr/local/bin/cmake /usr/bin

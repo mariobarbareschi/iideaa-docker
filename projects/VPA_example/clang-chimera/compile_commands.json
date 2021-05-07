@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/root/projects/VPA_example/src/build",
+  "command": "/usr/bin/clang++   -I/root/projects/VPA_example/src/taylor   -Wfatal-errors -fno-use-cxa-atexit -fPIC -g   -std=gnu++11 -o CMakeFiles/taylor_main.dir/main.cpp.o -c /root/projects/VPA_example/src/main.cpp",
+  "file": "/root/projects/VPA_example/src/main.cpp"
+},
+{
+  "directory": "/root/projects/VPA_example/src/build/stirling",
+  "command": "/usr/bin/clang++   -I/root/projects/VPA_example/src/stirling   -Wfatal-errors -fno-use-cxa-atexit -fPIC -g   -std=gnu++11 -o CMakeFiles/stirling.dir/stirling.cpp.o -c /root/projects/VPA_example/src/stirling/stirling.cpp",
+  "file": "/root/projects/VPA_example/src/stirling/stirling.cpp"
+},
+{
+  "directory": "/root/projects/VPA_example/src/build/taylor",
+  "command": "/usr/bin/clang++  -Dtaylor_EXPORTS -I/root/projects/VPA_example/src/taylor -I/root/projects/VPA_example/src/stirling   -Wfatal-errors -fno-use-cxa-atexit -fPIC -g -fPIC   -std=gnu++11 -o CMakeFiles/taylor.dir/taylor.cpp.o -c /root/projects/VPA_example/src/taylor/taylor.cpp",
+  "file": "/root/projects/VPA_example/src/taylor/taylor.cpp"
+}
+]

@@ -1,0 +1,5 @@
+3,neuron_conv1,27,31,evoapprox8u,0
+3,neuron_conv2,76,31,evoapprox8u,0
+3,neuron_conv3,125,31,evoapprox8u,0
+3,fccell_upropagate_2d,245,33,evoapprox8u,0
+3,fccell_upropagate,263,29,evoapprox8u,0

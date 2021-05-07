@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/opt/newton/src/build",
-  "command": "/usr/bin/clang++    -I/opt/newton/src/.   -Wfatal-errors -fno-use-cxa-atexit -fPIC -g   -std=gnu++11 -o CMakeFiles/demo.dir/newton.cpp.o -c /opt/newton/src/newton.cpp",
-  "file": "/opt/newton/src/newton.cpp"
-}
-]
